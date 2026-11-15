@@ -1,0 +1,166 @@
+{
+  "session": "05",
+  "source_sha256": "19673f5b8187658b76d37a231cb1e0223e3dd158afd72a3d35f2d185da79e200",
+  "panels": [
+    {
+      "id": "intro",
+      "titulo": "Introdução e objetivo",
+      "bbox": [
+        0.009,
+        0.204,
+        0.491,
+        0.337
+      ],
+      "pixels": [
+        1900,
+        393
+      ],
+      "src": "figuras/intro.svg"
+    },
+    {
+      "id": "metodo",
+      "titulo": "Metodologia e caracterização das unidades",
+      "bbox": [
+        0.009,
+        0.341,
+        0.492,
+        0.655
+      ],
+      "pixels": [
+        1900,
+        926
+      ],
+      "src": "figuras/metodo.svg"
+    },
+    {
+      "id": "inventario",
+      "titulo": "Inventário e participação dos processos",
+      "bbox": [
+        0.009,
+        0.657,
+        0.491,
+        0.794
+      ],
+      "pixels": [
+        1900,
+        405
+      ],
+      "src": "figuras/inventario.svg"
+    },
+    {
+      "id": "boxplots",
+      "titulo": "Hourly distributions at matched receptors",
+      "bbox": [
+        0.009,
+        0.794,
+        0.492,
+        0.972
+      ],
+      "pixels": [
+        1900,
+        525
+      ],
+      "src": "figuras/boxplots.svg"
+    },
+    {
+      "id": "maximos",
+      "titulo": "Maximum 24 h concentration envelopes",
+      "bbox": [
+        0.509,
+        0.203,
+        0.988,
+        0.415
+      ],
+      "pixels": [
+        1900,
+        631
+      ],
+      "src": "figuras/maximos.svg"
+    },
+    {
+      "id": "anual",
+      "titulo": "Maximum calendar-year mean concentration",
+      "bbox": [
+        0.509,
+        0.416,
+        0.988,
+        0.621
+      ],
+      "pixels": [
+        1900,
+        610
+      ],
+      "src": "figuras/anual.svg"
+    },
+    {
+      "id": "distancia",
+      "titulo": "Model contrast across distance bands",
+      "bbox": [
+        0.509,
+        0.626,
+        0.988,
+        0.774
+      ],
+      "pixels": [
+        1900,
+        440
+      ],
+      "src": "figuras/distancia.svg"
+    },
+    {
+      "id": "conclusoes",
+      "titulo": "Conclusões",
+      "bbox": [
+        0.508,
+        0.774,
+        0.988,
+        0.865
+      ],
+      "pixels": [
+        1900,
+        270
+      ],
+      "src": "figuras/conclusoes.svg"
+    },
+    {
+      "id": "apoio",
+      "titulo": "Agradecimentos e referências",
+      "bbox": [
+        0.508,
+        0.866,
+        0.99,
+        0.972
+      ],
+      "pixels": [
+        1900,
+        313
+      ],
+      "src": "figuras/apoio.svg"
+    },
+    {
+      "id": "referencias",
+      "titulo": "Referências do pôster",
+      "bbox": [
+        0.008,
+        0.974,
+        0.997,
+        0.998
+      ],
+      "pixels": [
+        1900,
+        35
+      ],
+      "src": "figuras/referencias.svg"
+    }
+  ],
+  "pdfs": [
+    {
+      "file": "Guia_preparacao_Session05_PT_EN.pdf",
+      "sha256": "ab7cbe30a7b1022e03eaaa60f741fa6bc6d24147d43f8cd3110dd8fee3eab81f"
+    },
+    {
+      "file": "Roteiro_Session05_PT_EN.pdf",
+      "sha256": "25a0adfced77f6f3cda959e28cdafd69364f05a2592316d2fb919d06e7ca59b7"
+    }
+  ]
+}

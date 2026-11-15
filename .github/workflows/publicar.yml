@@ -25,6 +25,11 @@ jobs:
           cp -a documentacao/codigos/. _site/codigos/
           sed -i 's@../../docs/@../@g' _site/codigos/index.html
           sed -i 's@../documentacao/codigos/@codigos/@g' _site/index.html
+          if [ -d documentacao/poster ]; then
+            mkdir -p _site/poster
+            cp -a documentacao/poster/. _site/poster/
+          fi
+          sed -i 's@../documentacao/poster/@poster/@g' _site/index.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
