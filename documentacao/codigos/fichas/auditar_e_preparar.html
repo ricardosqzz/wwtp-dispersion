@@ -1,0 +1,311 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/auditar_e_preparar.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/auditar_e_preparar.py</h2>
+<p>Lê entradas dos modelos, confere unidades e massas por processo, organiza as geometrias das fontes e exporta entradas e grades corrigidas para importação.</p>
+<p><strong>Papel.</strong> Auditoria/diagnóstico. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\auditar_e_preparar.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>csv</td><td>Leitura/escrita de tabelas delimitadas com separador e codificação explícitos.</td></tr><tr><td>datetime</td><td>Calendários, datas e duração dos períodos avaliados.</td></tr><tr><td>geometria_ete</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>hashlib</td><td>Assinaturas SHA-256 para identificar alterações de arquivos; não é validação do conteúdo científico.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>math</td><td>Funções matemáticas escalares.</td></tr><tr><td>openpyxl</td><td>Leitura/escrita de planilhas XLSX; não é o mecanismo do Excel aberto.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>re</td><td>Extração e validação de padrões textuais, datas, identificadores e linhas dos modelos.</td></tr><tr><td>shapely.geometry</td><td>Operações geométricas usadas nas áreas, distâncias, limites e relações espaciais.</td></tr><tr><td>statistics</td><td>Estatísticas descritivas da biblioteca padrão.</td></tr><tr><td>subprocess</td><td>Chamada de outros programas e verificação de seus resultados de execução.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>{p} — chamada p.read_text, linha 88.</li>
+<li>E:/copasa_map/in/CALMET.INP — chamada .read_text, linha 108.</li>
+<li>E:/copasa_map/in/CALMET.LST — chamada .read_text, linha 108.</li>
+<li>E:/copasa_map/AERMET_COP.SFC — chamada .read_text, linha 114.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/CALPUFF-VM_corrigido.INP — chamada .read_text, linha 216.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/CALPUFF-NC_corrigido.INP — chamada .read_text, linha 217.</li>
+<li>E:/copasa_map/temp/fontes_NC_xls_leitura.sha256 — chamada sha.read_text, linha 235.</li>
+<li>E:/copasa_map/in/H2S_Grid_Sources-NC.xls — chamada oldxls.read_bytes, linha 235.</li>
+<li>E:/copasa_map/temp/fontes_NC_xls_leitura.json — chamada cache.read_text, linha 240.</li>
+<li>proc(n) — chamada p.read_bytes, linha 256.</li>
+<p><strong>Saídas.</strong></p>
+<li>{p} — chamada p.write_text, linha 54.</li>
+<li>{p} — chamada p.open, linha 57.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/Grade_Receptora_Comum.ROU — chamada .write_text, linha 156.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/{name} — chamada .write_text, linha 174.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/CALPUFF-{k}_corrigido.INP — chamada .write_text, linha 214.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/CALPUFF-CMAS_TOTAL_corrigido.INP — chamada .write_text, linha 229.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>d: area, base, elev, flux, height, hill, index, mass, old_flux, origin, params, type, x, xy, xyinc, y.</li>
+<li>w: Comportamento, Entrada.</li>
+<li>s: B29, B31, B4, B54, B56, B58, B6, E13, K33, N17, N19, N20, N22, N23, N24.</li>
+<li>actual: NC, VM.</li>
+<li>cal: NC, VM.</li>
+<li>window: end, hours, start.</li>
+<li>z: Diam, Num_Coords, Type.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>: area, params, xy, xyinc.</li>
+<li>d: area, height, old_flux, receptor_id.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>dump(p, d)</td><td>54-54</td><td>grava produtos</td></tr><tr><td>csvout(p, rows)</td><td>56-58</td><td>Chamadas efetivas: p.open, csv.DictWriter, w.writeheader, w.writerows, list</td></tr><tr><td>nums(s)</td><td>60-60</td><td>Chamadas efetivas: float, re.findall, s.replace Retorno: [float(x) for x in re.findall(&#x27;[-+]?\\d*\\.?\\d+(?:[EeDd][-+]?\\d+)?&#x27;, s.replace(&#x27;D&#x27;, &#x27;E&#x27;))].</td></tr><tr><td>parse_cal(p)</td><td>62-71</td><td>lê dados Retorno: (t, out).</td></tr><tr><td>parse_aer(p)</td><td>73-84</td><td>lê dados Retorno: (t, out).</td></tr><tr><td>parse_rou(p)</td><td>86-103</td><td>lê dados Retorno: rows.</td></tr><tr><td>main()</td><td>105-259</td><td>lê dados; grava produtos Retorno: &#x27;\n&#x27;.join(lines) + &#x27;\n&#x27;, (start, t.index(&#x27;---------------&#x27;, start + 25)).</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/auditar_e_preparar.py, linhas 125-131.</p>
+<pre><code>    dump(A/&#x27;Geometria_UASB_WWTP2.json&#x27;,geometry_revision)
+    actual={&#x27;VM&#x27;:sum(d[&#x27;area&#x27;] for n,d in aer.items() if n.startswith(&#x27;VM_UASB&#x27;)),&#x27;NC&#x27;:sum(d[&#x27;area&#x27;] for n,d in aer.items() if n.startswith(&#x27;NC_UASB&#x27;))}
+    process={&#x27;VM_PRE&#x27;:s[&#x27;N17&#x27;].value,&#x27;VM_UASB&#x27;:s[&#x27;B29&#x27;].value*actual[&#x27;VM&#x27;]*s[&#x27;B31&#x27;].value+s[&#x27;K33&#x27;].value,&#x27;VM_CALHA&#x27;:s[&#x27;N19&#x27;].value,&#x27;NC_PRE&#x27;:s[&#x27;N20&#x27;].value,&#x27;NC_UASB&#x27;:s[&#x27;B54&#x27;].value*actual[&#x27;NC&#x27;]*s[&#x27;B56&#x27;].value*s[&#x27;B58&#x27;].value,&#x27;NC_FB&#x27;:s[&#x27;N22&#x27;].value,&#x27;CT_ONCA&#x27;:s[&#x27;N23&#x27;].value,&#x27;CT_PAMP&#x27;:s[&#x27;N24&#x27;].value}
+    def proc(n):
+        for p in sorted(process,key=len,reverse=True):
+            if n.startswith(p):return p
+        raise ValueError(n)</code></pre>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: {p} | p.read_text.
+    5  # Entrada: E:/copasa_map/in/CALMET.INP | .read_text.
+    6  # Entrada: E:/copasa_map/in/CALMET.LST | .read_text.
+    7  # Entrada: E:/copasa_map/AERMET_COP.SFC | .read_text.
+    8  # Entrada: E:/copasa_map/output/entradas_corrigidas/CALPUFF-VM_corrigido.INP | .read_text.
+    9  # Entrada: E:/copasa_map/output/entradas_corrigidas/CALPUFF-NC_corrigido.INP | .read_text.
+   10  # Entrada: E:/copasa_map/temp/fontes_NC_xls_leitura.sha256 | sha.read_text.
+   11  # Entrada: E:/copasa_map/in/H2S_Grid_Sources-NC.xls | oldxls.read_bytes.
+   12  # Entrada: E:/copasa_map/temp/fontes_NC_xls_leitura.json | cache.read_text.
+   13  # Entrada: proc(n) | p.read_bytes.
+   14  # Campos/chaves em d: area, base, elev, flux, height, hill, index, mass, old_flux, origin, params, type, x, xy, xyinc, y.
+   15  # Campos/chaves em w: Comportamento, Entrada.
+   16  # Campos/chaves em s: B29, B31, B4, B54, B56, B58, B6, E13, K33, N17, N19, N20, N22, N23, N24.
+   17  # Campos/chaves em actual: NC, VM.
+   18  # Campos/chaves em cal: NC, VM.
+   19  # Campos/chaves em window: end, hours, start.
+   20  # Campos/chaves em z: Diam, Num_Coords, Type.
+   21  # Saída: {p} | p.write_text.
+   22  # Saída: {p} | p.open.
+   23  # Saída: E:/copasa_map/output/entradas_corrigidas/Grade_Receptora_Comum.ROU | .write_text.
+   24  # Saída: E:/copasa_map/output/entradas_corrigidas/{name} | .write_text.
+   25  # Saída: E:/copasa_map/output/entradas_corrigidas/CALPUFF-{k}_corrigido.INP | .write_text.
+   26  # Saída: E:/copasa_map/output/entradas_corrigidas/CALPUFF-CMAS_TOTAL_corrigido.INP | .write_text.
+   27  # Campos/chaves gerados em : area, params, xy, xyinc.
+   28  # Campos/chaves gerados em d: area, height, old_flux, receptor_id.
+   29  # receptor_id: identificador do receptor.
+   30  # CÓDIGO DO PROCESSAMENTO
+   31  
+   32  &quot;&quot;&quot;Auditoria reproduzível; nunca sobrescreve os insumos recebidos.&quot;&quot;&quot;
+   33  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   34  import sys as _cp_sys
+   35  from pathlib import Path as _cp_Path
+   36  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   37  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   38      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   39      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   40          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   41          break
+   42  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   43  # FIM DOS CAMINHOS PORTÁTEIS
+   44  
+   45  from pathlib import Path
+   46  import sys,json,re,math,csv,hashlib,statistics,datetime
+   47  sys.path.append(_cp_externo(&#x27;python_5ae2cb6&#x27;))
+   48  import openpyxl
+   49  from shapely.geometry import Polygon,Point
+   50  from geometria_ete import regularizar
+   51  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));I=R/&#x27;in&#x27;;O=R/&#x27;output/entradas_corrigidas&#x27;;A=R/&#x27;output/auditoria&#x27;
+   52  O.mkdir(parents=True,exist_ok=True);A.mkdir(parents=True,exist_ok=True)
+   53  # Dump
+   54  def dump(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding=&#x27;utf8&#x27;)
+   55  # Csvout
+   56  def csvout(p,rows):
+   57      with p.open(&#x27;w&#x27;,newline=&#x27;&#x27;,encoding=&#x27;utf-8-sig&#x27;) as f:
+   58          w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
+   59  # Nums
+   60  def nums(s):return [float(x) for x in re.findall(r&#x27;[-+]?\d*\.?\d+(?:[EeDd][-+]?\d+)?&#x27;,s.replace(&#x27;D&#x27;,&#x27;E&#x27;))]
+   61  # Parse cal
+   62  def parse_cal(p):
+   63      t=p.read_text(encoding=&#x27;cp1252&#x27;);part=t.split(&#x27;Subgroup (14b)&#x27;)[1].split(&#x27;Subgroup (14c)&#x27;)[0]
+   64      out={}
+   65      for m in re.finditer(r&#x27;(\d+)\s*!\s*SRCNAM\s*=\s*(\w+)\s*!\s*\d+\s*!\s*X\s*=\s*([^!]+)!&#x27;,part):
+   66          v=nums(m[3]);out[m[2]]={&#x27;id&#x27;:m[2],&#x27;index&#x27;:int(m[1]),&#x27;height&#x27;:v[0],&#x27;base&#x27;:v[1],&#x27;sigma&#x27;:v[2],&#x27;old_flux&#x27;:v[3]}
+   67      part=t.split(&#x27;Subgroup (14c)&#x27;)[1].split(&#x27;Subgroup (14d)&#x27;)[0]
+   68      for m in re.finditer(r&#x27;(\d+)\s*!\s*SRCNAM\s*=\s*(\w+)\s*!\s*\d+\s*!\s*XVERT\s*=\s*([^!]+)!\s*\d+\s*!\s*YVERT\s*=\s*([^!]+)!&#x27;,part):
+   69          xy=list(zip([v*1000 for v in nums(m[3])],[v*1000 for v in nums(m[4])]))
+   70          out[m[2]][&#x27;xy&#x27;]=xy;out[m[2]][&#x27;area&#x27;]=Polygon(xy).area
+   71      return t,out
+   72  # Parse aer
+   73  def parse_aer(p):
+   74      t=p.read_text(encoding=&#x27;cp1252&#x27;);out={}
+   75      for l in t.splitlines():
+   76          s=l.split()
+   77          if not s:continue
+   78          if s[0]==&#x27;LOCATION&#x27;:out[s[1]]={&#x27;id&#x27;:s[1],&#x27;type&#x27;:s[2],&#x27;x&#x27;:float(s[3]),&#x27;y&#x27;:float(s[4]),&#x27;base&#x27;:float(s[5]),&#x27;xy&#x27;:[]}
+   79          elif s[0]==&#x27;SRCPARAM&#x27;:out[s[1]][&#x27;params&#x27;]=list(map(float,s[2:]))
+   80          elif s[0]==&#x27;AREAVERT&#x27;:out[s[1]][&#x27;xy&#x27;]+=list(zip(map(float,s[2::2]),map(float,s[3::2])))
+   81      for d in out.values():
+   82          d[&#x27;area&#x27;]=math.pi*d[&#x27;params&#x27;][2]**2 if d[&#x27;type&#x27;]==&#x27;AREACIRC&#x27; else Polygon(d[&#x27;xy&#x27;]).area
+   83          d[&#x27;old_flux&#x27;]=d[&#x27;params&#x27;][0];d[&#x27;height&#x27;]=d[&#x27;params&#x27;][1]
+   84      return t,out
+   85  # Parse rou
+   86  def parse_rou(p):
+   87      rows=[];nets={};network=None
+   88      for l in p.read_text(encoding=&#x27;cp1252&#x27;).splitlines():
+   89          s=l.split()
+   90          if s and s[0]==&#x27;DISCCART&#x27;:
+   91              v=list(map(float,s[1:]));rows.append(dict(x=v[0],y=v[1],elev=v[2],hill=v[3],origin=&#x27;DISCCART&#x27;))
+   92          elif len(s)&gt;2 and s[0]==&#x27;GRIDCART&#x27;:
+   93              network=s[1]
+   94              if s[2]==&#x27;STA&#x27;:nets[network]={&#x27;elev&#x27;:{},&#x27;hill&#x27;:{}}
+   95              elif s[2] in (&#x27;ELEV&#x27;,&#x27;HILL&#x27;):
+   96                  d=nets[network][s[2].lower()];d.setdefault(int(s[3]),[]).extend(map(float,s[4:]))
+   97          elif s and s[0]==&#x27;XYINC&#x27;:nets[network][&#x27;xyinc&#x27;]=list(map(float,s[1:]))
+   98      for name,d in nets.items():
+   99          x,nx,dx,y,ny,dy=d[&#x27;xyinc&#x27;];
+  100          for j in range(int(ny)):
+  101              for k in range(int(nx)):
+  102                  rows.append(dict(x=x+k*dx,y=y+j*dy,elev=d[&#x27;elev&#x27;][j+1][k],hill=d[&#x27;hill&#x27;][j+1][k],origin=name))
+  103      return rows
+  104  # Main
+  105  def main():
+  106      met=None;window=None
+  107      if (I/&#x27;CALMET.INP&#x27;).exists() and (I/&#x27;CALMET.LST&#x27;).exists():
+  108          mt=(I/&#x27;CALMET.INP&#x27;).read_text(encoding=&#x27;cp1252&#x27;);ml=(I/&#x27;CALMET.LST&#x27;).read_text(encoding=&#x27;cp1252&#x27;)
+  109          def value(k):return nums(re.search(rf&#x27;!\s*{k}\s*=\s*([^!]+)!&#x27;,mt)[1])[0]
+  110          last=re.search(r&#x27;LAST DAY/HOUR PROCESSED:\s*Year:\s*(\d+)\s*Month:\s*(\d+)\s*Day:\s*(\d+)\s*Julian day:\s*\d+\s*Hour:\s*(\d+)&#x27;,ml)
+  111          assert last and &#x27;End of run -- Clock time:&#x27; in ml
+  112          calstart=datetime.datetime(int(value(&#x27;IBYR&#x27;)),int(value(&#x27;IBMO&#x27;)),int(value(&#x27;IBDY&#x27;)))+datetime.timedelta(hours=value(&#x27;IBHR&#x27;))
+  113          calend=datetime.datetime(*map(int,last.groups()))
+  114          sr=(R/&#x27;AERMET_COP.SFC&#x27;).read_text(encoding=&#x27;cp1252&#x27;).splitlines()[1:]
+  115          def sfctime(line):
+  116              y,m,day,j,h=map(int,line.split()[:5]);return datetime.datetime(2000+y,m,day)+datetime.timedelta(hours=h)
+  117          first=max(calstart,sfctime(sr[0]));end=min(calend,sfctime(sr[-1]));count=int((end-first).total_seconds()/3600)+1
+  118          window=dict(start=first.isoformat(),end=end.isoformat(),hours=count)
+  119          met=dict(start=calstart.isoformat(),end=calend.isoformat(),hours=int(value(&#x27;IRLG&#x27;)),timezone_west_utc=value(&#x27;IBTZ&#x27;),nx=int(value(&#x27;NX&#x27;)),ny=int(value(&#x27;NY&#x27;)),grid_km=value(&#x27;DGRIDKM&#x27;),surface_stations=int(value(&#x27;NSSTA&#x27;)),upper_stations=int(value(&#x27;NUSTA&#x27;)),prognostic_files=int(value(&#x27;NM3D&#x27;)),warning=&#x27;BIAS(1) reset to -1 to be consistent with IEXTRP&#x27;,normal_end=True)
+  120      w=openpyxl.load_workbook(I/&#x27;Resumo_MOD.xlsx&#x27;,data_only=True);s=w[&#x27;Entrada&#x27;];profile=[w[&#x27;Comportamento&#x27;].cell(r,3).value for r in range(3,27)]
+  121      molecular=1/(1+10**(s[&#x27;B4&#x27;].value-s[&#x27;B6&#x27;].value));assert abs(molecular-s[&#x27;E13&#x27;].value)&lt;1e-12
+  122      at,aer=parse_aer(I/&#x27;H2S_TOTAL.ADI&#x27;);ct={};cal={}
+  123      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:ct[k],cal[k]=parse_cal(I/f&#x27;CALPUFF-{k}.INP&#x27;)
+  124      geometry_revision=regularizar(aer,cal)
+  125      dump(A/&#x27;Geometria_UASB_WWTP2.json&#x27;,geometry_revision)
+  126      actual={&#x27;VM&#x27;:sum(d[&#x27;area&#x27;] for n,d in aer.items() if n.startswith(&#x27;VM_UASB&#x27;)),&#x27;NC&#x27;:sum(d[&#x27;area&#x27;] for n,d in aer.items() if n.startswith(&#x27;NC_UASB&#x27;))}
+  127      process={&#x27;VM_PRE&#x27;:s[&#x27;N17&#x27;].value,&#x27;VM_UASB&#x27;:s[&#x27;B29&#x27;].value*actual[&#x27;VM&#x27;]*s[&#x27;B31&#x27;].value+s[&#x27;K33&#x27;].value,&#x27;VM_CALHA&#x27;:s[&#x27;N19&#x27;].value,&#x27;NC_PRE&#x27;:s[&#x27;N20&#x27;].value,&#x27;NC_UASB&#x27;:s[&#x27;B54&#x27;].value*actual[&#x27;NC&#x27;]*s[&#x27;B56&#x27;].value*s[&#x27;B58&#x27;].value,&#x27;NC_FB&#x27;:s[&#x27;N22&#x27;].value,&#x27;CT_ONCA&#x27;:s[&#x27;N23&#x27;].value,&#x27;CT_PAMP&#x27;:s[&#x27;N24&#x27;].value}
+  128      def proc(n):
+  129          for p in sorted(process,key=len,reverse=True):
+  130              if n.startswith(p):return p
+  131          raise ValueError(n)
+  132      records=[]
+  133      for model,src in [(&#x27;AERMOD&#x27;,aer),(&#x27;CALPUFF&#x27;,dict(**cal[&#x27;VM&#x27;],**cal[&#x27;NC&#x27;]))]:
+  134          areas={p:sum(d[&#x27;area&#x27;] for n,d in src.items() if proc(n)==p) for p in process}
+  135          for n,d in src.items():
+  136              p=proc(n);d.update(process=p,flux=process[p]/areas[p],mass=process[p]*d[&#x27;area&#x27;]/areas[p])
+  137              records.append(dict(model=model,id=n,process=p,area_m2=d[&#x27;area&#x27;],old_area_m2=d.get(&#x27;old_area&#x27;,d[&#x27;area&#x27;]),height_m=d[&#x27;height&#x27;],base_m=d[&#x27;base&#x27;],old_flux_g_s_m2=d[&#x27;old_flux&#x27;],old_mass_g_s=d[&#x27;old_flux&#x27;]*d.get(&#x27;old_area&#x27;,d[&#x27;area&#x27;]),corrected_flux_g_s_m2=d[&#x27;flux&#x27;],corrected_mass_g_s=d[&#x27;mass&#x27;],corrected_t_year=d[&#x27;mass&#x27;]*31.536))
+  138          for p in process:
+  139              subset=[d for n,d in src.items() if proc(n)==p]
+  140              if subset:assert abs(sum(d[&#x27;mass&#x27;] for d in subset)-process[p])&lt;1e-12
+  141      csvout(A/&#x27;Auditoria_fontes_modelos.csv&#x27;,records)
+  142  
+  143      mean=statistics.mean(profile);f=[v/mean for v in profile];hours=f[1:]+f[:1]
+  144      assert abs(statistics.mean(hours)-1)&lt;1e-14
+  145      csvout(O/&#x27;Perfil_horario_normalizado.csv&#x27;,[dict(hour_end=i+1,original=profile[(i+1)%24],normalized=hours[i]) for i in range(24)])
+  146  
+  147      ref=I/&#x27;AERMOD/H2S_Ref/H2S_TOTAL.ROU&#x27;;rr=parse_rou(ref);chosen={}
+  148      centres=[(614080,7834430),(589190,7805680)]
+  149      for d in rr:
+  150          near=min(math.hypot(d[&#x27;x&#x27;]-x,d[&#x27;y&#x27;]-y) for x,y in centres)&lt;=1800
+  151          if d[&#x27;origin&#x27;]==&#x27;UCART4&#x27; or near:
+  152              key=(round(d[&#x27;x&#x27;],2),round(d[&#x27;y&#x27;],2));chosen.setdefault(key,d)
+  153      grid=sorted(chosen.values(),key=lambda d:(d[&#x27;y&#x27;],d[&#x27;x&#x27;]))
+  154      for i,d in enumerate(grid):d[&#x27;receptor_id&#x27;]=i+1
+  155      csvout(O/&#x27;Grade_Receptora_Comum.csv&#x27;,grid)
+  156      (O/&#x27;Grade_Receptora_Comum.ROU&#x27;).write_text(&#x27;RE ELEVUNIT METERS\n&#x27;+&#x27;&#x27;.join(f&quot;   DISCCART {d[&#x27;x&#x27;]:.2f} {d[&#x27;y&#x27;]:.2f} {d[&#x27;elev&#x27;]:.2f} {d[&#x27;hill&#x27;]:.2f}\n&quot; for d in grid),encoding=&#x27;ascii&#x27;)
+  157  
+  158      def newadi(include_ct=False):
+  159          lines=[&#x27;CO STARTING&#x27;,&#x27; TITLEONE H2S - inventory corrected 2026-11-09&#x27;,&#x27; MODELOPT DFAULT CONC&#x27;,&#x27; AVERTIME 1 24 ANNUAL&#x27;,&#x27; POLLUTID H2S&#x27;,&#x27; RUNORNOT RUN&#x27;,&#x27;CO FINISHED&#x27;,&#x27;SO STARTING&#x27;]
+  160          for n,d in aer.items():
+  161              if not include_ct and n.startswith(&#x27;CT_&#x27;):continue
+  162              lines+=[f&quot; LOCATION {n} {d[&#x27;type&#x27;]} {d[&#x27;x&#x27;]:.8f} {d[&#x27;y&#x27;]:.8f} {d[&#x27;base&#x27;]:.3f}&quot;]
+  163              pr=d[&#x27;params&#x27;][1:];lines+=[f&quot; SRCPARAM {n} {d[&#x27;flux&#x27;]:.12g} &quot;+&#x27; &#x27;.join(f&#x27;{v:.9g}&#x27; for v in pr)]
+  164              for i in range(0,len(d[&#x27;xy&#x27;]),2):lines+=[f&#x27; AREAVERT {n} &#x27;+&#x27; &#x27;.join(f&#x27;{x:.8f} {y:.8f}&#x27; for x,y in d[&#x27;xy&#x27;][i:i+2])]
+  165              for i in range(0,24,6):lines+=[f&#x27; EMISFACT {n} HROFDY &#x27;+&#x27; &#x27;.join(f&#x27;{v:.10f}&#x27; for v in hours[i:i+6])]
+  166          for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:lines+=[&#x27; SRCGROUP &#x27;+k+&#x27; &#x27;+&#x27; &#x27;.join(n for n in aer if n.startswith(k+&#x27;_&#x27;))]
+  167          if include_ct:lines+=[&#x27; SRCGROUP CT CT_ONCA CT_PAMP&#x27;]
+  168          lines+=[&#x27; SRCGROUP ALL&#x27;,&#x27;SO FINISHED&#x27;,&#x27;RE STARTING&#x27;,&#x27; INCLUDED Grade_Receptora_Comum.ROU&#x27;,&#x27;RE FINISHED&#x27;,&#x27;ME STARTING&#x27;,_cp_adaptar(r&#x27; SURFFILE E:\copasa_map\AERMET_COP.SFC&#x27;),_cp_adaptar(r&#x27; PROFFILE E:\copasa_map\in\AERMOD\AERMET\AERMET_COP.PFL&#x27;),&#x27; SURFDATA 1 2024&#x27;,&#x27; UAIRDATA 83566 2024&#x27;,&#x27; PROFBASE 854.0 METERS&#x27;,&#x27;ME FINISHED&#x27;,&#x27;OU STARTING&#x27;,&#x27; RECTABLE ALLAVE 1ST&#x27;,&#x27; PLOTFILE 24 ALL 1ST H2S_24H.PLT&#x27;,&#x27; PLOTFILE ANNUAL ALL H2S_ANNUAL.PLT&#x27;,&#x27; PLOTFILE 24 VM 1ST H2S24_W1.PLT&#x27;,&#x27; PLOTFILE 24 NC 1ST H2S24_W2.PLT&#x27;,&#x27; PLOTFILE ANNUAL VM H2SAN_W1.PLT&#x27;,&#x27; PLOTFILE ANNUAL NC H2SAN_W2.PLT&#x27;,&#x27;OU FINISHED&#x27;]
+  169          if window:
+  170              b=datetime.datetime.fromisoformat(window[&#x27;start&#x27;]);e=datetime.datetime.fromisoformat(window[&#x27;end&#x27;])
+  171              assert b.hour&gt;0 and e.hour&gt;0
+  172              lines.insert(lines.index(&#x27;ME FINISHED&#x27;),f&#x27; STARTEND {b.year} {b.month} {b.day} {b.hour} {e.year} {e.month} {e.day} {e.hour}&#x27;)
+  173          return &#x27;\n&#x27;.join(lines)+&#x27;\n&#x27;
+  174      for name,cton in [(&#x27;H2S_CMAS_corrigido.ADI&#x27;,False),(&#x27;H2S_COMPLETO_corrigido.ADI&#x27;,True)]: (O/name).write_text(newadi(cton),encoding=&#x27;ascii&#x27;)
+  175  
+  176      def subgroup(t,letter):
+  177          start=t.index(f&#x27;Subgroup (14{letter})&#x27;);return start,t.index(&#x27;---------------&#x27;,start+25)
+  178      for k,t in ct.items():
+  179          if window:
+  180              b=datetime.datetime.fromisoformat(window[&#x27;start&#x27;])
+  181              for key,val in dict(IBYR=b.year,IBMO=b.month,IBDY=b.day,IBHR=b.hour,IRLG=window[&#x27;hours&#x27;]).items():
+  182                  t=re.sub(rf&#x27;(!\s*{key}\s*=\s*)\d+&#x27;,lambda m:m[1]+str(val),t)
+  183          for n,d in cal[k].items():
+  184              pat=rf&#x27;(\d+\s*!\s*SRCNAM\s*=\s*{n}\s*!\s*\d+\s*!\s*X\s*=\s*)([^!]+)(!)&#x27;
+  185              def repl(m):
+  186                  vals=nums(m[2]);vals[3]=d[&#x27;flux&#x27;];return m[1]+&#x27;, &#x27;.join(f&#x27;{v:.12g}&#x27; for v in vals)+m[3]
+  187              t,count=re.subn(pat,repl,t);assert count==1
+  188              if n.startswith(&#x27;NC_UASB&#x27;):
+  189                  pat=rf&#x27;(\d+\s*!\s*SRCNAM\s*=\s*{n}\s*!\s*\d+\s*!\s*XVERT\s*=\s*)([^!]+)(!\s*\d+\s*!\s*YVERT\s*=\s*)([^!]+)(!)&#x27;
+  190                  xs=&#x27;, &#x27;.join(f&#x27;{x/1000:.11f}&#x27; for x,y in d[&#x27;xy&#x27;]);ys=&#x27;, &#x27;.join(f&#x27;{y/1000:.11f}&#x27; for x,y in d[&#x27;xy&#x27;])
+  191                  t,count=re.subn(pat,lambda m:m[1]+xs+m[3]+ys+m[5],t);assert count==1
+  192  
+  193          st=t.index(&#x27;Subgroup (14d)&#x27;);en=t.index(&#x27;INPUT GROUPS: 15&#x27;,st)
+  194          old=t[st:en]
+  195          for n,d in cal[k].items():
+  196              pattern=rf&#x27;\d+\s*!\s*SRCNAM\s*=\s*{n}\s*!\s*\d+\s*!\s*IVARY\s*=\s*1\s*![^!]*?\d+\s*!\s*ODOR\s*=\s*[^!]+!\s*!END!&#x27;
+  197              h=&#x27;,\n       &#x27;.join(&#x27;,&#x27;.join(f&#x27;{v:.10f}&#x27; for v in hours[i:i+6]) for i in range(0,24,6))
+  198              replacement=f&quot;{d[&#x27;index&#x27;]} ! SRCNAM = {n} !\n {d[&#x27;index&#x27;]} ! IVARY = 1 !\n {d[&#x27;index&#x27;]} ! ODOR = {h} !\n!END!&quot;
+  199              old,count=re.subn(pattern,replacement,old);assert count==1,(k,n,count)
+  200          t=t[:st]+old+t[en:]
+  201          t=re.sub(r&#x27;(!\s*LSAMP\s*=\s*)T&#x27;,r&#x27;\g&lt;1&gt;F&#x27;,t)
+  202          t=re.sub(r&#x27;(!\s*NREC\s*=\s*)\d+&#x27;,lambda m:m[1]+str(len(grid)),t)
+  203  
+  204          g16=t.index(&#x27;Subgroup (17b)&#x27;)
+  205          tail=t[g16:];m=re.search(r&#x27;(?m)^\s*1\s*!\s*X\s*=&#x27;,tail)
+  206          if not m:
+  207              m=re.search(r&#x27;(?m)^\s*1\s+[-+]?\d&#x27;,tail)
+  208          assert m,tail[:1800]
+  209  
+  210          e=tail.rindex(&#x27;!END!&#x27;)+len(&#x27;!END!&#x27;)
+  211          records16=&#x27;&#x27;.join(f&quot; {i+1} ! X = {d[&#x27;x&#x27;]/1000:.8f}, {d[&#x27;y&#x27;]/1000:.8f}, {d[&#x27;elev&#x27;]:.3f}, 0.0 ! !END!\n&quot; for i,d in enumerate(grid))
+  212          t=t[:g16]+tail[:m.start()]+records16+tail[e:]
+  213  
+  214          (O/f&#x27;CALPUFF-{k}_corrigido.INP&#x27;).write_text(t,encoding=&#x27;cp1252&#x27;)
+  215  
+  216      tv=(O/&#x27;CALPUFF-VM_corrigido.INP&#x27;).read_text(encoding=&#x27;cp1252&#x27;)
+  217      tn=(O/&#x27;CALPUFF-NC_corrigido.INP&#x27;).read_text(encoding=&#x27;cp1252&#x27;)
+  218      def block(t,letter):
+  219          start=t.index(f&#x27;Subgroup (14{letter})&#x27;);end=t.index(&#x27;Subgroup (14&#x27;+chr(ord(letter)+1)+&#x27;)&#x27;) if letter!=&#x27;d&#x27; else t.index(&#x27;INPUT GROUPS: 15&#x27;,start)
+  220          part=t[start:end];ms=list(re.finditer(r&#x27;(?m)^\s*\d+\s*!\s*SRCNAM\s*=&#x27;,part));assert len(ms)==6
+  221          a=ms[0].start();b=part.rindex(&#x27;!END!&#x27;)+5
+  222          return start+a,start+b,part[a:b]
+  223      for letter in [&#x27;d&#x27;,&#x27;c&#x27;,&#x27;b&#x27;]:
+  224          av,bv,bvm=block(tv,letter);an,bn,bnc=block(tn,letter)
+  225          bnc=re.sub(r&#x27;(?m)^(\s*)(\d+)(\s*!)&#x27;,lambda m:m[1]+str(int(m[2])+6)+m[3],bnc)
+  226          tv=tv[:av]+bvm+&#x27;\n&#x27;+bnc+tv[bv:]
+  227      tv=re.sub(r&#x27;(!\s*(?:NAR1|NSAR1)\s*=\s*)6\b&#x27;,r&#x27;\g&lt;1&gt;12&#x27;,tv)
+  228      tv=re.sub(r&#x27;(!\s*MSOURCE\s*=\s*)0&#x27;,r&#x27;\g&lt;1&gt;1&#x27;,tv)
+  229      (O/&#x27;CALPUFF-CMAS_TOTAL_corrigido.INP&#x27;).write_text(tv,encoding=&#x27;cp1252&#x27;)
+  230      sums=[]
+  231      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+  232          sums.append(dict(unit=k,alias=&#x27;WWTP 1&#x27; if k==&#x27;VM&#x27; else &#x27;WWTP 2&#x27;,uasb_actual_m2=actual[k],old_process_total=sum(s[f&#x27;N{r}&#x27;].value for r in (range(17,20) if k==&#x27;VM&#x27; else range(20,23))),new_process_total=sum(v for p,v in process.items() if p.startswith(k+&#x27;_&#x27;)),old_aermod_total=sum(d[&#x27;old_flux&#x27;]*d.get(&#x27;old_area&#x27;,d[&#x27;area&#x27;]) for n,d in aer.items() if n.startswith(k+&#x27;_&#x27;)),old_calpuff_total=sum(d[&#x27;old_flux&#x27;]*d.get(&#x27;old_area&#x27;,d[&#x27;area&#x27;]) for d in cal[k].values())))
+  233  
+  234      cache=R/&#x27;temp/fontes_NC_xls_leitura.json&#x27;;sha=R/&#x27;temp/fontes_NC_xls_leitura.sha256&#x27;;oldxls=I/&#x27;H2S_Grid_Sources-NC.xls&#x27;
+  235      if not sha.exists() or sha.read_text().strip()!=hashlib.sha256(oldxls.read_bytes()).hexdigest():
+  236          import subprocess
+  237          subprocess.run([_cp_externo(&#x27;pwsh_exe_72a6651&#x27;),&#x27;-NoProfile&#x27;,&#x27;-File&#x27;,str(R/&#x27;codigo/ler_xls_original.ps1&#x27;)],check=True)
+  238      oldbooks=[]
+  239      for fn,hr in [(&#x27;H2S_TOTAL_Sources-AERMOD.xlsx&#x27;,51),(&#x27;H2S_Grid_Sources-VM.xlsx&#x27;,49),(&#x27;H2S_Grid_Sources-NC.xls&#x27;,49)]:
+  240          if fn.endswith(&#x27;.xls&#x27;):rrr=json.loads(cache.read_text(encoding=&#x27;utf-8-sig&#x27;))
+  241          else:
+  242              wb=openpyxl.load_workbook(I/fn,data_only=True,read_only=True);rrr=list(wb.active.values);wb.close()
+  243          head=list(rrr[hr-1]);field=&#x27;Emission_Rate&#x27; if &#x27;AERMOD&#x27; in fn else &#x27;ODOR&#x27;
+  244          for row in rrr[hr+1:]:
+  245              z=dict(zip(head,row));n=z.get(&#x27;ID&#x27;)
+  246              if not n or not z.get(&#x27;Type&#x27;):continue
+  247              pts=[(z.get(f&#x27;X{j}&#x27;),z.get(f&#x27;Y{j}&#x27;)) for j in range(1,int(z[&#x27;Num_Coords&#x27;])+1)]
+  248              ar=math.pi*z[&#x27;Diam&#x27;]**2 if z[&#x27;Type&#x27;]==&#x27;AREA_CIRC&#x27; else Polygon(pts).area
+  249              refsrc=aer if &#x27;AERMOD&#x27; in fn else dict(**cal[&#x27;VM&#x27;],**cal[&#x27;NC&#x27;])
+  250              matches=[d for name,d in refsrc.items() if name==n or name.startswith(n+&#x27;_&#x27;)]
+  251              expected=sum(d[&#x27;old_flux&#x27;]*d[&#x27;area&#x27;] for d in matches)/sum(d[&#x27;area&#x27;] for d in matches) if matches else None
+  252              v=z.get(field);oldbooks.append(dict(workbook=fn,id=n,type=z[&#x27;Type&#x27;],area_m2=ar,flux_g_s_m2=v,mass_g_s=v*ar,model_flux_g_s_m2=expected,divergent=expected is not None and abs(v-expected)&gt;max(1e-9,abs(expected)*.01)))
+  253      csvout(A/&#x27;Auditoria_planilhas_importacao_originais.csv&#x27;,oldbooks)
+  254      bases=[I/&#x27;Resumo_MOD.xlsx&#x27;,I/&#x27;H2S_TOTAL_Sources-AERMOD.xlsx&#x27;,I/&#x27;H2S_Grid_Sources-VM.xlsx&#x27;,oldxls,I/&#x27;H2S_TOTAL.ADI&#x27;,I/&#x27;CALPUFF-VM.INP&#x27;,I/&#x27;CALPUFF-NC.INP&#x27;,ref]
+  255      if met:bases += [I/&#x27;CALMET.INP&#x27;,I/&#x27;CALMET.LST&#x27;]
+  256      manifest=[dict(path=str(p),sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in bases]
+  257      data=dict(process=process,actual_uasb_areas=actual,molecular_fraction=molecular,profile_mean_old=mean,profile_hour_end=hours,sources_aermod=aer,sources_calpuff=cal,summary=sums,grid=grid,grid_count=len(grid),inputs=manifest,source_records=records,old_source_workbooks=oldbooks,calmet=met,common_window=window,geometry_revision=geometry_revision)
+  258      dump(A/&#x27;Auditoria_consolidada.json&#x27;,data)
+  259      print(json.dumps({&#x27;summary&#x27;:sums,&#x27;grid_count&#x27;:len(grid),&#x27;profile_mean_old&#x27;:mean},ensure_ascii=True))
+  260  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>

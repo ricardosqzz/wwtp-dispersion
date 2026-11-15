@@ -1,0 +1,102 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/complementar_metricas_p95.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/complementar_metricas_p95.py</h2>
+<p>Compara o P95 horário de cada receptor entre modelos, com pares de coordenadas válidos e estatísticas de associação e concordância de magnitude.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\complementar_metricas_p95.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>grafico_concordancia_p95</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>numpy</td><td>Matrizes numéricas, máscaras de validade, transformações, percentis e estatísticas vetorizadas.</td></tr><tr><td>pandas</td><td>Leitura tabular, chaves de junção, agrupamento por período e exportação de indicadores.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>perfis_comparacao_modelos</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>scipy.stats</td><td>Agrupamento, matrizes esparsas, distâncias, interpolação e estatísticas; conferir as chamadas na ficha.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/output/comparacao_modelos/Estatistica_horaria_por_receptor.csv — chamada pd.read_csv, linha 38.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/comparacao_modelos/Concordancia_espacial_P95.json — chamada .write_text, linha 55.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Concordancia_espacial_P95.csv — chamada .to_csv, linha 56.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv — chamada .to_csv, linha 57.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>data: distance_m, unit.</li>
+<li>near: AERMOD_P95, CALPUFF_P95, P95_within_factor_2, WWTP, distance_m, receptor_id, unit, x, y.</li>
+<li>r: distance_max_m, distance_min_m.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>near: P95_within_factor_2.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>main()</td><td>37-63</td><td>lê dados; grava produtos; Associação por postos. Mede ordenação conjunta, não igualdade de magnitude nem desempenho frente a observações ausentes. Retorno: payload.</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/complementar_metricas_p95.py, linhas 47-53.</p>
+<pre><code>            within=(b&gt;=.5*a)&amp;(b&lt;=2*a)
+            rho=float(spearmanr(a,b).statistic) if len(s)&gt;1 and np.ptp(a)&gt;0 and np.ptp(b)&gt;0 else None
+            results.append(dict(unit=unit,WWTP=1 if unit==&#x27;VM&#x27; else 2,distance_min_m=lo,distance_max_m=hi,n=len(s),within_factor_2_count=int(within.sum()),within_factor_2_percent=float(100*within.mean()),Spearman_rho_P95=rho,both_zero=int(((a==0)&amp;(b==0)).sum()),one_zero=int(((a==0)^(b==0)).sum())))
+        near[&#x27;P95_within_factor_2&#x27;]=(near.CALPUFF_P95&gt;=.5*near.AERMOD_P95)&amp;(near.CALPUFF_P95&lt;=2*near.AERMOD_P95)
+        selected=near[(near.AERMOD_P95&gt;=.7)|(near.CALPUFF_P95&gt;=.7)]
+        sensitivity.append(dict(unit=unit,n=len(selected),selection=&#x27;At least one model P95 &gt;= 0.7 ug/m3&#x27;,within_factor_2_percent=float(100*selected.P95_within_factor_2.mean()),Spearman_rho_P95=float(spearmanr(selected.AERMOD_P95,selected.CALPUFF_P95).statistic)))
+        pairs.append(near[[&#x27;unit&#x27;,&#x27;WWTP&#x27;,&#x27;receptor_id&#x27;,&#x27;x&#x27;,&#x27;y&#x27;,&#x27;distance_m&#x27;,&#x27;AERMOD_P95&#x27;,&#x27;CALPUFF_P95&#x27;,&#x27;P95_within_factor_2&#x27;]])</code></pre>
+<p>Associação por postos. Mede ordenação conjunta, não igualdade de magnitude nem desempenho frente a observações ausentes.</p>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p>Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>spearmanr: Associação por postos. Mede ordenação conjunta, não igualdade de magnitude nem desempenho frente a observações ausentes.</li>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/output/comparacao_modelos/Estatistica_horaria_por_receptor.csv | pd.read_csv.
+    5  # Campos/chaves em data: distance_m, unit.
+    6  # Campos/chaves em near: AERMOD_P95, CALPUFF_P95, P95_within_factor_2, WWTP, distance_m, receptor_id, unit, x, y.
+    7  # Campos/chaves em r: distance_max_m, distance_min_m.
+    8  # Saída: E:/copasa_map/output/comparacao_modelos/Concordancia_espacial_P95.json | .write_text.
+    9  # Saída: E:/copasa_map/output/comparacao_modelos/Concordancia_espacial_P95.csv | .to_csv.
+   10  # Saída: E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv | .to_csv.
+   11  # Campos/chaves gerados em near: P95_within_factor_2.
+   12  # receptor_id: identificador do receptor.
+   13  # CÓDIGO DO PROCESSAMENTO
+   14  
+   15  &quot;&quot;&quot;Concordância espacial descritiva dos P95, sem validar contra observações.&quot;&quot;&quot;
+   16  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   17  import sys as _cp_sys
+   18  from pathlib import Path as _cp_Path
+   19  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   20  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   21      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   22      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   23          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   24          break
+   25  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   26  # FIM DOS CAMINHOS PORTÁTEIS
+   27  
+   28  from pathlib import Path
+   29  import json
+   30  import numpy as np
+   31  import pandas as pd
+   32  from scipy.stats import spearmanr
+   33  
+   34  O=Path(_cp_texto(&#x27;output/comparacao_modelos&#x27;, &#x27;posix&#x27;))
+   35  
+   36  # Main
+   37  def main():
+   38      data=pd.read_csv(O/&#x27;Estatistica_horaria_por_receptor.csv&#x27;)
+   39      results=[];pairs=[];sensitivity=[]
+   40      for unit in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+   41          near=data[data.unit.eq(unit)&amp;data.distance_m.lt(1800)].copy()
+   42          for lo,hi in [(0,1800),(0,100),(100,500),(500,1800)]:
+   43              s=near[near.distance_m.ge(lo)&amp;near.distance_m.lt(hi)]
+   44              a=s.AERMOD_P95.to_numpy();b=s.CALPUFF_P95.to_numpy()
+   45              assert np.isfinite(a).all() and np.isfinite(b).all() and (a&gt;=0).all() and (b&gt;=0).all()
+   46  
+   47              within=(b&gt;=.5*a)&amp;(b&lt;=2*a)
+   48              rho=float(spearmanr(a,b).statistic) if len(s)&gt;1 and np.ptp(a)&gt;0 and np.ptp(b)&gt;0 else None
+   49              results.append(dict(unit=unit,WWTP=1 if unit==&#x27;VM&#x27; else 2,distance_min_m=lo,distance_max_m=hi,n=len(s),within_factor_2_count=int(within.sum()),within_factor_2_percent=float(100*within.mean()),Spearman_rho_P95=rho,both_zero=int(((a==0)&amp;(b==0)).sum()),one_zero=int(((a==0)^(b==0)).sum())))
+   50          near[&#x27;P95_within_factor_2&#x27;]=(near.CALPUFF_P95&gt;=.5*near.AERMOD_P95)&amp;(near.CALPUFF_P95&lt;=2*near.AERMOD_P95)
+   51          selected=near[(near.AERMOD_P95&gt;=.7)|(near.CALPUFF_P95&gt;=.7)]
+   52          sensitivity.append(dict(unit=unit,n=len(selected),selection=&#x27;At least one model P95 &gt;= 0.7 ug/m3&#x27;,within_factor_2_percent=float(100*selected.P95_within_factor_2.mean()),Spearman_rho_P95=float(spearmanr(selected.AERMOD_P95,selected.CALPUFF_P95).statistic)))
+   53          pairs.append(near[[&#x27;unit&#x27;,&#x27;WWTP&#x27;,&#x27;receptor_id&#x27;,&#x27;x&#x27;,&#x27;y&#x27;,&#x27;distance_m&#x27;,&#x27;AERMOD_P95&#x27;,&#x27;CALPUFF_P95&#x27;,&#x27;P95_within_factor_2&#x27;]])
+   54      payload=dict(reference_year=2024,metric=&#x27;Spatial agreement of model-native hourly P95 at unique coincident receptors&#x27;,scope=&#x27;All unique coincident receptors within 1800 m; no low-concentration filtering&#x27;,factor_2_definition=&#x27;0.5*AERMOD_P95 &lt;= CALPUFF_P95 &lt;= 2*AERMOD_P95&#x27;,zero_policy=&#x27;Both zero agree; exactly one zero disagrees&#x27;,inference=&#x27;Descriptive, no spatially independent p values or pass/fail acceptance criterion; neither model is an observation&#x27;,rows=results,sensitivity_P95_ge_0_7=sensitivity,sources=[&#x27;https://www.cerc.co.uk/environmental-software/assets/data/doc_userguides/Model_Evaluation_Toolkit_User_Guide.pdf&#x27;,&#x27;https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html&#x27;])
+   55      (O/&#x27;Concordancia_espacial_P95.json&#x27;).write_text(json.dumps(payload,indent=2,ensure_ascii=False),encoding=&#x27;utf8&#x27;)
+   56      pd.DataFrame(results).to_csv(O/&#x27;Concordancia_espacial_P95.csv&#x27;,index=False,encoding=&#x27;utf-8-sig&#x27;)
+   57      pd.concat(pairs).to_csv(O/&#x27;Pares_concordancia_P95.csv&#x27;,index=False,encoding=&#x27;utf-8-sig&#x27;)
+   58      from grafico_concordancia_p95 import main as render_scatter
+   59      render_scatter()
+   60      from perfis_comparacao_modelos import main as render_profiles
+   61      render_profiles()
+   62      print(json.dumps([r for r in results if r[&#x27;distance_max_m&#x27;]==1800 and r[&#x27;distance_min_m&#x27;]==0],indent=2))
+   63      return payload
+   64  
+   65  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>

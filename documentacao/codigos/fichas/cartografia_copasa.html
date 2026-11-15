@@ -1,0 +1,339 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/cartografia_copasa.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/cartografia_copasa.py</h2>
+<p>Gera mapas comparáveis de fontes, receptores e dispersão, com geometrias sem identificação das unidades, escala física e barras de concentração comuns.</p>
+<p><strong>Papel.</strong> Cartografia/apresentação. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\cartografia_copasa.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>atualizar_cartografia_cmas</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>contexto_ete</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>datetime</td><td>Calendários, datas e duração dos períodos avaliados.</td></tr><tr><td>geometria_ete</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>html</td><td>Escape e construção de páginas HTML de documentação/visualização.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>matplotlib</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.cm</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.colors</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.lines</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.patches</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.pyplot</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.text</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.ticker</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>numpy</td><td>Matrizes numéricas, máscaras de validade, transformações, percentis e estatísticas vetorizadas.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>pyproj</td><td>Dependência importada; conferir as chamadas efetivas abaixo e a instalação do ambiente correspondente.</td></tr><tr><td>scipy.interpolate</td><td>Agrupamento, matrizes esparsas, distâncias, interpolação e estatísticas; conferir as chamadas na ficha.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/output/auditoria/Auditoria_consolidada.json — chamada .read_text, linha 56.</li>
+<li>{path} — chamada path.read_text, linha 132.</li>
+<li>E:/copasa_map/output/cmas_poster/dados_cenarios24h/Cenarios24h_manifesto.json — chamada .read_text, linha 152.</li>
+<li>selected[&#x27;csv&#x27;] — chamada np.loadtxt, linha 159.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Faixas_concentracao_poster.json — chamada .read_text, linha 205.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/cmas_poster/figuras/{name}.{ext} — chamada fig.savefig, linha 115.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/{name}.png — chamada fig.savefig, linha 116.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/{name}_previa.png — chamada fig.savefig, linha 116.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/{name}_poster.{ext} — chamada fig.savefig, linha 126.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/{name}_poster.png — chamada fig.savefig, linha 127.</li>
+<li>plt.figure(figsize=(wc / 2.54, hc / 2.54)) — chamada save, linha 281.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Faixas_concentracao_poster.json — chamada .write_text, linha 250.</li>
+<li>E:/copasa_map/output/cmas_poster/index.html — chamada .write_text, linha 262.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Resultados_historicos.json — chamada .write_text, linha 283.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Cartografia_metadados.json — chamada .write_text, linha 283.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>D: grid, sources_aermod.</li>
+<li>s: params, process, type, x, xy, y.</li>
+<li>event: period_end, period_start.</li>
+<li>v: color, finite_coverage, label, model, style, unit, width, x, y.</li>
+<li>selected: csv, period_end, period_start.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>record: poster_figure_cm, poster_scale.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>centre(k)</td><td>62-64</td><td>Chamadas efetivas: limite Retorno: ((x0 + x1) / 2, (y0 + y1) / 2).</td></tr><tr><td>bounds(k, span)</td><td>66-68</td><td>Chamadas efetivas: TO_GEO.transform, centre, GEOD.fwd Retorno: (GEOD.fwd(lon, lat, 270, span / 2)[0], GEOD.fwd(lon, lat, 180, span / 2)[1], GEOD.fwd(lon, lat, 90, span / 2)[0], GEOD.fwd(lon, lat, 0, span / 2)[1]).</td></tr><tr><td>frame(ax, k, span, scale)</td><td>70-87</td><td>Chamadas efetivas: bounds, ax.set_xlim, ax.set_ylim, ax.set_aspect, ax.set_facecolor, ax.set_xlabel, ax.set_ylabel, ax.set_xticks Retorno: (x0, y0, x1, y1).</td></tr><tr><td>sources(ax, k, filled=True)</td><td>89-96</td><td>Chamadas efetivas: .items, np.column_stack, ax.add_patch, n.startswith, np.linspace, TO_GEO.transform, Polygon, np.asarray</td></tr><tr><td>physical_layout(rows, span, scale, bottom_override=None)</td><td>98-107</td><td>Chamadas efetivas: plt.figure, range, axs.append, np.array, row.append, fig.add_axes Retorno: (fig, np.array(axs), wc, hc).</td></tr><tr><td>save(fig, name, poster_scale=None)</td><td>109-128</td><td>grava produtos</td></tr><tr><td>read_field(path, km=False)</td><td>130-139</td><td>lê dados Retorno: a[idx].</td></tr><tr><td>event_title(event)</td><td>141-145</td><td>Chamadas efetivas: datetime.fromisoformat, start.strftime, end.strftime Retorno: f&#x27;{start.day:02d}–{end.day:02d} &#x27; + end.strftime(&#x27;%b %Y&#x27;) + f&#x27; · {start:%H:%M}–{end:%H:%M}&#x27;, start.strftime(&#x27;%d %b %Y&#x27;) + &#x27; · 00:00–24:00&#x27;.</td></tr><tr><td>plume_pair(period=&#x27;24&#x27;, event=False)</td><td>148-184</td><td>lê dados; grava produtos</td></tr><tr><td>context_handles()</td><td>186-187</td><td>Chamadas efetivas: Patch, Line2D, ROAD_STYLES.values Retorno: [Line2D([], [], color=&#x27;#122f40&#x27;, linewidth=1.8, label=&#x27;WWTP boundary&#x27;)] + [Line2D([], [], color=v[&#x27;color&#x27;], linewidth=v[&#x27;width&#x27;], linestyle=v[&#x27;style&#x27;], label=v[&#x27;label&#x27;]) for v in ROAD_STYLES.values()].</td></tr><tr><td>context_legend(fig, y)</td><td>189-190</td><td>Chamadas efetivas: fig.legend, context_handles</td></tr><tr><td>credit(fig, y)</td><td>192-193</td><td>Chamadas efetivas: fig.text</td></tr><tr><td>poster_concentration_rows(only_annual=False)</td><td>196-250</td><td>lê dados; grava produtos</td></tr><tr><td>gallery()</td><td>252-262</td><td>grava produtos</td></tr><tr><td>main()</td><td>264-283</td><td>grava produtos</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/cartografia_copasa.py, linhas 168-174.</p>
+<pre><code>            lo,la=TO_GEO.transform(xx,yy);inside=(lo&gt;=x0)&amp;(lo&lt;=x1)&amp;(la&gt;=y0)&amp;(la&lt;=y1)
+            coverage=float(np.isfinite(zz[inside]).mean());assert coverage&gt;.999,(path,coverage)
+            m=ax.contourf(lo,la,np.maximum(zz,1e-12),levels=levels,cmap=cmap,norm=norm,extend=&#x27;both&#x27;,zorder=2);m.set_edgecolor(&#x27;face&#x27;);m.set_linewidth(.1)
+            ax.contour(lo,la,zz,levels=[v for v in [1,10,100,1000] if v&lt;vmax],colors=&#x27;#24445b&#x27;,alpha=.20,linewidths=.35,zorder=4)
+            draw_context(ax,k,TO_GEO,True);sources(ax,k,False)
+            label=model
+            if period!=&#x27;24&#x27;:label+=&#x27; · annual mean&#x27; if i==0 else &#x27; · max. 8,760 h mean&#x27;</code></pre>
+<p>Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</p>
+<p>Trecho de codigo/cartografia_copasa.py, linhas 226-232.</p>
+<pre><code>                lon,lat=TO_GEO.transform(xx,yy);inside=(lon&gt;=x0)&amp;(lon&lt;=x1)&amp;(lat&gt;=y0)&amp;(lat&lt;=y1)
+                coverage=float(np.isfinite(z[inside]).mean());assert coverage==1
+                norm=LogNorm(.1,1200)
+                m=ax.contourf(lon,lat,np.maximum(z,1e-12),levels=np.geomspace(.1,1200,65),cmap=cmap,norm=norm,extend=&#x27;both&#x27;,zorder=2)
+                m.set_edgecolor(&#x27;face&#x27;);m.set_linewidth(.1)
+                ax.contour(lon,lat,z,levels=[1,10,100,1000],colors=&#x27;#24445b&#x27;,alpha=.20,linewidths=.35,zorder=4)
+                nl,nt=TO_GEO.transform(a[:,0],a[:,1]);visible=(nl&gt;=x0)&amp;(nl&lt;=x1)&amp;(nt&gt;=y0)&amp;(nt&lt;=y1)</code></pre>
+<p>Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/output/auditoria/Auditoria_consolidada.json | .read_text.
+    5  # Entrada: {path} | path.read_text.
+    6  # Entrada: E:/copasa_map/output/cmas_poster/dados_cenarios24h/Cenarios24h_manifesto.json | .read_text.
+    7  # Entrada: selected[&#x27;csv&#x27;] | np.loadtxt.
+    8  # Entrada: E:/copasa_map/output/cmas_poster/figuras/Faixas_concentracao_poster.json | .read_text.
+    9  # Campos/chaves em D: grid, sources_aermod.
+   10  # Campos/chaves em s: params, process, type, x, xy, y.
+   11  # Campos/chaves em event: period_end, period_start.
+   12  # Campos/chaves em v: color, finite_coverage, label, model, style, unit, width, x, y.
+   13  # Campos/chaves em selected: csv, period_end, period_start.
+   14  # Saída: E:/copasa_map/output/cmas_poster/figuras/{name}.{ext} | fig.savefig.
+   15  # Saída: E:/copasa_map/output/cmas_poster/figuras/{name}.png | fig.savefig.
+   16  # Saída: E:/copasa_map/output/cmas_poster/figuras/{name}_previa.png | fig.savefig.
+   17  # Saída: E:/copasa_map/output/cmas_poster/figuras/{name}_poster.{ext} | fig.savefig.
+   18  # Saída: E:/copasa_map/output/cmas_poster/figuras/{name}_poster.png | fig.savefig.
+   19  # Saída: plt.figure(figsize=(wc / 2.54, hc / 2.54)) | save.
+   20  # Saída: E:/copasa_map/output/cmas_poster/figuras/Faixas_concentracao_poster.json | .write_text.
+   21  # Saída: E:/copasa_map/output/cmas_poster/index.html | .write_text.
+   22  # Saída: E:/copasa_map/output/cmas_poster/figuras/Resultados_historicos.json | .write_text.
+   23  # Saída: E:/copasa_map/output/cmas_poster/figuras/Cartografia_metadados.json | .write_text.
+   24  # Campos/chaves gerados em record: poster_figure_cm, poster_scale.
+   25  # CÓDIGO DO PROCESSAMENTO
+   26  
+   27  &quot;&quot;&quot;Encarte geográfico COPASA, com escalas físicas e campos nativos completos.&quot;&quot;&quot;
+   28  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   29  import sys as _cp_sys
+   30  from pathlib import Path as _cp_Path
+   31  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   32  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   33      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   34      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   35          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   36          break
+   37  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   38  # FIM DOS CAMINHOS PORTÁTEIS
+   39  
+   40  from pathlib import Path
+   41  import json,html
+   42  import numpy as np
+   43  import matplotlib
+   44  matplotlib.use(&#x27;Agg&#x27;)
+   45  import matplotlib.pyplot as plt
+   46  from matplotlib.colors import LogNorm,LinearSegmentedColormap
+   47  from matplotlib.patches import Polygon,Patch,Rectangle
+   48  from matplotlib.ticker import FuncFormatter
+   49  from matplotlib.text import Text
+   50  from scipy.interpolate import LinearNDInterpolator
+   51  from matplotlib.lines import Line2D
+   52  from pyproj import Transformer,Geod
+   53  from contexto_ete import draw as draw_context,export_metadata,ROAD_STYLES
+   54  from geometria_ete import limite
+   55  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/cmas_poster&#x27;;F=O/&#x27;figuras&#x27;;F.mkdir(parents=True,exist_ok=True)
+   56  D=json.loads((R/&#x27;output/auditoria/Auditoria_consolidada.json&#x27;).read_text(encoding=&#x27;utf8&#x27;))
+   57  TO_GEO=Transformer.from_crs(32723,4326,always_xy=True);GEOD=Geod(ellps=&#x27;WGS84&#x27;)
+   58  plt.rcParams.update({&#x27;font.family&#x27;:&#x27;Arial&#x27;,&#x27;svg.fonttype&#x27;:&#x27;path&#x27;,&#x27;pdf.fonttype&#x27;:42,&#x27;font.size&#x27;:9,&#x27;axes.titlesize&#x27;:11,&#x27;axes.linewidth&#x27;:.7})
+   59  COL={&#x27;PRE&#x27;:&#x27;#52a8ad&#x27;,&#x27;UASB&#x27;:&#x27;#e5a653&#x27;,&#x27;FB&#x27;:&#x27;#8e77a3&#x27;,&#x27;CALHA&#x27;:&#x27;#bc5362&#x27;}
+   60  META={};RESULTS=[]
+   61  # Centre
+   62  def centre(k):
+   63      x0,y0,x1,y1=limite(k).bounds
+   64      return (x0+x1)/2,(y0+y1)/2
+   65  # Bounds
+   66  def bounds(k,span):
+   67      lon,lat=TO_GEO.transform(*centre(k))
+   68      return GEOD.fwd(lon,lat,270,span/2)[0],GEOD.fwd(lon,lat,180,span/2)[1],GEOD.fwd(lon,lat,90,span/2)[0],GEOD.fwd(lon,lat,0,span/2)[1]
+   69  # Frame
+   70  def frame(ax,k,span,scale):
+   71      x0,y0,x1,y1=bounds(k,span)
+   72      ax.set_xlim(x0,x1);ax.set_ylim(y0,y1);ax.set_aspect((x1-x0)/(y1-y0));ax.set_facecolor(&#x27;#f5f5f1&#x27;);ax.set_xlabel(&#x27;&#x27;);ax.set_ylabel(&#x27;&#x27;)
+   73      ax.set_xticks(np.linspace(x0,x1,5)[1:-1]);ax.set_yticks(np.linspace(y0,y1,5)[1:-1]);dec=4 if span&lt;=500 else 3
+   74      ax.xaxis.set_major_formatter(FuncFormatter(lambda v,p:f&#x27;{abs(v):.{dec}f}°W&#x27;));ax.yaxis.set_major_formatter(FuncFormatter(lambda v,p:f&#x27;{abs(v):.{dec}f}°S&#x27;))
+   75      ax.tick_params(axis=&#x27;both&#x27;,labelsize=8,length=2,pad=3);ax.tick_params(axis=&#x27;y&#x27;,labelrotation=90,pad=5.3)
+   76      for t in ax.get_yticklabels():t.set(ha=&#x27;center&#x27;,va=&#x27;center&#x27;,rotation_mode=&#x27;anchor&#x27;)
+   77      for s in ax.spines.values():s.set(visible=True,color=&#x27;#35413d&#x27;,linewidth=.7,zorder=30)
+   78      ax.grid(alpha=.09,linewidth=.35)
+   79      ax.text(.963,.955,&#x27;N&#x27;,transform=ax.transAxes,ha=&#x27;center&#x27;,va=&#x27;bottom&#x27;,fontsize=8,fontweight=&#x27;bold&#x27;,color=&#x27;#39433f&#x27;,zorder=40)
+   80      ax.annotate(&#x27;&#x27;,xy=(.963,.946),xytext=(.963,.858),xycoords=&#x27;axes fraction&#x27;,arrowprops=dict(arrowstyle=&#x27;-|&gt;&#x27;,mutation_scale=12,lw=1,color=&#x27;#39433f&#x27;,shrinkA=0,shrinkB=0),zorder=40)
+   81      datum=ax.text(.97,.025,f&#x27;Datum: WGS 84\nGeographic · EPSG:4326\nScale 1:{scale:,}&#x27;,transform=ax.transAxes,ha=&#x27;right&#x27;,va=&#x27;bottom&#x27;,multialignment=&#x27;center&#x27;,fontsize=5.5,linespacing=1.2,color=&#x27;#646962&#x27;,bbox=dict(boxstyle=&#x27;round,pad=.35,rounding_size=.15&#x27;,facecolor=&#x27;white&#x27;,edgecolor=&#x27;#b9bdb6&#x27;,linewidth=.45,alpha=.96),zorder=40)
+   82      datum.set_gid(&#x27;datum_scale&#x27;);ax._datum=datum;ax._scale=scale;ax._span=span
+   83      length=100 if span&lt;=500 else 200 if span&lt;=1200 else 500;x=x0+(x1-x0)*.07;y=y0+(y1-y0)*.075
+   84      xm=GEOD.fwd(x,y,90,length/2)[0];xe=GEOD.fwd(x,y,90,length)[0];h=(y1-y0)*.012
+   85      for a,b,c in [(x,xm,&#x27;#4b504c&#x27;),(xm,xe,&#x27;white&#x27;)]:ax.add_patch(Rectangle((a,y),b-a,h,facecolor=c,edgecolor=&#x27;#4b504c&#x27;,lw=.45,zorder=40))
+   86      for xx,lab in [(x,&#x27;0&#x27;),(xm,str(length//2)),(xe,f&#x27;{length} m&#x27;)]:ax.text(xx,y-(y1-y0)*.016,lab,ha=&#x27;center&#x27;,va=&#x27;top&#x27;,fontsize=6,zorder=40)
+   87      return x0,y0,x1,y1
+   88  # Sources
+   89  def sources(ax,k,filled=True):
+   90      for n,s in D[&#x27;sources_aermod&#x27;].items():
+   91          if not n.startswith(k+&#x27;_&#x27;):continue
+   92          if s[&#x27;type&#x27;]==&#x27;AREACIRC&#x27;:
+   93              a=np.linspace(0,2*np.pi,101);xx=s[&#x27;x&#x27;]+s[&#x27;params&#x27;][2]*np.cos(a);yy=s[&#x27;y&#x27;]+s[&#x27;params&#x27;][2]*np.sin(a)
+   94          else:xx,yy=np.asarray(s[&#x27;xy&#x27;]).T
+   95          xy=np.column_stack(TO_GEO.transform(xx,yy));color=COL[s[&#x27;process&#x27;].split(&#x27;_&#x27;)[1]]
+   96          ax.add_patch(Polygon(xy,facecolor=color if filled else &#x27;none&#x27;,edgecolor=&#x27;#25414d&#x27;,lw=.65 if filled else .35,zorder=20))
+   97  # Physical layout
+   98  def physical_layout(rows,span,scale,bottom_override=None):
+   99      side=span/scale*100;left,gap,right,top,bottom=(1.35,2.25,1.55,1.,2.5) if rows==1 else (1.35,1.9,1.55,1.2,3.0);rowgap=1.6 if rows&gt;1 else 0
+  100      if bottom_override is not None:bottom=bottom_override
+  101      wc=left+2*side+gap+right;hc=bottom+rows*side+(rows-1)*rowgap+top
+  102      fig=plt.figure(figsize=(wc/2.54,hc/2.54));axs=[]
+  103      for j in range(rows):
+  104          row=[]
+  105          for i in range(2):row.append(fig.add_axes([(left+i*(side+gap))/wc,(bottom+(rows-1-j)*(side+rowgap))/hc,side/wc,side/hc]))
+  106          axs.append(row)
+  107      return fig,np.array(axs),wc,hc
+  108  # Save
+  109  def save(fig,name,poster_scale=None):
+  110      axes=[a for a in fig.axes if hasattr(a,&#x27;_span&#x27;)];fig.canvas.draw();native=[]
+  111      for ax in axes:
+  112          paper=ax.get_position().width*fig.get_figwidth()*.0254;actual=ax._span/paper;assert abs(actual-ax._scale)&lt;.01,(name,actual,ax._scale)
+  113          native.append(dict(scale=ax._scale,measured_scale=actual,span_m=ax._span,axis_width_cm=paper*100))
+  114      record=dict(native_scale=axes[0]._scale,figure_cm=(fig.get_size_inches()*2.54).tolist(),maps=native)
+  115      for ext in [&#x27;svg&#x27;,&#x27;pdf&#x27;]:fig.savefig(F/f&#x27;{name}.{ext}&#x27;,facecolor=&#x27;white&#x27;)
+  116      fig.savefig(F/f&#x27;{name}.png&#x27;,dpi=600,facecolor=&#x27;white&#x27;);fig.savefig(F/f&#x27;{name}_previa.png&#x27;,dpi=180,facecolor=&#x27;white&#x27;)
+  117      if poster_scale:
+  118          factor=axes[0]._scale/poster_scale;fig.set_size_inches(fig.get_size_inches()*factor,forward=True)
+  119          for t in fig.findobj(match=Text):t.set_fontsize(t.get_fontsize()*factor)
+  120          for ax in axes:
+  121              ax._datum.set_text((f&#x27;WGS 84\nScale 1:{poster_scale:,}&#x27;) if getattr(ax,&#x27;_compact_datum&#x27;,False) else f&#x27;Datum: WGS 84\nGeographic · EPSG:4326\nScale 1:{poster_scale:,}&#x27;);ax.tick_params(axis=&#x27;both&#x27;,pad=3*factor,length=2*factor);ax.tick_params(axis=&#x27;y&#x27;,pad=5.3*factor)
+  122              for t in ax.texts:
+  123                  if getattr(t,&#x27;arrow_patch&#x27;,None):t.arrow_patch.set_mutation_scale(12*factor)
+  124          fig.canvas.draw();record[&#x27;poster_scale&#x27;]=poster_scale;record[&#x27;poster_figure_cm&#x27;]=(fig.get_size_inches()*2.54).tolist()
+  125          for ax in axes:assert abs(ax._span/(ax.get_position().width*fig.get_figwidth()*.0254)-poster_scale)&lt;.01
+  126          for ext in [&#x27;svg&#x27;,&#x27;pdf&#x27;]:fig.savefig(F/f&#x27;{name}_poster.{ext}&#x27;,facecolor=&#x27;white&#x27;)
+  127          fig.savefig(F/f&#x27;{name}_poster.png&#x27;,dpi=300,facecolor=&#x27;white&#x27;)
+  128      META[name]=record;plt.close(fig)
+  129  # Read field
+  130  def read_field(path,km=False):
+  131      v=[]
+  132      for line in path.read_text(encoding=&#x27;cp1252&#x27;).splitlines():
+  133          q=line.split()
+  134          if len(q)&lt;3:continue
+  135          try:x,y,c=map(float,q[:3])
+  136          except ValueError:continue
+  137          if km:x*=1000;y*=1000
+  138          if np.isfinite([x,y,c]).all() and c&gt;=0:v.append([x,y,c])
+  139      a=np.array(v);assert len(a)&gt;20 and a[:,2].max()&gt;0,str(path);_,idx=np.unique(a[:,:2],axis=0,return_index=True);return a[idx]
+  140  # Event title
+  141  def event_title(event):
+  142      from datetime import datetime
+  143      start=datetime.fromisoformat(event[&#x27;period_start&#x27;]);end=datetime.fromisoformat(event[&#x27;period_end&#x27;])
+  144      if start.hour==0:return start.strftime(&#x27;%d %b %Y&#x27;)+&#x27; · 00:00–24:00&#x27;
+  145      return f&#x27;{start.day:02d}–{end.day:02d} &#x27;+end.strftime(&#x27;%b %Y&#x27;)+f&#x27; · {start:%H:%M}–{end:%H:%M}&#x27;
+  146  
+  147  # Plume pair
+  148  def plume_pair(period=&#x27;24&#x27;,event=False):
+  149      cmap=LinearSegmentedColormap.from_list(&#x27;plume&#x27;,[&#x27;#fff8db&#x27;,&#x27;#e5efba&#x27;,&#x27;#b6dfbe&#x27;,&#x27;#73c7bc&#x27;,&#x27;#35a7b3&#x27;,&#x27;#227d9e&#x27;,&#x27;#245482&#x27;,&#x27;#183459&#x27;])
+  150      span,scale=1000,10000
+  151      fig,axs,wc,hc=physical_layout(2,span,scale);vmax=1200 if period==&#x27;24&#x27; else 500;norm=LogNorm(.1,vmax);levels=np.geomspace(.1,vmax,65);info=[]
+  152      events=json.loads((O/&#x27;dados_cenarios24h/Cenarios24h_manifesto.json&#x27;).read_text(encoding=&#x27;utf8&#x27;))[&#x27;events&#x27;] if event else []
+  153      for j,(k,suffix,group) in enumerate([(&#x27;VM&#x27;,&#x27;V-MARIA&#x27;,&#x27;001&#x27;),(&#x27;NC&#x27;,&#x27;N-CONT&#x27;,&#x27;002&#x27;)]):
+  154          paths=[R/f&#x27;CMAS/24H1G{group}_{suffix}.PLT&#x27;,R/f&#x27;CMAS/RANK(ALL)_ODOR_24HR_CONC_C_{suffix}.DAT&#x27;] if period==&#x27;24&#x27; else [R/f&#x27;CMAS/AN00G{group}_{suffix}.PLT&#x27;,R/f&#x27;CMAS/RANK(ALL)_ODOR_8760HR_CONC_C_{suffix}.DAT&#x27;]
+  155          for i,path in enumerate(paths):
+  156              model=[&#x27;AERMOD&#x27;,&#x27;CALPUFF&#x27;][i]
+  157              selected=next((v for v in events if v[&#x27;unit&#x27;]==k and v[&#x27;model&#x27;]==model),None)
+  158              if selected:
+  159                  path=Path(selected[&#x27;csv&#x27;]);a=np.loadtxt(path,delimiter=&#x27;,&#x27;,skiprows=1);_,idx=np.unique(a[:,:2],axis=0,return_index=True);a=a[idx]
+  160              else:a=read_field(path,km=i==1)
+  161              ax=axs[j,i];x0,y0,x1,y1=frame(ax,k,span,scale);cx,cy=centre(k)
+  162              gx=np.linspace(cx-span*.65,cx+span*.65,401);gy=np.linspace(cy-span*.65,cy+span*.65,401);near=(abs(a[:,0]-cx)&lt;span*.7)&amp;(abs(a[:,1]-cy)&lt;span*.7)
+  163  
+  164              gx=np.unique(np.r_[gx,a[near,0]]);gy=np.unique(np.r_[gy,a[near,1]]);xx,yy=np.meshgrid(gx,gy)
+  165              points=a[:,:2]-[cx,cy];query=np.column_stack((xx.ravel()-cx,yy.ravel()-cy))
+  166              interpolator=LinearNDInterpolator(points,a[:,2],fill_value=np.nan)
+  167              zz=interpolator(query).reshape(xx.shape)
+  168              lo,la=TO_GEO.transform(xx,yy);inside=(lo&gt;=x0)&amp;(lo&lt;=x1)&amp;(la&gt;=y0)&amp;(la&lt;=y1)
+  169              coverage=float(np.isfinite(zz[inside]).mean());assert coverage&gt;.999,(path,coverage)
+  170              m=ax.contourf(lo,la,np.maximum(zz,1e-12),levels=levels,cmap=cmap,norm=norm,extend=&#x27;both&#x27;,zorder=2);m.set_edgecolor(&#x27;face&#x27;);m.set_linewidth(.1)
+  171              ax.contour(lo,la,zz,levels=[v for v in [1,10,100,1000] if v&lt;vmax],colors=&#x27;#24445b&#x27;,alpha=.20,linewidths=.35,zorder=4)
+  172              draw_context(ax,k,TO_GEO,True);sources(ax,k,False)
+  173              label=model
+  174              if period!=&#x27;24&#x27;:label+=&#x27; · annual mean&#x27; if i==0 else &#x27; · max. 8,760 h mean&#x27;
+  175              title=f&#x27;WWTP {j+1} · {label}&#x27;+(&#x27;\n&#x27;+event_title(selected) if selected else &#x27;&#x27;)
+  176              ax.set_title(title,pad=6,fontsize=9.2 if event or period!=&#x27;24&#x27; else 8.7,fontweight=&#x27;bold&#x27;,linespacing=1.4)
+  177              nl,nt=TO_GEO.transform(a[:,0],a[:,1]);visible=(nl&gt;=x0)&amp;(nl&lt;=x1)&amp;(nt&gt;=y0)&amp;(nt&lt;=y1)
+  178              raw=a[visible,2].max();draw=float(np.nanmax(zz[inside]));assert draw&gt;=raw*(1-1e-5),(path,draw,raw)
+  179              fit=interpolator(points);node_error=float(np.nanmax(abs(fit-a[:,2])))
+  180              assert node_error&lt;1e-4,(path,node_error)
+  181              info.append(dict(unit=k,model=model,period=period,source=str(path),native_receptors=len(a),maximum_native=float(a[:,2].max()),maximum_displayed=draw,maximum_native_in_frame=float(raw),finite_coverage=coverage,interpolation=&#x27;Linear triangulation of native receptor values; no extrapolation or IDW; display only&#x27;,native_node_max_error=node_error,interpolated_minimum=float(np.nanmin(zz[inside])),statistic=&#x27;coherent 24h event&#x27; if event else &#x27;receptor-wise highest 24h envelope&#x27; if period==&#x27;24&#x27; else (&#x27;native annual mean&#x27; if i==0 else &#x27;highest 8760h mean&#x27;),simultaneous=event,period_start=selected[&#x27;period_start&#x27;] if selected else None,period_end=selected[&#x27;period_end&#x27;] if selected else None))
+  182      left=axs[1,0].get_position().x0;right=axs[1,1].get_position().x1;cbax=fig.add_axes([left,2.0/hc,right-left,.22/hc]);cb=fig.colorbar(m,cax=cbax,orientation=&#x27;horizontal&#x27;,ticks=[.1,1,10,100,1000] if period==&#x27;24&#x27; else [.1,1,10,100,500]);cb.ax.xaxis.set_major_formatter(FuncFormatter(lambda x,p:f&#x27;{x:g}&#x27;));cb.ax.tick_params(labelsize=8,length=2,pad=2);cb.set_label(&#x27;H$_2$S concentration (µg/m³)&#x27;,fontsize=9,labelpad=3)
+  183      context_legend(fig,.30/hc);credit(fig,.06/hc)
+  184      name=&#x27;Cenarios_24h_eventos_coerentes&#x27; if event else &#x27;Comparacao_24h_pre_harmonizacao&#x27; if period==&#x27;24&#x27; else &#x27;Comparacao_anual_8760h_pre_harmonizacao&#x27;;save(fig,name,5800 if event else 6000 if period==&#x27;24&#x27; else None);RESULTS.extend(info)
+  185  # Context handles
+  186  def context_handles():
+  187      return [Line2D([],[],color=&#x27;#122f40&#x27;,linewidth=1.8,label=&#x27;WWTP boundary&#x27;)]+[Line2D([],[],color=v[&#x27;color&#x27;],linewidth=v[&#x27;width&#x27;],linestyle=v[&#x27;style&#x27;],label=v[&#x27;label&#x27;]) for v in ROAD_STYLES.values()]+[Patch(facecolor=&#x27;none&#x27;,edgecolor=&#x27;#756083&#x27;,linewidth=.65,label=&#x27;Building outlines&#x27;)]
+  188  # Context legend
+  189  def context_legend(fig,y):
+  190      fig.legend(handles=context_handles(),loc=&#x27;lower center&#x27;,bbox_to_anchor=(.5,y),ncol=3,frameon=False,fontsize=7.1,columnspacing=2,labelspacing=.7,alignment=&#x27;left&#x27;)
+  191  # Credit
+  192  def credit(fig,y):
+  193      fig.text(.5,y,&#x27;Roads: supplied RMBH dataset + © OpenStreetMap contributors · openstreetmap.org/copyright&#x27;,ha=&#x27;center&#x27;,va=&#x27;bottom&#x27;,fontsize=5.6,color=&#x27;#606a70&#x27;)
+  194  
+  195  # Poster concentration rows
+  196  def poster_concentration_rows(only_annual=False):
+  197      &quot;&quot;&quot;Four matching map frames per row, plus an explicitly empty annual layout.&quot;&quot;&quot;
+  198      from matplotlib.cm import ScalarMappable
+  199      from matplotlib.colors import Normalize
+  200      span,scale=1000,8000;side=span/scale*100
+  201      left,gap,right,bottom,top=1.4,1.0,.3,3.2,1.2
+  202      wc,hc=left+4*side+3*gap+right,bottom+side+top
+  203      palette=[&#x27;#fff8db&#x27;,&#x27;#e5efba&#x27;,&#x27;#b6dfbe&#x27;,&#x27;#73c7bc&#x27;,&#x27;#35a7b3&#x27;,&#x27;#227d9e&#x27;,&#x27;#245482&#x27;,&#x27;#183459&#x27;]
+  204      cmap=LinearSegmentedColormap.from_list(&#x27;plume_poster&#x27;,palette);records=[]
+  205      if only_annual and (F/&#x27;Faixas_concentracao_poster.json&#x27;).exists():records=json.loads((F/&#x27;Faixas_concentracao_poster.json&#x27;).read_text(encoding=&#x27;utf8&#x27;))[&#x27;historical_24h&#x27;]
+  206      panels=[(&#x27;VM&#x27;,&#x27;V-MARIA&#x27;,&#x27;001&#x27;,&#x27;AERMOD&#x27;),(&#x27;VM&#x27;,&#x27;V-MARIA&#x27;,&#x27;001&#x27;,&#x27;CALPUFF&#x27;),(&#x27;NC&#x27;,&#x27;N-CONT&#x27;,&#x27;002&#x27;,&#x27;AERMOD&#x27;),(&#x27;NC&#x27;,&#x27;N-CONT&#x27;,&#x27;002&#x27;,&#x27;CALPUFF&#x27;)]
+  207      for placeholder in ([True] if only_annual else [False,True]):
+  208          fig=plt.figure(figsize=(wc/2.54,hc/2.54));axes=[]
+  209          for i,(unit,suffix,group,model) in enumerate(panels):
+  210              ax=fig.add_axes([(left+i*(side+gap))/wc,bottom/hc,side/wc,side/hc]);axes.append(ax)
+  211              x0,y0,x1,y1=frame(ax,unit,span,scale)
+  212              ax.tick_params(labelsize=10,pad=3);ax.tick_params(axis=&#x27;y&#x27;,pad=5.3)
+  213              for t in ax.texts:t.set_fontsize(8.5 if t.get_gid()!=&#x27;datum_scale&#x27; else 7)
+  214              if placeholder:
+  215                  ax.set_facecolor(&#x27;#f3f5f3&#x27;)
+  216                  ax.text(.5,.5,&#x27;Annual results\npending&#x27;,ha=&#x27;center&#x27;,va=&#x27;center&#x27;,transform=ax.transAxes,fontsize=12,color=&#x27;#526675&#x27;,linespacing=1.4,bbox=dict(facecolor=&#x27;white&#x27;,edgecolor=&#x27;#b8c5ca&#x27;,linewidth=.5,pad=8,alpha=.96),zorder=28)
+  217              else:
+  218                  path=R/(f&#x27;CMAS/24H1G{group}_{suffix}.PLT&#x27; if model==&#x27;AERMOD&#x27; else f&#x27;CMAS/RANK(ALL)_ODOR_24HR_CONC_C_{suffix}.DAT&#x27;)
+  219                  a=read_field(path,km=model==&#x27;CALPUFF&#x27;);cx,cy=centre(unit)
+  220                  near=(abs(a[:,0]-cx)&lt;span*.7)&amp;(abs(a[:,1]-cy)&lt;span*.7)
+  221                  gx=np.unique(np.r_[np.linspace(cx-span*.65,cx+span*.65,401),a[near,0]])
+  222                  gy=np.unique(np.r_[np.linspace(cy-span*.65,cy+span*.65,401),a[near,1]])
+  223                  xx,yy=np.meshgrid(gx,gy);points=a[:,:2]-[cx,cy]
+  224                  interpolation=LinearNDInterpolator(points,a[:,2],fill_value=np.nan)
+  225                  z=interpolation(np.column_stack((xx.ravel()-cx,yy.ravel()-cy))).reshape(xx.shape)
+  226                  lon,lat=TO_GEO.transform(xx,yy);inside=(lon&gt;=x0)&amp;(lon&lt;=x1)&amp;(lat&gt;=y0)&amp;(lat&lt;=y1)
+  227                  coverage=float(np.isfinite(z[inside]).mean());assert coverage==1
+  228                  norm=LogNorm(.1,1200)
+  229                  m=ax.contourf(lon,lat,np.maximum(z,1e-12),levels=np.geomspace(.1,1200,65),cmap=cmap,norm=norm,extend=&#x27;both&#x27;,zorder=2)
+  230                  m.set_edgecolor(&#x27;face&#x27;);m.set_linewidth(.1)
+  231                  ax.contour(lon,lat,z,levels=[1,10,100,1000],colors=&#x27;#24445b&#x27;,alpha=.20,linewidths=.35,zorder=4)
+  232                  nl,nt=TO_GEO.transform(a[:,0],a[:,1]);visible=(nl&gt;=x0)&amp;(nl&lt;=x1)&amp;(nt&gt;=y0)&amp;(nt&lt;=y1)
+  233                  raw=float(a[visible,2].max());peak=float(np.nanmax(z[inside]));node_error=float(np.nanmax(abs(interpolation(points)-a[:,2])))
+  234                  assert peak&gt;=raw-1e-5 and node_error&lt;1e-4
+  235                  records.append(dict(unit=unit,model=model,source=str(path),statistic=&#x27;native highest 24 h per receptor&#x27;,maximum_native=float(a[:,2].max()),maximum_displayed=peak,maximum_native_in_frame=raw,finite_coverage=coverage,native_node_max_error=node_error,historical_before_rerun=True))
+  236              draw_context(ax,unit,TO_GEO,not placeholder);sources(ax,unit,False)
+  237              ax.set_title(f&quot;WWTP {1 if unit==&#x27;VM&#x27; else 2} · {model}&quot;,y=1.0,pad=7,fontweight=&#x27;bold&#x27;,fontsize=12)
+  238          cbax=fig.add_axes([axes[0].get_position().x0,2.05/hc,axes[-1].get_position().x1-axes[0].get_position().x0,.24/hc])
+  239          if placeholder:
+  240              cb=fig.colorbar(ScalarMappable(norm=Normalize(0,1),cmap=cmap),cax=cbax,orientation=&#x27;horizontal&#x27;,ticks=[])
+  241              cb.set_label(&#x27;Maximum calendar-year mean H$_2$S (µg/m³) · numerical range pending&#x27;,fontsize=11,labelpad=5)
+  242          else:
+  243              cb=fig.colorbar(m,cax=cbax,orientation=&#x27;horizontal&#x27;,ticks=[.1,1,10,100,1000]);cb.ax.xaxis.set_major_formatter(FuncFormatter(lambda x,p:f&#x27;{x:g}&#x27;));cb.ax.tick_params(labelsize=10,length=2,pad=2);cb.set_label(&#x27;H$_2$S concentration (µg/m³)&#x27;,fontsize=11,labelpad=4)
+  244          fig.legend(handles=context_handles(),loc=&#x27;lower center&#x27;,bbox_to_anchor=(.5,.22/hc),ncol=6,frameon=False,fontsize=10,columnspacing=2,alignment=&#x27;left&#x27;)
+  245          credit(fig,.025/hc)
+  246          stem=&#x27;Comparacao_anual_placeholder&#x27; if placeholder else &#x27;Comparacao_24h_faixa&#x27;
+  247          save(fig,stem,scale)
+  248          META[stem].update(placeholder=placeholder,panels=4,columns=[&#x27;WWTP 1 · AERMOD&#x27;,&#x27;WWTP 1 · CALPUFF&#x27;,&#x27;WWTP 2 · AERMOD&#x27;,&#x27;WWTP 2 · CALPUFF&#x27;])
+  249          if placeholder:META[stem].update(concentrations_plotted=False,numerical_color_range=None,statistic=&#x27;Maximum across calendar-year means at each receptor&#x27;,requires=&#x27;New AERMOD hourly POST with annual masks and equivalent calendar-year CALPUFF/CALPOST RANK for matching years; existing rolling 8760 h RANK not substituted; native multi-year ANNUAL mean is a different summary&#x27;)
+  250      (F/&#x27;Faixas_concentracao_poster.json&#x27;).write_text(json.dumps(dict(historical_24h=records,annual_status=&#x27;placeholder; no concentration values plotted&#x27;,annual_statistic=&#x27;Maximum across calendar-year means at each receptor; confirmed by author&#x27;,poster_scale=scale),indent=2),encoding=&#x27;utf8&#x27;)
+  251  # Gallery
+  252  def gallery():
+  253      cards=[(&#x27;Fontes_privacidade&#x27;,&#x27;Sources and location&#x27;,&#x27;Mapped emitting surfaces, anonymous surrounding road hierarchy and building outlines. Supplied RMBH road data are complemented by OpenStreetMap where coverage is absent. No satellite imagery or facility names.&#x27;),(&#x27;Grade_comum_privacidade&#x27;,&#x27;Common receptor grid&#x27;,&#x27;1,790 model records at 1,789 distinct terrain-processed locations. All 40 supplied sensitive IDs are retained: NC_6 and NC_BAG intentionally share one coordinate. Orange markers identify sensitive receptors. Regional receptors outside the close-up remain in both model inputs.&#x27;),(&#x27;Comparacao_24h_pre_harmonizacao&#x27;,&#x27;Receptor-wise maximum 24 h envelope · poster&#x27;,&#x27;Each native PLT/RANK receptor uses its highest 24 h value, possibly on a different date. The envelope is not a simultaneous plume. All four panels share a logarithmic concentration scale. Linear triangulation preserves receptor values without extrapolation.&#x27;),(&#x27;Cenarios_24h_eventos_coerentes&#x27;,&#x27;Complement: worst date-specific 24 h events&#x27;,&#x27;All receptors in each panel share its displayed 24 h interval. The worst interval is selected independently for each model and plant. Historical runs before emission corrections. AERMET time convention remains to be confirmed.&#x27;),(&#x27;Comparacao_anual_8760h_pre_harmonizacao&#x27;,&#x27;Complement: long-duration fields&#x27;,&#x27;AERMOD annual mean and CALPOST maximum 8,760 h mean are different statistics. These historical outputs are not a controlled annual model comparison.&#x27;)]
+  254      if (F/&#x27;Comparacao_anual_placeholder_previa.png&#x27;).exists():
+  255          cards[2:2]=[(&#x27;Comparacao_24h_faixa&#x27;,&#x27;Poster: maximum 24 h envelopes&#x27;,&#x27;Four aligned panels share one concentration scale. Historical outputs remain in use until the new runs are supplied.&#x27;),(&#x27;Comparacao_anual_placeholder&#x27;,&#x27;Poster: maximum calendar-year mean · pending&#x27;,&#x27;The author selected the highest calendar-year mean at each receptor across matched modelled years. The present figure is a layout placeholder, without annual concentrations or numerical colour limits. New AERMOD hourly POST and equivalent per-year CALPUFF/CALPOST RANK are required. Neither the existing rolling 8,760 h maximum nor the native multi-year mean is substituted for this annual envelope.&#x27;)]
+  256      s=[&#x27;&lt;!doctype html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;&lt;title&gt;WWTP · maps&lt;/title&gt;&lt;style&gt;body{font:16px Arial,sans-serif;max-width:1250px;margin:30px auto;padding:0 24px;color:#173445;background:#f4f7f8}article{background:white;margin:25px 0;padding:22px;border:1px solid #d7e0e3}img{display:block;max-width:100%;height:auto;margin:16px auto}h1,h2{color:#173445}a{color:#006b8d;margin-right:15px}p{line-height:1.5}&lt;/style&gt;&lt;h1&gt;Wastewater treatment plants · map viewer&lt;/h1&gt;&lt;p&gt;Existing dispersion results, before the corrected inventory and geometry are rerun. Date-specific 24 h fields have been extracted from hourly results and checked against native ranked maxima. Contours use linear triangulation without IDW smoothing or extrapolation. The common receptor grid and input emissions have not changed in this map revision. The three WWTP 2 UASB polygons were regularized to equal areas, preserving the total 1,309 m².&lt;/p&gt;&lt;p&gt;Background: © OpenStreetMap contributors, &lt;a href=&quot;https://www.openstreetmap.org/copyright&quot;&gt;ODbL&lt;/a&gt;. Provided KMZ plant boundaries; surrounding roads and building outlines are shown without names.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;Poster_CMAS_Session05_WWTP.pdf&quot;&gt;Poster PDF&lt;/a&gt;&lt;a href=&quot;Poster_CMAS_Session05_WWTP.pptx&quot;&gt;PowerPoint&lt;/a&gt;&lt;a href=&quot;../auditoria/Origem_cenarios_24h.pdf&quot;&gt;24 h methods (Portuguese)&lt;/a&gt;&lt;/p&gt;&#x27;]
+  257      s[0]=s[0].replace(&#x27;The common receptor grid and input emissions have not changed in this map revision.&#x27;,&#x27;The new import grid preserves the supplied sensitive IDs and existing terrain data. The historical concentration maps have not been rerun with that input.&#x27;).replace(&#x27;Background: © OpenStreetMap contributors&#x27;,&#x27;Background: supplied RMBH road dataset (CMAS/vias), complemented by © OpenStreetMap contributors&#x27;)
+  258      for unit in [&#x27;NC&#x27;,&#x27;VM&#x27;,&#x27;NC_VM&#x27;]:
+  259          s.append(f&#x27;&lt;p&gt;{unit}: &lt;a href=&quot;../entradas_corrigidas/AERMOD/Grade_Receptora_{unit}_AERMOD.csv&quot;&gt;AERMOD View · CSV&lt;/a&gt;&lt;a href=&quot;../entradas_corrigidas/CALPUFF/Grade_Receptora_{unit}_CALPUFF.xls&quot;&gt;CALPUFF View · XLS&lt;/a&gt;&lt;/p&gt;&#x27;)
+  260      s.append(&#x27;&lt;p&gt;&lt;a href=&quot;../Receptores_importacao_AERMOD_CALPUFF.zip&quot;&gt;Receptor import package&lt;/a&gt;&lt;a href=&quot;../entradas_corrigidas/LEIA_PRIMEIRO.md&quot;&gt;Import instructions&lt;/a&gt;&lt;a href=&quot;../auditoria/Guia_grade_e_poster_COPASA.pdf&quot;&gt;Interpretation guide (Portuguese)&lt;/a&gt;&lt;/p&gt;&#x27;)
+  261      for stem,title,note in cards:s.append(f&#x27;&lt;article&gt;&lt;h2&gt;{html.escape(title)}&lt;/h2&gt;&lt;p&gt;{html.escape(note)}&lt;/p&gt;&lt;img loading=&quot;eager&quot; src=&quot;figuras/{stem}_previa.png&quot; alt=&quot;{html.escape(title)}&quot;&gt;&lt;p&gt;&lt;a href=&quot;figuras/{stem}.pdf&quot;&gt;PDF · vector&lt;/a&gt;&lt;a href=&quot;figuras/{stem}.svg&quot;&gt;SVG · vector&lt;/a&gt;&lt;a href=&quot;figuras/{stem}.png&quot;&gt;PNG · high resolution&lt;/a&gt;&lt;/p&gt;&lt;/article&gt;&#x27;)
+  262      (O/&#x27;index.html&#x27;).write_text(&#x27;\n&#x27;.join(s+[&#x27;&lt;/html&gt;&#x27;]),encoding=&#x27;utf8&#x27;)
+  263  # Main
+  264  def main():
+  265      if (R/&#x27;CMAS/AERMOD/01_GWWTP1.POS&#x27;).exists() and (R/&#x27;output/comparacao_modelos/Campos_nativos.npz&#x27;).exists():
+  266          from atualizar_cartografia_cmas import main as current_main
+  267          current_main()
+  268          return
+  269      fig,axs,_,hc=physical_layout(1,500,4000)
+  270      for ax,k,label in zip(axs[0],[&#x27;VM&#x27;,&#x27;NC&#x27;],[&#x27;WWTP 1&#x27;,&#x27;WWTP 2&#x27;]):frame(ax,k,500,4000);draw_context(ax,k,TO_GEO);sources(ax,k);ax.set_title(label,pad=5,fontweight=&#x27;bold&#x27;)
+  271      handles=[Patch(facecolor=c,edgecolor=&#x27;#25414d&#x27;,linewidth=.5,label={&#x27;PRE&#x27;:&#x27;Preliminary treatment&#x27;,&#x27;UASB&#x27;:&#x27;UASB reactors&#x27;,&#x27;FB&#x27;:&#x27;Trickling filters&#x27;,&#x27;CALHA&#x27;:&#x27;Outlet weir&#x27;}[p]) for p,c in COL.items()]
+  272      handles+=context_handles()
+  273      fig.legend(handles=handles,loc=&#x27;lower center&#x27;,bbox_to_anchor=(.5,.035),ncol=4,frameon=False,fontsize=8.0,columnspacing=1.5,handletextpad=.55,alignment=&#x27;left&#x27;);credit(fig,.08/hc);save(fig,&#x27;Fontes_privacidade&#x27;,2500)
+  274      fig,axs,_,hc=physical_layout(1,1000,10000)
+  275      for ax,k,label in zip(axs[0],[&#x27;VM&#x27;,&#x27;NC&#x27;],[&#x27;WWTP 1&#x27;,&#x27;WWTP 2&#x27;]):
+  276          frame(ax,k,1000,10000);draw_context(ax,k,TO_GEO)
+  277          for sensitive,color,size in [(0,&#x27;#20566f&#x27;,13),(1,&#x27;#c87536&#x27;,25)]:
+  278              points=[v for v in D[&#x27;grid&#x27;] if v.get(&#x27;sensitive&#x27;,0)==sensitive];lon,lat=TO_GEO.transform([v[&#x27;x&#x27;] for v in points],[v[&#x27;y&#x27;] for v in points]);ax.scatter(lon,lat,s=size,facecolor=color,edgecolor=&#x27;white&#x27;,linewidth=.3,alpha=.92,zorder=9+sensitive)
+  279          sources(ax,k,False);ax.set_title(label,pad=5,fontweight=&#x27;bold&#x27;)
+  280      fig.legend(handles=[Line2D([],[],marker=&#x27;o&#x27;,color=&#x27;none&#x27;,markerfacecolor=&#x27;#20566f&#x27;,markeredgecolor=&#x27;white&#x27;,markersize=5,label=&#x27;Regular receptors&#x27;),Line2D([],[],marker=&#x27;o&#x27;,color=&#x27;none&#x27;,markerfacecolor=&#x27;#c87536&#x27;,markeredgecolor=&#x27;white&#x27;,markersize=5,label=&#x27;Sensitive receptors&#x27;)]+context_handles(),loc=&#x27;lower center&#x27;,bbox_to_anchor=(.5,.30/hc),ncol=4,frameon=False,fontsize=7.5,columnspacing=1.6,labelspacing=.7,alignment=&#x27;left&#x27;)
+  281      credit(fig,.08/hc);save(fig,&#x27;Grade_comum_privacidade&#x27;);plume_pair(&#x27;24&#x27;,True);plume_pair(&#x27;24&#x27;);plume_pair(&#x27;annual&#x27;)
+  282      poster_concentration_rows()
+  283      (F/&#x27;Resultados_historicos.json&#x27;).write_text(json.dumps(RESULTS,indent=2),encoding=&#x27;utf8&#x27;);(F/&#x27;Cartografia_metadados.json&#x27;).write_text(json.dumps(META,indent=2),encoding=&#x27;utf8&#x27;);gallery();print(json.dumps(dict(figures=len(META),context=export_metadata(),complete_fields=all(v[&#x27;finite_coverage&#x27;]&gt;.999 for v in RESULTS),results=RESULTS)))
+  284  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>

@@ -1,0 +1,185 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/preparar_grade_importacao.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/preparar_grade_importacao.py</h2>
+<p>Preserva receptores sensíveis e gera a mesma sequência nativa nos dois modelos.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\preparar_grade_importacao.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>csv</td><td>Leitura/escrita de tabelas delimitadas com separador e codificação explícitos.</td></tr><tr><td>hashlib</td><td>Assinaturas SHA-256 para identificar alterações de arquivos; não é validação do conteúdo científico.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>math</td><td>Funções matemáticas escalares.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>re</td><td>Extração e validação de padrões textuais, datas, identificadores e linhas dos modelos.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/output/auditoria/Auditoria_consolidada.json — chamada .read_text, linha 48.</li>
+<li>E:/copasa_map/output/auditoria/Grade_base_1789.json — chamada bp.read_text, linha 52.</li>
+<li>E:/copasa_map/mod/AERMOD/receptors_part.csv — chamada src.open, linha 55.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/Grade_Receptora_NC_VM_CALPUFF_17b.txt — chamada .read_text, linha 106.</li>
+<li>{p} — chamada p.read_text, linha 121.</li>
+<li>E:/copasa_map/mod/AERMOD/receptors_part.csv — chamada src.read_bytes, linha 133.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/auditoria/Grade_base_1789.json — chamada bp.write_text, linha 53.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/AERMOD/Grade_Receptora_{unit}_AERMOD.csv — chamada .open, linha 100.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/Grade_Receptora_{unit}.ROU — chamada .write_text, linha 103.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/Grade_Receptora_{unit}_CALPUFF_17b.txt — chamada .write_text, linha 105.</li>
+<li>{p} — chamada p.write_text, linha 123.</li>
+<li>E:/copasa_map/output/auditoria/Auditoria_consolidada.json — chamada .write_text, linha 126.</li>
+<li>E:/copasa_map/output/auditoria/Grades_por_unidade.json — chamada .write_text, linha 128.</li>
+<li>E:/copasa_map/output/auditoria/Correspondencia_Receptores_Grades.csv — chamada .open, linha 129.</li>
+<li>E:/copasa_map/output/auditoria/Grade_importacao_validada.json — chamada .write_text, linha 135.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>d: grid, grid_revision.</li>
+<li>row: ID, SENSITIVE.</li>
+<li>q: elev, group, hill, id, joint_id, origin, sensitive, x, y.</li>
+<li>v: distance_m.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>row: receptor_id.</li>
+<li>q: id, joint_id, receptor_id.</li>
+<li>sets: NC_VM.</li>
+<li>d: grid, grid_count, grid_revision, grid_unique_locations.</li>
+<li>audit: sets.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>number(s)</td><td>58-58</td><td>Chamadas efetivas: float, s.replace Retorno: float(s.replace(&#x27;,&#x27;, &#x27;.&#x27;)).</td></tr><tr><td>dec(v)</td><td>96-96</td><td>Chamadas efetivas: .replace, .rstrip Retorno: f&#x27;{v:.8f}&#x27;.rstrip(&#x27;0&#x27;).rstrip(&#x27;.&#x27;).replace(&#x27;.&#x27;, &#x27;,&#x27;).</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/preparar_grade_importacao.py, linhas 126-132.</p>
+<pre><code>(A/&#x27;Auditoria_consolidada.json&#x27;).write_text(json.dumps(d,indent=2),encoding=&#x27;utf8&#x27;)
+counts={unit:dict(total=len(selected),monitoring=sum(q[&#x27;sensitive&#x27;] for q in selected),grid=sum(not q[&#x27;sensitive&#x27;] for q in selected),unique_positions=len({(q[&#x27;x&#x27;],q[&#x27;y&#x27;]) for q in selected})) for unit,selected in sets.items()}
+(A/&#x27;Grades_por_unidade.json&#x27;).write_text(json.dumps(dict(counts=counts,grids=sets,method=d[&#x27;grid_revision&#x27;]),indent=2),encoding=&#x27;utf8&#x27;)
+with (A/&#x27;Correspondencia_Receptores_Grades.csv&#x27;).open(&#x27;w&#x27;,encoding=&#x27;utf-8-sig&#x27;,newline=&#x27;&#x27;) as f:
+    w=csv.writer(f,delimiter=&#x27;;&#x27;);w.writerow([&#x27;GRADE&#x27;,&#x27;INDICE_MODELO&#x27;,&#x27;ID&#x27;,&#x27;ID_NC_VM&#x27;,&#x27;X_m&#x27;,&#x27;Y_m&#x27;,&#x27;TIPO&#x27;])
+    for unit,selected in sets.items():
+        for i,q in enumerate(selected,1):w.writerow([unit,i,q[&#x27;id&#x27;],q[&#x27;joint_id&#x27;],dec(q[&#x27;x&#x27;]),dec(q[&#x27;y&#x27;]),q[&#x27;group&#x27;]])</code></pre>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/output/auditoria/Auditoria_consolidada.json | .read_text.
+    5  # Entrada: E:/copasa_map/output/auditoria/Grade_base_1789.json | bp.read_text.
+    6  # Entrada: E:/copasa_map/mod/AERMOD/receptors_part.csv | src.open.
+    7  # Entrada: E:/copasa_map/output/entradas_corrigidas/Grade_Receptora_NC_VM_CALPUFF_17b.txt | .read_text.
+    8  # Entrada: {p} | p.read_text.
+    9  # Entrada: E:/copasa_map/mod/AERMOD/receptors_part.csv | src.read_bytes.
+   10  # Campos/chaves em d: grid, grid_revision.
+   11  # Campos/chaves em row: ID, SENSITIVE.
+   12  # Campos/chaves em q: elev, group, hill, id, joint_id, origin, sensitive, x, y.
+   13  # Campos/chaves em v: distance_m.
+   14  # Saída: E:/copasa_map/output/auditoria/Grade_base_1789.json | bp.write_text.
+   15  # Saída: E:/copasa_map/output/entradas_corrigidas/AERMOD/Grade_Receptora_{unit}_AERMOD.csv | .open.
+   16  # Saída: E:/copasa_map/output/entradas_corrigidas/Grade_Receptora_{unit}.ROU | .write_text.
+   17  # Saída: E:/copasa_map/output/entradas_corrigidas/Grade_Receptora_{unit}_CALPUFF_17b.txt | .write_text.
+   18  # Saída: {p} | p.write_text.
+   19  # Saída: E:/copasa_map/output/auditoria/Auditoria_consolidada.json | .write_text.
+   20  # Saída: E:/copasa_map/output/auditoria/Grades_por_unidade.json | .write_text.
+   21  # Saída: E:/copasa_map/output/auditoria/Correspondencia_Receptores_Grades.csv | .open.
+   22  # Saída: E:/copasa_map/output/auditoria/Grade_importacao_validada.json | .write_text.
+   23  # Campos/chaves gerados em row: receptor_id.
+   24  # Campos/chaves gerados em q: id, joint_id, receptor_id.
+   25  # Campos/chaves gerados em sets: NC_VM.
+   26  # Campos/chaves gerados em d: grid, grid_count, grid_revision, grid_unique_locations.
+   27  # Campos/chaves gerados em audit: sets.
+   28  # receptor_id: identificador do receptor.
+   29  # CÓDIGO DO PROCESSAMENTO
+   30  
+   31  &quot;&quot;&quot;Preserva receptores sensíveis e gera a mesma sequência nativa nos dois modelos.&quot;&quot;&quot;
+   32  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   33  import sys as _cp_sys
+   34  from pathlib import Path as _cp_Path
+   35  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   36  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   37      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   38      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   39          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   40          break
+   41  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   42  # FIM DOS CAMINHOS PORTÁTEIS
+   43  
+   44  from pathlib import Path
+   45  import csv,json,math,re,hashlib
+   46  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/entradas_corrigidas&#x27;;A=R/&#x27;output/auditoria&#x27;
+   47  src=R/&#x27;mod/AERMOD/receptors_part.csv&#x27;
+   48  d=json.loads((A/&#x27;Auditoria_consolidada.json&#x27;).read_text(encoding=&#x27;utf8&#x27;))
+   49  base=[v for v in d[&#x27;grid&#x27;] if not v.get(&#x27;sensitive&#x27;)]
+   50  
+   51  bp=A/&#x27;Grade_base_1789.json&#x27;
+   52  if bp.exists():base=json.loads(bp.read_text(encoding=&#x27;utf8&#x27;))
+   53  else:bp.write_text(json.dumps(d[&#x27;grid&#x27;],indent=2),encoding=&#x27;utf8&#x27;);base=d[&#x27;grid&#x27;]
+   54  assert len(base)==1789
+   55  with src.open(encoding=&#x27;utf-8-sig&#x27;,newline=&#x27;&#x27;) as f:
+   56      original=[{k.strip():v.strip() for k,v in row.items()} for row in csv.DictReader(f,delimiter=&#x27;;&#x27;)]
+   57  # Number
+   58  def number(s):return float(s.replace(&#x27;,&#x27;,&#x27;.&#x27;))
+   59  matched=set();rows=[];matches=[]
+   60  for row in original:
+   61      q={k.lower():number(row[k]) for k in [&#x27;X&#x27;,&#x27;Y&#x27;,&#x27;ELEV&#x27;,&#x27;HILL&#x27;]}
+   62      q.update(id=row[&#x27;ID&#x27;],group=&#x27;MONITOR&#x27;,sensitive=int(row[&#x27;SENSITIVE&#x27;]),origin=&#x27;receptors_part.csv&#x27;)
+   63      idx=min(range(len(base)),key=lambda i:math.hypot(base[i][&#x27;x&#x27;]-q[&#x27;x&#x27;],base[i][&#x27;y&#x27;]-q[&#x27;y&#x27;]))
+   64      dist=math.hypot(base[idx][&#x27;x&#x27;]-q[&#x27;x&#x27;],base[idx][&#x27;y&#x27;]-q[&#x27;y&#x27;])
+   65      assert dist&lt;.01,(q[&#x27;id&#x27;],dist)
+   66      assert q[&#x27;elev&#x27;]==base[idx][&#x27;elev&#x27;] and q[&#x27;hill&#x27;]==base[idx][&#x27;hill&#x27;]
+   67      assert q[&#x27;hill&#x27;]&gt;=q[&#x27;elev&#x27;]
+   68      matches.append(dict(id=q[&#x27;id&#x27;],base_index=idx+1,distance_m=dist))
+   69      matched.add(idx);rows.append(q)
+   70  regular_index=0
+   71  for i,q in enumerate(base):
+   72      if i in matched:continue
+   73      regular_index+=1
+   74      rows.append(dict(x=q[&#x27;x&#x27;],y=q[&#x27;y&#x27;],elev=q[&#x27;elev&#x27;],hill=q[&#x27;hill&#x27;],id=f&#x27;R{regular_index:04d}&#x27;,group=&#x27;GRADE&#x27;,sensitive=0,origin=q[&#x27;origin&#x27;]))
+   75  for i,row in enumerate(rows):row[&#x27;receptor_id&#x27;]=i+1
+   76  assert len(original)==40 and len(matched)==39 and len(rows)==1790
+   77  coords={}
+   78  for q in rows:coords.setdefault((q[&#x27;x&#x27;],q[&#x27;y&#x27;]),[]).append(q[&#x27;id&#x27;])
+   79  duplicates=[dict(x=k[0],y=k[1],ids=v) for k,v in coords.items() if len(v)&gt;1]
+   80  assert len(coords)==1789 and len(duplicates)==1 and set(duplicates[0][&#x27;ids&#x27;])=={&#x27;NC_6&#x27;,&#x27;NC_BAG&#x27;}
+   81  
+   82  centres={&#x27;NC&#x27;:(589190,7805680),&#x27;VM&#x27;:(614080,7834430)}
+   83  sets={}
+   84  for unit,centre in centres.items():
+   85      selected=[dict(q) for q in rows if (q[&#x27;sensitive&#x27;] and q[&#x27;id&#x27;].startswith(unit+&#x27;_&#x27;)) or (not q[&#x27;sensitive&#x27;] and (q[&#x27;origin&#x27;]==&#x27;UCART4&#x27; or math.hypot(q[&#x27;x&#x27;]-centre[0],q[&#x27;y&#x27;]-centre[1])&lt;=1800))]
+   86      counter=0
+   87      for i,q in enumerate(selected):
+   88          q[&#x27;joint_id&#x27;]=q[&#x27;id&#x27;];q[&#x27;receptor_id&#x27;]=i+1
+   89          if not q[&#x27;sensitive&#x27;]:counter+=1;q[&#x27;id&#x27;]=f&#x27;R{counter:04d}&#x27;
+   90      sets[unit]=selected
+   91  sets[&#x27;NC_VM&#x27;]=[dict(q,joint_id=q[&#x27;id&#x27;]) for q in rows]
+   92  joint_coords={(q[&#x27;x&#x27;],q[&#x27;y&#x27;]) for q in rows}
+   93  assert {(q[&#x27;x&#x27;],q[&#x27;y&#x27;]) for unit in [&#x27;NC&#x27;,&#x27;VM&#x27;] for q in sets[unit]}==joint_coords
+   94  
+   95  # Dec
+   96  def dec(v):return f&#x27;{v:.8f}&#x27;.rstrip(&#x27;0&#x27;).rstrip(&#x27;.&#x27;).replace(&#x27;.&#x27;,&#x27;,&#x27;)
+   97  (O/&#x27;AERMOD&#x27;).mkdir(parents=True,exist_ok=True)
+   98  for unit,selected in sets.items():
+   99      stem=&#x27;Grade_Receptora_&#x27;+unit
+  100      with (O/&#x27;AERMOD&#x27;/(stem+&#x27;_AERMOD.csv&#x27;)).open(&#x27;w&#x27;,encoding=&#x27;ascii&#x27;,newline=&#x27;&#x27;) as f:
+  101          w=csv.writer(f,delimiter=&#x27;,&#x27;);w.writerow([&#x27;X&#x27;,&#x27;Y&#x27;,&#x27;ELEV&#x27;,&#x27;HILL&#x27;,&#x27;FLAG&#x27;,&#x27;GROUP&#x27;,&#x27;ID&#x27;,&#x27;SENSITIVE&#x27;])
+  102          for q in selected:w.writerow([f&quot;{q[&#x27;x&#x27;]:.8f}&quot;.rstrip(&#x27;0&#x27;).rstrip(&#x27;.&#x27;),f&quot;{q[&#x27;y&#x27;]:.8f}&quot;.rstrip(&#x27;0&#x27;).rstrip(&#x27;.&#x27;),q[&#x27;elev&#x27;],q[&#x27;hill&#x27;],0,q[&#x27;group&#x27;],q[&#x27;id&#x27;],q[&#x27;sensitive&#x27;]])
+  103      (O/(stem+&#x27;.ROU&#x27;)).write_text(&#x27;RE ELEVUNIT METERS\n&#x27;+&#x27;&#x27;.join(f&quot; DISCCART {q[&#x27;x&#x27;]:.8f} {q[&#x27;y&#x27;]:.8f} {q[&#x27;elev&#x27;]:.3f} {q[&#x27;hill&#x27;]:.3f}\n&quot; for q in selected),encoding=&#x27;ascii&#x27;)
+  104      native=&#x27;&#x27;.join(f&quot; {i+1} ! X = {q[&#x27;x&#x27;]/1000:.11f}, {q[&#x27;y&#x27;]/1000:.11f}, {q[&#x27;elev&#x27;]:.3f}, 0.0 ! !END!\n&quot; for i,q in enumerate(selected))
+  105      (O/(stem+&#x27;_CALPUFF_17b.txt&#x27;)).write_text(native,encoding=&#x27;ascii&#x27;)
+  106  native=(O/&#x27;Grade_Receptora_NC_VM_CALPUFF_17b.txt&#x27;).read_text(encoding=&#x27;ascii&#x27;)
+  107  patched=[]
+  108  for p in sorted(O.glob(&#x27;CALPUFF-*_corrigido.INP&#x27;)):
+  109      t=p.read_text(encoding=&#x27;cp1252&#x27;);at=t.index(&#x27;Subgroup (17b)&#x27;);head,tail=t[:at],t[at:]
+  110      m=re.search(r&#x27;(?m)^\s*1\s*!\s*X\s*=&#x27;,tail);assert m
+  111      end=tail.rindex(&#x27;!END!&#x27;)+len(&#x27;!END!&#x27;)
+  112      new=head+tail[:m.start()]+native+tail[end:]
+  113      new=re.sub(r&#x27;(!\s*NREC\s*=\s*)\d+&#x27;,lambda m:m[1]+str(len(rows)),new)
+  114      assert len(re.findall(r&#x27;(?m)^\s*\d+\s*!\s*X\s*=&#x27;,new[new.index(&#x27;Subgroup (17b)&#x27;):]))==len(rows)
+  115  
+  116      before=re.sub(r&#x27;(!\s*NREC\s*=\s*)\d+&#x27;,r&#x27;\g&lt;1&gt;N&#x27;,head)
+  117      after=re.sub(r&#x27;(!\s*NREC\s*=\s*)\d+&#x27;,r&#x27;\g&lt;1&gt;N&#x27;,new[:new.index(&#x27;Subgroup (17b)&#x27;)])
+  118      assert before==after
+  119      p.write_text(new,encoding=&#x27;cp1252&#x27;);patched.append(p.name)
+  120  for p in O.glob(&#x27;H2S_*_corrigido.ADI&#x27;):
+  121      t=p.read_text(encoding=&#x27;ascii&#x27;).replace(&#x27;INCLUDED Grade_Receptora_Comum.ROU&#x27;,&#x27;INCLUDED Grade_Receptora_NC_VM.ROU&#x27;)
+  122      assert &#x27;INCLUDED Grade_Receptora_NC_VM.ROU&#x27; in t
+  123      p.write_text(t,encoding=&#x27;ascii&#x27;)
+  124  d[&#x27;grid&#x27;]=rows;d[&#x27;grid_count&#x27;]=len(rows);d[&#x27;grid_unique_locations&#x27;]=len(coords)
+  125  d[&#x27;grid_revision&#x27;]=dict(source=str(src),sensitive_records=40,unique_sensitive_locations=39,original_duplicate=duplicates,order=&#x27;Monitoring IDs preserved first; regular grid uses R0001 onward, restarted within each file&#x27;,unit_selection=&#x27;Original UCART4 regional network in each unit, plus existing detailed receptors within 1800 m of original reference centres&#x27;,reference_centres=centres,new_terrain_points=0)
+  126  (A/&#x27;Auditoria_consolidada.json&#x27;).write_text(json.dumps(d,indent=2),encoding=&#x27;utf8&#x27;)
+  127  counts={unit:dict(total=len(selected),monitoring=sum(q[&#x27;sensitive&#x27;] for q in selected),grid=sum(not q[&#x27;sensitive&#x27;] for q in selected),unique_positions=len({(q[&#x27;x&#x27;],q[&#x27;y&#x27;]) for q in selected})) for unit,selected in sets.items()}
+  128  (A/&#x27;Grades_por_unidade.json&#x27;).write_text(json.dumps(dict(counts=counts,grids=sets,method=d[&#x27;grid_revision&#x27;]),indent=2),encoding=&#x27;utf8&#x27;)
+  129  with (A/&#x27;Correspondencia_Receptores_Grades.csv&#x27;).open(&#x27;w&#x27;,encoding=&#x27;utf-8-sig&#x27;,newline=&#x27;&#x27;) as f:
+  130      w=csv.writer(f,delimiter=&#x27;;&#x27;);w.writerow([&#x27;GRADE&#x27;,&#x27;INDICE_MODELO&#x27;,&#x27;ID&#x27;,&#x27;ID_NC_VM&#x27;,&#x27;X_m&#x27;,&#x27;Y_m&#x27;,&#x27;TIPO&#x27;])
+  131      for unit,selected in sets.items():
+  132          for i,q in enumerate(selected,1):w.writerow([unit,i,q[&#x27;id&#x27;],q[&#x27;joint_id&#x27;],dec(q[&#x27;x&#x27;]),dec(q[&#x27;y&#x27;]),q[&#x27;group&#x27;]])
+  133  audit=dict(records=len(rows),unique_locations=len(coords),sensitive_records=40,regular_records=len(rows)-40,duplicates=duplicates,matches=matches,maximum_matching_distance_m=max(v[&#x27;distance_m&#x27;] for v in matches),crs=&#x27;WGS 84 / UTM zone 23S (EPSG:32723)&#x27;,calpuff_units=&#x27;X/Y km; ground elevation m; receptor height above ground 0 m&#x27;,files_patched=patched,source_sha256=hashlib.sha256(src.read_bytes()).hexdigest(),source_inputs_changed=False)
+  134  audit[&#x27;sets&#x27;]=counts
+  135  (A/&#x27;Grade_importacao_validada.json&#x27;).write_text(json.dumps(audit,indent=2),encoding=&#x27;utf8&#x27;)
+  136  print(json.dumps({k:v for k,v in audit.items() if k!=&#x27;matches&#x27;}))</code></pre></article></html>

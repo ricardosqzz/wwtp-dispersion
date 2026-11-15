@@ -1,0 +1,68 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/consolidar_comparacao_atual.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/consolidar_comparacao_atual.py</h2>
+<p>Integra as saídas da rodada nova, preserva seus critérios temporais e confere a reprodução dos indicadores nativos e os campos finais usados no pôster.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\consolidar_comparacao_atual.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>csv</td><td>Leitura/escrita de tabelas delimitadas com separador e codificação explícitos.</td></tr><tr><td>hashlib</td><td>Assinaturas SHA-256 para identificar alterações de arquivos; não é validação do conteúdo científico.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>shutil</td><td>Cópia e movimentação de arquivos, inclusive preservação de versões geradas.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/output/comparacao_modelos/Comparacao_consolidada.json — chamada p.read_text, linha 26.</li>
+<li>E:/copasa_map/output/comparacao_modelos/CALPUFF_horario_validado.json — chamada .read_text, linha 26.</li>
+<li>{path} — chamada path.read_bytes, linha 35.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/comparacao_modelos/Comparacao_consolidada.json — chamada p.write_text, linha 28.</li>
+<li>E:/copasa_map/descontinuado/2026_11_10_novos_resultados/manifesto_nova_rodada.json — chamada .write_text, linha 41.</li>
+<p><strong>Sequência.</strong> A rotina executa no corpo principal. Os pontos de leitura/escrita acima e os trechos abaixo mostram a ordem de processamento. Não é uma função que possa ser importada sem considerar esses efeitos.</p>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/consolidar_comparacao_atual.py, linhas 25-33.</p>
+<pre><code>R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/comparacao_modelos&#x27;;A=R/&#x27;descontinuado/2026_11_10_novos_resultados&#x27;
+p=O/&#x27;Comparacao_consolidada.json&#x27;;d=json.loads(p.read_text(encoding=&#x27;utf8&#x27;));cal=json.loads((O/&#x27;CALPUFF_horario_validado.json&#x27;).read_text(encoding=&#x27;utf8&#x27;))
+d.update(quality_CALPUFF=cal,annual_CALPUFF_status=&#x27;Derived from current hourly CONC, highest calendar-year mean at each receptor. 2024 complete; 2025 99.680365% available. No 8760h RANK substitution.&#x27;,hourly_CALPUFF_status=&#x27;Decoded current CONC files and reproduced native RANK fields within printed precision. Embedded input matches supplied INP. Normal end confirmed in current LST.&#x27;,AERMET_time_zone=&#x27;LOCATION 0 is a time adjustment, not proof of UTC. Supplied SAMSON header declares zone 0; original interval/clock convention needs confirmation against CALMET UTC-3. Each model is conditioned on its own executed meteorology. One-hour label offset is documented as a diagnostic, not imposed.&#x27;,publication=&#x27;Current poster and gallery use CMAS/AERMOD and CMAS/CALPUFF new outputs supplied on 10 November 2026&#x27;)
+p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding=&#x27;utf8&#x27;)
+manifest=[]
+for stem in [&#x27;Comparacao_24h_pre_harmonizacao&#x27;,&#x27;Comparacao_anual_8760h_pre_harmonizacao&#x27;,&#x27;Cenarios_24h_eventos_coerentes&#x27;]:
+    for path in (R/&#x27;output/cmas_poster/figuras&#x27;).glob(stem+&#x27;*&#x27;):
+        if not path.is_file():continue
+        target=A/&#x27;figuras_historicas&#x27;/path.name;target.parent.mkdir(parents=True,exist_ok=True)</code></pre>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/output/comparacao_modelos/Comparacao_consolidada.json | p.read_text.
+    5  # Entrada: E:/copasa_map/output/comparacao_modelos/CALPUFF_horario_validado.json | .read_text.
+    6  # Entrada: {path} | path.read_bytes.
+    7  # Saída: E:/copasa_map/output/comparacao_modelos/Comparacao_consolidada.json | p.write_text.
+    8  # Saída: E:/copasa_map/descontinuado/2026_11_10_novos_resultados/manifesto_nova_rodada.json | .write_text.
+    9  # CÓDIGO DO PROCESSAMENTO
+   10  
+   11  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   12  import sys as _cp_sys
+   13  from pathlib import Path as _cp_Path
+   14  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   15  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   16      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   17      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   18          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   19          break
+   20  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   21  # FIM DOS CAMINHOS PORTÁTEIS
+   22  
+   23  from pathlib import Path
+   24  import json,csv,hashlib,shutil
+   25  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/comparacao_modelos&#x27;;A=R/&#x27;descontinuado/2026_11_10_novos_resultados&#x27;
+   26  p=O/&#x27;Comparacao_consolidada.json&#x27;;d=json.loads(p.read_text(encoding=&#x27;utf8&#x27;));cal=json.loads((O/&#x27;CALPUFF_horario_validado.json&#x27;).read_text(encoding=&#x27;utf8&#x27;))
+   27  d.update(quality_CALPUFF=cal,annual_CALPUFF_status=&#x27;Derived from current hourly CONC, highest calendar-year mean at each receptor. 2024 complete; 2025 99.680365% available. No 8760h RANK substitution.&#x27;,hourly_CALPUFF_status=&#x27;Decoded current CONC files and reproduced native RANK fields within printed precision. Embedded input matches supplied INP. Normal end confirmed in current LST.&#x27;,AERMET_time_zone=&#x27;LOCATION 0 is a time adjustment, not proof of UTC. Supplied SAMSON header declares zone 0; original interval/clock convention needs confirmation against CALMET UTC-3. Each model is conditioned on its own executed meteorology. One-hour label offset is documented as a diagnostic, not imposed.&#x27;,publication=&#x27;Current poster and gallery use CMAS/AERMOD and CMAS/CALPUFF new outputs supplied on 10 November 2026&#x27;)
+   28  p.write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding=&#x27;utf8&#x27;)
+   29  manifest=[]
+   30  for stem in [&#x27;Comparacao_24h_pre_harmonizacao&#x27;,&#x27;Comparacao_anual_8760h_pre_harmonizacao&#x27;,&#x27;Cenarios_24h_eventos_coerentes&#x27;]:
+   31      for path in (R/&#x27;output/cmas_poster/figuras&#x27;).glob(stem+&#x27;*&#x27;):
+   32          if not path.is_file():continue
+   33          target=A/&#x27;figuras_historicas&#x27;/path.name;target.parent.mkdir(parents=True,exist_ok=True)
+   34          if target.exists():continue
+   35          manifest.append(dict(source=str(path),archived=str(target),reason=&#x27;Historical output superseded by current CMAS model run&#x27;,sha256=hashlib.sha256(path.read_bytes()).hexdigest()));shutil.move(str(path),str(target))
+   36  for name in [&#x27;Resultados_historicos.json&#x27;,&#x27;Validacao_Poster_Anual.json&#x27;]:
+   37      path=R/(&#x27;output/cmas_poster/figuras/&#x27;+name if name.startswith(&#x27;Resultados&#x27;) else &#x27;output/auditoria/&#x27;+name)
+   38      if path.exists():
+   39          target=A/path.name
+   40          if not target.exists():shutil.move(str(path),str(target));manifest.append(dict(source=str(path),archived=str(target),reason=&#x27;Superseded generated status, not current analysis&#x27;))
+   41  (A/&#x27;manifesto_nova_rodada.json&#x27;).write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding=&#x27;utf8&#x27;)
+   42  print(&#x27;Current analysis consolidated; obsolete generated outputs archived:&#x27;,len(manifest))</code></pre></article></html>

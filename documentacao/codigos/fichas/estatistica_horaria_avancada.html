@@ -1,0 +1,257 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/estatistica_horaria_avancada.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/estatistica_horaria_avancada.py</h2>
+<p>Calcula estatísticas horárias em cada receptor e compõe distribuições espaciais por faixas de distância, separando o percentil temporal do boxplot entre receptores.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\estatistica_horaria_avancada.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>auditar_e_preparar</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>comparar_modelos_cmas</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>complementar_metricas_p95</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>csv</td><td>Leitura/escrita de tabelas delimitadas com separador e codificação explícitos.</td></tr><tr><td>datetime</td><td>Calendários, datas e duração dos períodos avaliados.</td></tr><tr><td>geometria_ete</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>math</td><td>Funções matemáticas escalares.</td></tr><tr><td>matplotlib</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.backends.backend_pdf</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.patches</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.pyplot</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>numpy</td><td>Matrizes numéricas, máscaras de validade, transformações, percentis e estatísticas vetorizadas.</td></tr><tr><td>pandas</td><td>Leitura tabular, chaves de junção, agrupamento por período e exportação de indicadores.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>re</td><td>Extração e validação de padrões textuais, datas, identificadores e linhas dos modelos.</td></tr><tr><td>scipy.spatial</td><td>Agrupamento, matrizes esparsas, distâncias, interpolação e estatísticas; conferir as chamadas na ficha.</td></tr><tr><td>scipy.stats</td><td>Agrupamento, matrizes esparsas, distâncias, interpolação e estatísticas; conferir as chamadas na ficha.</td></tr><tr><td>shapely.geometry</td><td>Operações geométricas usadas nas áreas, distâncias, limites e relações espaciais.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>files[j] — chamada np.loadtxt, linha 98.</li>
+<li>E:/copasa_map/output/auditoria/Auditoria_consolidada.json — chamada .read_text, linha 104.</li>
+<li>E:/copasa_map/temp/cache_nova_modelagem/AERMOD_{k}_1h.json — chamada .read_text, linha 112.</li>
+<li>E:/copasa_map/temp/cache_nova_modelagem/CALPUFF_{k}_1h.json — chamada .read_text, linha 112.</li>
+<li>E:/copasa_map/temp/cache_nova_modelagem/AERMOD_{k}_1h.npy — chamada np.load, linha 112.</li>
+<li>E:/copasa_map/temp/cache_nova_modelagem/CALPUFF_{k}_1h.npy — chamada np.load, linha 112.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Pares_nativos_{k}_24h.csv — chamada pd.read_csv, linha 114.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Meteorologia_AERMET.csv — chamada pd.read_csv, linha 115.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Estatistica_horaria_por_receptor.csv — chamada pd.read_csv, linha 189.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Estatistica_avancada.json — chamada .read_text, linha 191.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/cmas_poster/figuras/{name}.{ext} — chamada fig.savefig, linha 78.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/{name}.png — chamada fig.savefig, linha 79.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/{name}_previa.png — chamada fig.savefig, linha 79.</li>
+<li>{fig} — chamada save, linha 172.</li>
+<li>{fig} — chamada pdf.savefig, linha 184.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>art: boxes, medians.</li>
+<li>meta: source, start_times, xy.</li>
+<li>D: grid.</li>
+<li>a: area, base, boxes, height, medians, old_flux, params.</li>
+<li>v: area, base, height, old_flux, sigma, x, y.</li>
+<li>p: distance_m, x, y.</li>
+<li>hm: codes, xy.</li>
+<li>cm: start_times, xy.</li>
+<li>met: calm, missing.</li>
+<li>g: x, y.</li>
+<li>row: AERMOD_P95, AERMOD_mean, CALPUFF_P95, CALPUFF_mean.</li>
+<li>u: boxplot_eligible, distance_m, monitoring_location, screen_active.</li>
+<li>active: x, y.</li>
+<li>ax.spines: bottom, left.</li>
+<li>r: distance_m, receptor_id, unit.</li>
+<li>d: model, values.</li>
+<li>data: boxplot_eligible, unit.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>row: boxplot_eligible.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>save(fig, name)</td><td>77-79</td><td>grava produtos</td></tr><tr><td>statsbox(row, model, label=&#x27;&#x27;)</td><td>81-82</td><td>Chamadas efetivas: dict, float Retorno: dict(label=label, whislo=float(row[f&#x27;{model}_P05&#x27;]), q1=float(row[f&#x27;{model}_P25&#x27;]), med=float(row[f&#x27;{model}_P50&#x27;]), q3=float(row[f&#x27;{model}_P75&#x27;]), whishi=float(row[f&#x27;{model}_P95&#x27;]), fliers=[]).</td></tr><tr><td>add_boxes(ax, stats, pos, color, width=0.3)</td><td>84-90</td><td>Chamadas efetivas: ax.bxp, z.set Retorno: art.</td></tr><tr><td>validate_exports(k, arr, meta)</td><td>92-101</td><td>lê dados Retorno: dict(available_files=len(files), sampled=out, complete_series_source=meta[&#x27;source&#x27;][&#x27;path&#x27;], all_hours_from_binary=True), dict(available_files=0, sampled=[]).</td></tr><tr><td>main()</td><td>103-148</td><td>lê dados; grava produtos; Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.</td></tr><tr><td>render_monitor(u, k)</td><td>151-158</td><td>grava produtos</td></tr><tr><td>render_comparison_and_atlas(poster, atlas)</td><td>161-185</td><td>grava produtos</td></tr><tr><td>render_cached()</td><td>188-192</td><td>lê dados</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/estatistica_horaria_avancada.py, linhas 116-122.</p>
+<pre><code>        assert A.shape[0]==8496 and B.shape[0]==8784
+        quantiles=[.05,.1,.25,.5,.75,.9,.95,.98,.99];aq=np.quantile(A,quantiles,axis=0);bq=np.quantile(B,quantiles,axis=0)
+        near_monitor=[]
+        for v in monitor:
+            dist,ind=cKDTree(xy).query([v[&#x27;x&#x27;],v[&#x27;y&#x27;]])
+            if dist&lt;=.01:near_monitor.append((ind,str(v.get(&#x27;id&#x27;,v.get(&#x27;receptor_id&#x27;,v.get(&#x27;ID&#x27;,&#x27;&#x27;))))))
+        ids={}</code></pre>
+<p>Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>quantile: Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.</li>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<li>std: Desvio-padrão. Na padronização z, coloca colunas em escala comparável; conferir ddof no trecho.</li>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: files[j] | np.loadtxt.
+    5  # Entrada: E:/copasa_map/output/auditoria/Auditoria_consolidada.json | .read_text.
+    6  # Entrada: E:/copasa_map/temp/cache_nova_modelagem/AERMOD_{k}_1h.json | .read_text.
+    7  # Entrada: E:/copasa_map/temp/cache_nova_modelagem/CALPUFF_{k}_1h.json | .read_text.
+    8  # Entrada: E:/copasa_map/temp/cache_nova_modelagem/AERMOD_{k}_1h.npy | np.load.
+    9  # Entrada: E:/copasa_map/temp/cache_nova_modelagem/CALPUFF_{k}_1h.npy | np.load.
+   10  # Entrada: E:/copasa_map/output/comparacao_modelos/Pares_nativos_{k}_24h.csv | pd.read_csv.
+   11  # Entrada: E:/copasa_map/output/comparacao_modelos/Meteorologia_AERMET.csv | pd.read_csv.
+   12  # Entrada: E:/copasa_map/output/comparacao_modelos/Estatistica_horaria_por_receptor.csv | pd.read_csv.
+   13  # Entrada: E:/copasa_map/output/comparacao_modelos/Estatistica_avancada.json | .read_text.
+   14  # Campos/chaves em art: boxes, medians.
+   15  # Campos/chaves em meta: source, start_times, xy.
+   16  # Campos/chaves em D: grid.
+   17  # Campos/chaves em a: area, base, boxes, height, medians, old_flux, params.
+   18  # Campos/chaves em v: area, base, height, old_flux, sigma, x, y.
+   19  # Campos/chaves em p: distance_m, x, y.
+   20  # Campos/chaves em hm: codes, xy.
+   21  # Campos/chaves em cm: start_times, xy.
+   22  # Campos/chaves em met: calm, missing.
+   23  # Campos/chaves em g: x, y.
+   24  # Campos/chaves em row: AERMOD_P95, AERMOD_mean, CALPUFF_P95, CALPUFF_mean.
+   25  # Campos/chaves em u: boxplot_eligible, distance_m, monitoring_location, screen_active.
+   26  # Campos/chaves em active: x, y.
+   27  # Campos/chaves em ax.spines: bottom, left.
+   28  # Campos/chaves em r: distance_m, receptor_id, unit.
+   29  # Campos/chaves em d: model, values.
+   30  # Campos/chaves em data: boxplot_eligible, unit.
+   31  # Saída: E:/copasa_map/output/cmas_poster/figuras/{name}.{ext} | fig.savefig.
+   32  # Saída: E:/copasa_map/output/cmas_poster/figuras/{name}.png | fig.savefig.
+   33  # Saída: E:/copasa_map/output/cmas_poster/figuras/{name}_previa.png | fig.savefig.
+   34  # Saída: {fig} | save.
+   35  # Saída: {fig} | pdf.savefig.
+   36  # Campos/chaves gerados em row: boxplot_eligible.
+   37  # receptor_id: identificador do receptor.
+   38  # CÓDIGO DO PROCESSAMENTO
+   39  
+   40  &quot;&quot;&quot;Distribuições horárias por receptor, sem tratar um modelo como observação.
+   41  
+   42  Ano completo de referência: 2024. Horas válidas nativas em cada modelo.
+   43  Sem ajuste do relógio por otimização da concordância. Limite de exibição 0,7
+   44  ug/m3 é uma referência baixa da faixa de percepção, não um limite universal.
+   45  &quot;&quot;&quot;
+   46  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   47  import sys as _cp_sys
+   48  from pathlib import Path as _cp_Path
+   49  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   50  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   51      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   52      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   53          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   54          break
+   55  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   56  # FIM DOS CAMINHOS PORTÁTEIS
+   57  
+   58  from pathlib import Path
+   59  import json,csv,datetime as dt,re,sys,math
+   60  import numpy as np
+   61  import pandas as pd
+   62  from scipy.stats import wasserstein_distance,ks_2samp
+   63  from scipy.spatial import cKDTree
+   64  from shapely.geometry import Point
+   65  import matplotlib
+   66  matplotlib.use(&#x27;Agg&#x27;)
+   67  import matplotlib.pyplot as plt
+   68  from matplotlib.backends.backend_pdf import PdfPages
+   69  from matplotlib.patches import Patch
+   70  from auditar_e_preparar import parse_aer,parse_cal
+   71  from geometria_ete import limite
+   72  from comparar_modelos_cmas import csvout,dump
+   73  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/comparacao_modelos&#x27;;F=R/&#x27;output/cmas_poster/figuras&#x27;;C=R/&#x27;temp/cache_nova_modelagem&#x27;;CUT=.7
+   74  COL={&#x27;AERMOD&#x27;:&#x27;#2465a8&#x27;,&#x27;CALPUFF&#x27;:&#x27;#e3873a&#x27;}
+   75  plt.rcParams.update({&#x27;font.family&#x27;:&#x27;Arial&#x27;,&#x27;font.size&#x27;:11,&#x27;pdf.fonttype&#x27;:42,&#x27;svg.fonttype&#x27;:&#x27;path&#x27;,&#x27;axes.spines.top&#x27;:False,&#x27;axes.spines.right&#x27;:False,&#x27;axes.formatter.useoffset&#x27;:False})
+   76  # Save
+   77  def save(fig,name):
+   78      for ext in [&#x27;svg&#x27;,&#x27;pdf&#x27;]:fig.savefig(F/f&#x27;{name}.{ext}&#x27;,facecolor=&#x27;white&#x27;)
+   79      fig.savefig(F/f&#x27;{name}.png&#x27;,dpi=450,facecolor=&#x27;white&#x27;);fig.savefig(F/f&#x27;{name}_previa.png&#x27;,dpi=150,facecolor=&#x27;white&#x27;);plt.close(fig)
+   80  # Statsbox
+   81  def statsbox(row,model,label=&#x27;&#x27;):
+   82      return dict(label=label,whislo=float(row[f&#x27;{model}_P05&#x27;]),q1=float(row[f&#x27;{model}_P25&#x27;]),med=float(row[f&#x27;{model}_P50&#x27;]),q3=float(row[f&#x27;{model}_P75&#x27;]),whishi=float(row[f&#x27;{model}_P95&#x27;]),fliers=[])
+   83  # Add boxes
+   84  def add_boxes(ax,stats,pos,color,width=.30):
+   85      art=ax.bxp(stats,positions=pos,widths=width,showfliers=False,patch_artist=True,manage_ticks=False)
+   86      for z in art[&#x27;boxes&#x27;]:z.set(facecolor=color,alpha=.72,edgecolor=color,linewidth=1.1)
+   87      for name in [&#x27;whiskers&#x27;,&#x27;caps&#x27;]:
+   88          for z in art[name]:z.set(color=color,linewidth=1)
+   89      for z in art[&#x27;medians&#x27;]:z.set(color=&#x27;#182f3d&#x27;,linewidth=1.3)
+   90      return art
+   91  # Validate exports
+   92  def validate_exports(k,arr,meta):
+   93      files=sorted((R/f&#x27;CMAS/CALPUFF/ODOR-{k}&#x27;).rglob(&#x27;*_1HR_CONC.DAT&#x27;));out=[]
+   94      if not files:return dict(available_files=0,sampled=[])
+   95      dates={s:i for i,s in enumerate(meta[&#x27;start_times&#x27;])};xy=np.array(meta[&#x27;xy&#x27;])
+   96      for j in sorted(set(np.linspace(0,len(files)-1,min(9,len(files))).astype(int))):
+   97          p=files[j];ma=re.search(r&#x27;(\d{4})_M(\d{2})_D(\d{2})_(\d{2})(\d{2})&#x27;,p.name);date=dt.datetime(*map(int,ma.groups())).isoformat();assert date in dates,(p,date)
+   98          a=np.loadtxt(p,skiprows=6);assert len(a)==arr.shape[1];assert np.allclose(a[:,:2]*1000,xy,atol=.001)
+   99          z=np.asarray(arr[dates[date]],dtype=&#x27;float64&#x27;);error=float(abs(a[:,2]-z).max());assert np.allclose(a[:,2],z,rtol=6e-5,atol=1e-6),(p,error)
+  100          out.append(dict(file=str(p),start_label=date,max_abs_error=error,passed=True))
+  101      return dict(available_files=len(files),sampled=out,complete_series_source=meta[&#x27;source&#x27;][&#x27;path&#x27;],all_hours_from_binary=True)
+  102  # Main
+  103  def main():
+  104      D=json.loads((R/&#x27;output/auditoria/Auditoria_consolidada.json&#x27;).read_text(encoding=&#x27;utf8&#x27;));grid=D[&#x27;grid&#x27;];print(&#x27;grid keys&#x27;,list(grid[0]),flush=True)
+  105      monitor=[v for v in grid if v.get(&#x27;sensitive&#x27;)];rows=[];poster={};summary={};atlas=[];export_validation={};inputrows=[]
+  106      _,aer=parse_aer(R/&#x27;CMAS/AERMOD/H2S_TOTAL.ADI&#x27;)
+  107      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+  108          _,cal=parse_cal(R/f&#x27;CMAS/CALPUFF/CALPUFF-{k}.INP&#x27;)
+  109          for name,v in cal.items():
+  110              aid=&#x27;VM_PRE&#x27; if name.startswith(&#x27;VM_PRE&#x27;) else name;a=aer[aid]
+  111              inputrows.append(dict(unit=k,source_AERMOD=aid,source_CALPUFF=name,ground_elevation_AERMOD_m=a[&#x27;base&#x27;],ground_elevation_CALPUFF_m=v[&#x27;base&#x27;],release_height_AGL_AERMOD_m=a[&#x27;height&#x27;],release_height_AGL_CALPUFF_m=v[&#x27;height&#x27;],absolute_release_AERMOD_m=a[&#x27;base&#x27;]+a[&#x27;height&#x27;],absolute_release_CALPUFF_m=v[&#x27;base&#x27;]+v[&#x27;height&#x27;],sigma_z_AERMOD_m=a[&#x27;params&#x27;][-1],sigma_z_CALPUFF_m=v[&#x27;sigma&#x27;],mass_AERMOD_g_s=a[&#x27;old_flux&#x27;]*a[&#x27;area&#x27;],mass_CALPUFF_g_s=v[&#x27;old_flux&#x27;]*v[&#x27;area&#x27;]))
+  112          hm=json.loads((C/f&#x27;AERMOD_{k}_1h.json&#x27;).read_text());cm=json.loads((C/f&#x27;CALPUFF_{k}_1h.json&#x27;).read_text());ah=np.load(C/f&#x27;AERMOD_{k}_1h.npy&#x27;,mmap_mode=&#x27;r&#x27;);ch=np.load(C/f&#x27;CALPUFF_{k}_1h.npy&#x27;,mmap_mode=&#x27;r&#x27;)
+  113          export_validation[k]=validate_exports(k,ch,cm)
+  114          p=pd.read_csv(O/f&#x27;Pares_nativos_{k}_24h.csv&#x27;);xy=p[[&#x27;x&#x27;,&#x27;y&#x27;]].to_numpy();_,ai=cKDTree(hm[&#x27;xy&#x27;]).query(xy);_,ci=cKDTree(cm[&#x27;xy&#x27;]).query(xy)
+  115          met=pd.read_csv(O/&#x27;Meteorologia_AERMET.csv&#x27;);asel=(np.array(hm[&#x27;codes&#x27;])//1000000==24)&amp;~met.calm.to_numpy()&amp;~met.missing.to_numpy();csel=np.array([s.startswith(&#x27;2024-&#x27;) for s in cm[&#x27;start_times&#x27;]]);A=np.asarray(ah[asel][:,ai],dtype=&#x27;float64&#x27;);B=np.asarray(ch[csel][:,ci],dtype=&#x27;float64&#x27;)
+  116          assert A.shape[0]==8496 and B.shape[0]==8784
+  117          quantiles=[.05,.1,.25,.5,.75,.9,.95,.98,.99];aq=np.quantile(A,quantiles,axis=0);bq=np.quantile(B,quantiles,axis=0)
+  118          near_monitor=[]
+  119          for v in monitor:
+  120              dist,ind=cKDTree(xy).query([v[&#x27;x&#x27;],v[&#x27;y&#x27;]])
+  121              if dist&lt;=.01:near_monitor.append((ind,str(v.get(&#x27;id&#x27;,v.get(&#x27;receptor_id&#x27;,v.get(&#x27;ID&#x27;,&#x27;&#x27;))))))
+  122          ids={}
+  123          for ind,ident in near_monitor:ids.setdefault(ind,[]).append(ident)
+  124          outline=limite(k);unitrows=[]
+  125          for j,point in enumerate(xy):
+  126              match=cKDTree([[g[&#x27;x&#x27;],g[&#x27;y&#x27;]] for g in grid]).query(point)[1];g=grid[match];ident=str(g.get(&#x27;id&#x27;,g.get(&#x27;receptor_id&#x27;,g.get(&#x27;ID&#x27;,f&#x27;P{j+1:04}&#x27;))))
+  127              row=dict(unit=k,WWTP=1 if k==&#x27;VM&#x27; else 2,receptor_id=&#x27;/&#x27;.join(ids.get(j,[ident])),x=float(point[0]),y=float(point[1]),distance_m=float(p.distance_m.iloc[j]),inside_plant=bool(outline.covers(Point(point))),monitoring_location=j in ids,hours_AERMOD=len(A),hours_CALPUFF=len(B),screen_active=bool(max(A[:,j].max(),B[:,j].max())&gt;=CUT))
+  128              for name,z,q in [(&#x27;AERMOD&#x27;,A,aq),(&#x27;CALPUFF&#x27;,B,bq)]:
+  129                  row.update({f&#x27;{name}_P{round(v*100):02}&#x27;:float(q[i,j]) for i,v in enumerate(quantiles)});row.update({f&#x27;{name}_mean&#x27;:float(z[:,j].mean()),f&#x27;{name}_std&#x27;:float(z[:,j].std()),f&#x27;{name}_max&#x27;:float(z[:,j].max()),f&#x27;{name}_hours_ge_0_7_percent&#x27;:float(100*np.mean(z[:,j]&gt;=CUT))})
+  130              row.update(mean_difference_CAL_minus_AER=row[&#x27;CALPUFF_mean&#x27;]-row[&#x27;AERMOD_mean&#x27;],P95_difference_CAL_minus_AER=row[&#x27;CALPUFF_P95&#x27;]-row[&#x27;AERMOD_P95&#x27;],wasserstein_ug_m3=float(wasserstein_distance(A[:,j],B[:,j])),KS_D=float(ks_2samp(A[:,j],B[:,j],method=&#x27;asymp&#x27;).statistic))
+  131              row[&#x27;boxplot_eligible&#x27;]=max(row[&#x27;AERMOD_P95&#x27;],row[&#x27;CALPUFF_P95&#x27;])&gt;=CUT
+  132              rows.append(row);unitrows.append(row)
+  133          u=pd.DataFrame(unitrows);active=u[(u.distance_m&lt;1800)&amp;u.screen_active].copy();atlas.extend(u[u.boxplot_eligible].to_dict(&#x27;records&#x27;))
+  134          bands=[(0,100),(100,500),(500,1800)];poster[k]=[]
+  135          for lo,hi in bands:
+  136              sub=active[(active.distance_m&gt;=lo)&amp;(active.distance_m&lt;hi)]
+  137              for model in COL:poster[k].append(dict(model=model,distance_min=lo,distance_max=hi,n=len(sub),values=sub[f&#x27;{model}_P95&#x27;].tolist(),median=float(sub[f&#x27;{model}_P95&#x27;].median())))
+  138  
+  139          rng=np.random.default_rng(724);blocks=np.floor(active[[&#x27;x&#x27;,&#x27;y&#x27;]].to_numpy()/250).astype(int);_,bid=np.unique(blocks,axis=0,return_inverse=True);clusters=[np.flatnonzero(bid==b) for b in np.unique(bid)];delta=active.P95_difference_CAL_minus_AER.to_numpy();boot=[]
+  140          for rep in range(500):
+  141              idx=np.concatenate([clusters[i] for i in rng.integers(0,len(clusters),len(clusters))]);boot.append(float(np.median(delta[idx])))
+  142          summary[k]=dict(reference_year=2024,n_native_pairs=len(u),n_near_active=len(active),n_monitoring_locations=int(u.monitoring_location.sum()),n_boxplot_eligible=int(u.boxplot_eligible.sum()),hours_AERMOD=len(A),hours_CALPUFF=len(B),median_Wasserstein_near_ug_m3=float(active.wasserstein_ug_m3.median()),median_KS_D_near=float(active.KS_D.median()),median_P95_difference_CAL_minus_AER=float(np.median(delta)),bootstrap_spatial_blocks_250m=len(clusters),bootstrap_replicates=500,spatial_CI95_median_P95_difference=np.quantile(boot,[.025,.975]).tolist(),fraction_Cal_higher_P95=float(np.mean(active.CALPUFF_P95&gt;active.AERMOD_P95)),screen_cut_ug_m3=CUT)
+  143          render_monitor(u,k)
+  144          print(k,summary[k],flush=True)
+  145      csvout(O/&#x27;Estatistica_horaria_por_receptor.csv&#x27;,rows);csvout(O/&#x27;Comparacao_cota_altura_fontes.csv&#x27;,inputrows);dump(O/&#x27;Estatistica_avancada.json&#x27;,dict(summary=summary,poster_distributions=poster,export_validation=export_validation,method=&#x27;Full 2024 model-native valid hourly distributions at coincident unique receptors. No concentration deletion within selected sites. Odour-range lower reference 0.7 ug/m3 for display/screening only.&#x27;,bootstrap_scope=&#x27;Spatial sampling variability of receptor P95 contrasts; not total model uncertainty and not observational validation.&#x27;))
+  146      from complementar_metricas_p95 import main as metricas_p95
+  147      metricas_p95()
+  148      render_comparison_and_atlas(poster,atlas)
+  149  
+  150  # Render monitor
+  151  def render_monitor(u,k):
+  152  
+  153      fig,axs=plt.subplots(1,2,figsize=(11.7,5.3));fig.subplots_adjust(left=.09,right=.97,bottom=.18,top=.85,wspace=.26)
+  154      mon=u[u.monitoring_location].sort_values(&#x27;receptor_id&#x27;);mrows=mon.to_dict(&#x27;records&#x27;);half=int(np.ceil(len(mrows)/2))
+  155      for ax,part in zip(axs,[mrows[:half],mrows[half:]]):
+  156          for model,shift in [(&#x27;AERMOD&#x27;,-.17),(&#x27;CALPUFF&#x27;,.17)]:add_boxes(ax,[statsbox(r,model) for r in part],np.arange(len(part))+shift,COL[model],.28)
+  157          ax.spines[&#x27;bottom&#x27;].set_position((&#x27;outward&#x27;,8));ax.spines[&#x27;left&#x27;].set_position((&#x27;outward&#x27;,5));ax.set_xticks(range(len(part)),[r[&#x27;receptor_id&#x27;] for r in part],rotation=65,ha=&#x27;right&#x27;,fontsize=8);ax.set_ylabel(&#x27;Hourly H$_2$S (µg/m³)&#x27;,labelpad=14);ax.set_ylim(bottom=0);ax.ticklabel_format(axis=&#x27;y&#x27;,style=&#x27;plain&#x27;);ax.grid(axis=&#x27;y&#x27;,alpha=.15)
+  158      fig.suptitle(f&#x27;WWTP {1 if k==&quot;VM&quot; else 2} · monitoring receptors · hourly distributions (2024)&#x27;,fontsize=13,weight=&#x27;bold&#x27;);fig.legend(handles=[Patch(facecolor=c,label=m) for m,c in COL.items()],loc=&#x27;upper center&#x27;,bbox_to_anchor=(.5,.94),ncol=2,frameon=False);save(fig,f&#x27;Boxplots_monitoramento_{k}&#x27;)
+  159  
+  160  # Render comparison and atlas
+  161  def render_comparison_and_atlas(poster,atlas):
+  162  
+  163      fig,axs=plt.subplots(1,2,figsize=(11.7,6));fig.subplots_adjust(left=.10,right=.985,bottom=.21,top=.82,wspace=.24)
+  164      for ax,k in zip(axs,[&#x27;VM&#x27;,&#x27;NC&#x27;]):
+  165          for model,shift in [(&#x27;AERMOD&#x27;,-.19),(&#x27;CALPUFF&#x27;,.19)]:
+  166              lists=[d[&#x27;values&#x27;] for d in poster[k] if d[&#x27;model&#x27;]==model];a=ax.boxplot(lists,positions=np.arange(3)+shift,widths=.31,showfliers=False,patch_artist=True,manage_ticks=False)
+  167              for box in a[&#x27;boxes&#x27;]:box.set(facecolor=COL[model],alpha=.75,edgecolor=COL[model],linewidth=1.5)
+  168              for name in [&#x27;whiskers&#x27;,&#x27;caps&#x27;]:
+  169                  for v in a[name]:v.set(color=COL[model],linewidth=1.3)
+  170              for v in a[&#x27;medians&#x27;]:v.set(color=&#x27;#173445&#x27;,linewidth=1.8)
+  171          ax.set_xticks(range(3),[&#x27;0–100 m&#x27;,&#x27;100–500 m&#x27;,&#x27;500–1,800 m&#x27;]);ax.set_ylim(bottom=0);ax.set_title(f&#x27;WWTP {1 if k==&quot;VM&quot; else 2}&#x27;,fontsize=15,weight=&#x27;bold&#x27;,pad=12);ax.tick_params(labelsize=11);ax.grid(axis=&#x27;y&#x27;,alpha=.15);ax.set_xlabel(&#x27;Distance to nearest emitting surface&#x27;,fontsize=12,labelpad=12);ax.spines[&#x27;bottom&#x27;].set_position((&#x27;outward&#x27;,8));ax.spines[&#x27;left&#x27;].set_position((&#x27;outward&#x27;,5))
+  172      axs[0].set_ylabel(&#x27;Receptor P95 of hourly H$_2$S (µg/m³)&#x27;,fontsize=13,labelpad=10);fig.legend(handles=[Patch(facecolor=c,label=m) for m,c in COL.items()],loc=&#x27;upper center&#x27;,bbox_to_anchor=(.5,.97),ncol=2,frameon=False,fontsize=14);save(fig,&#x27;Boxplot_comparacao_poster&#x27;)
+  173  
+  174      with PdfPages(O/&#x27;Boxplots_Receptores.pdf&#x27;) as pdf:
+  175          for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+  176              unit=sorted([r for r in atlas if r[&#x27;unit&#x27;]==k],key=lambda r:r[&#x27;distance_m&#x27;])
+  177              for first in range(0,len(unit),40):
+  178                  fig,axs=plt.subplots(2,1,figsize=(11.7,8.3));fig.subplots_adjust(left=.08,right=.97,bottom=.14,top=.88,hspace=.56)
+  179                  for ax,start in zip(axs,[first,first+20]):
+  180                      part=unit[start:start+20]
+  181                      if not part:ax.set_visible(False);continue
+  182                      for model,shift in [(&#x27;AERMOD&#x27;,-.18),(&#x27;CALPUFF&#x27;,.18)]:add_boxes(ax,[statsbox(r,model) for r in part],np.arange(len(part))+shift,COL[model],.28)
+  183                      ax.spines[&#x27;bottom&#x27;].set_position((&#x27;outward&#x27;,7));ax.spines[&#x27;left&#x27;].set_position((&#x27;outward&#x27;,5));ax.set_xticks(range(len(part)),[r[&#x27;receptor_id&#x27;] for r in part],rotation=65,ha=&#x27;right&#x27;,fontsize=7);ax.tick_params(axis=&#x27;y&#x27;,labelsize=8);ax.set_ylim(bottom=0,top=max(.7,ax.get_ylim()[1]));ax.ticklabel_format(axis=&#x27;y&#x27;,style=&#x27;plain&#x27;,useOffset=False);ax.set_ylabel(&#x27;Hourly H$_2$S (µg/m³)&#x27;,fontsize=9,labelpad=13);ax.grid(axis=&#x27;y&#x27;,alpha=.15)
+  184                  fig.suptitle(f&#x27;WWTP {1 if k==&quot;VM&quot; else 2} · hourly distribution by receptor · 2024&#x27;,fontsize=14,weight=&#x27;bold&#x27;);fig.legend(handles=[Patch(facecolor=c,label=m) for m,c in COL.items()],loc=&#x27;upper center&#x27;,bbox_to_anchor=(.5,.95),ncol=2,frameon=False,fontsize=10);fig.text(.5,.025,&#x27;Boxes: Q25–Q75; median line; whiskers: P5–P95. Locations with P95 ≥0.7 µg/m³ in either model. All other points and extremes retained in CSV.&#x27;,ha=&#x27;center&#x27;,fontsize=8);pdf.savefig(fig);plt.close(fig)
+  185      print(&#x27;Advanced hourly statistics and boxplot atlas completed&#x27;,flush=True)
+  186  
+  187  # Render cached
+  188  def render_cached():
+  189      data=pd.read_csv(O/&#x27;Estatistica_horaria_por_receptor.csv&#x27;)
+  190      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:render_monitor(data[data.unit.eq(k)],k)
+  191      poster=json.loads((O/&#x27;Estatistica_avancada.json&#x27;).read_text(encoding=&#x27;utf8&#x27;))[&#x27;poster_distributions&#x27;]
+  192      render_comparison_and_atlas(poster,data[data.boxplot_eligible].to_dict(&#x27;records&#x27;))
+  193  
+  194  if __name__==&#x27;__main__&#x27;:
+  195      import sys
+  196      render_cached() if &#x27;--figures-only&#x27; in sys.argv else main()</code></pre></article></html>

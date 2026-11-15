@@ -1,0 +1,109 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/grafico_concordancia_p95.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/grafico_concordancia_p95.py</h2>
+<p>Dispersão P95 em pares nativos, com ampliação e visão integral dos extremos.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\grafico_concordancia_p95.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>hashlib</td><td>Assinaturas SHA-256 para identificar alterações de arquivos; não é validação do conteúdo científico.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>matplotlib</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.lines</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.patches</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.pyplot</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>numpy</td><td>Matrizes numéricas, máscaras de validade, transformações, percentis e estatísticas vetorizadas.</td></tr><tr><td>pandas</td><td>Leitura tabular, chaves de junção, agrupamento por período e exportação de indicadores.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv — chamada pd.read_csv, linha 43.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Concordancia_espacial_P95.json — chamada .read_text, linha 43.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv — chamada .read_bytes, linha 71.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores.{ext} — chamada fig.savefig, linha 69.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores.png — chamada fig.savefig, linha 70.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores_previa.png — chamada fig.savefig, linha 70.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores.json — chamada .write_text, linha 71.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>d: unit.</li>
+<li>summary: rows.</li>
+<li>x: distance_max_m, distance_min_m, unit.</li>
+<li>score: Spearman_rho_P95, WWTP, within_factor_2_percent.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>main()</td><td>42-72</td><td>lê dados; grava produtos</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/grafico_concordancia_p95.py, linhas 62-68.</p>
+<pre><code>        inset.set(xlim=(0,cap),ylim=(0,cap),xticks=[0,cap],yticks=[0,cap]);inset.tick_params(labelsize=8,pad=2,length=2);inset.set_title(&#x27;Full range&#x27;,fontsize=9,pad=5);inset.set_aspect(&#x27;equal&#x27;)
+        visible=int(((a&lt;=30)&amp;(b&lt;=30)).sum());ax.text(.5,-.20,f&#x27;Zoom: 0–30 µg/m³ ({visible}/{len(s)} receptors shown)&#x27;,transform=ax.transAxes,ha=&#x27;center&#x27;,fontsize=10,color=&#x27;#536b77&#x27;)
+        evidence.append(dict(unit=k,n=len(s),n_visible_main=visible,n_in_full_range=len(s),full_range_max=cap,stats_all_receptors=True,Spearman_rho=score[&#x27;Spearman_rho_P95&#x27;],within_factor_2_percent=score[&#x27;within_factor_2_percent&#x27;]))
+    fig.suptitle(&#x27;Intermodel comparison at matched receptors · 2024&#x27;,fontsize=19,fontweight=&#x27;bold&#x27;,color=&#x27;#173445&#x27;,y=.975)
+    handles=[Line2D([],[],marker=&#x27;o&#x27;,ls=&#x27;&#x27;,color=col[0],label=&#x27;Within factor 2&#x27;),Line2D([],[],marker=&#x27;o&#x27;,ls=&#x27;&#x27;,color=col[1],label=&#x27;Outside factor 2&#x27;),Line2D([],[],ls=&#x27;--&#x27;,color=&#x27;#526874&#x27;,label=&#x27;Equal concentration (1:1)&#x27;),Patch(facecolor=&#x27;#e4eeea&#x27;,label=&#x27;Factor-of-two band&#x27;)]
+    fig.legend(handles=handles,loc=&#x27;upper center&#x27;,bbox_to_anchor=(.5,.92),ncol=4,frameon=False,fontsize=11)
+    fig.text(.5,.035,&#x27;Each point is the hourly P95 at one receptor within 1,800 m. Insets retain the full range; all receptors enter the statistics.\nThe two native hourly distributions are compared descriptively. Neither model is treated as an ambient observation.&#x27;,ha=&#x27;center&#x27;,fontsize=10,color=&#x27;#536b77&#x27;,linespacing=1.6)</code></pre>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv | pd.read_csv.
+    5  # Entrada: E:/copasa_map/output/comparacao_modelos/Concordancia_espacial_P95.json | .read_text.
+    6  # Entrada: E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv | .read_bytes.
+    7  # Campos/chaves em d: unit.
+    8  # Campos/chaves em summary: rows.
+    9  # Campos/chaves em x: distance_max_m, distance_min_m, unit.
+   10  # Campos/chaves em score: Spearman_rho_P95, WWTP, within_factor_2_percent.
+   11  # Saída: E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores.{ext} | fig.savefig.
+   12  # Saída: E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores.png | fig.savefig.
+   13  # Saída: E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores_previa.png | fig.savefig.
+   14  # Saída: E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores.json | .write_text.
+   15  # CÓDIGO DO PROCESSAMENTO
+   16  
+   17  &quot;&quot;&quot;Dispersão P95 em pares nativos, com ampliação e visão integral dos extremos.&quot;&quot;&quot;
+   18  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   19  import sys as _cp_sys
+   20  from pathlib import Path as _cp_Path
+   21  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   22  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   23      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   24      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   25          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   26          break
+   27  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   28  # FIM DOS CAMINHOS PORTÁTEIS
+   29  
+   30  from pathlib import Path
+   31  import json,hashlib
+   32  import numpy as np
+   33  import pandas as pd
+   34  import matplotlib
+   35  matplotlib.use(&#x27;Agg&#x27;)
+   36  import matplotlib.pyplot as plt
+   37  from matplotlib.lines import Line2D
+   38  from matplotlib.patches import Patch,Rectangle
+   39  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/comparacao_modelos&#x27;;F=R/&#x27;output/cmas_poster/figuras&#x27;
+   40  
+   41  # Main
+   42  def main():
+   43      d=pd.read_csv(O/&#x27;Pares_concordancia_P95.csv&#x27;);summary=json.loads((O/&#x27;Concordancia_espacial_P95.json&#x27;).read_text(encoding=&#x27;utf8&#x27;))
+   44      plt.rcParams.update({&#x27;font.family&#x27;:&#x27;Arial&#x27;,&#x27;font.size&#x27;:12,&#x27;svg.fonttype&#x27;:&#x27;path&#x27;,&#x27;pdf.fonttype&#x27;:42,&#x27;axes.spines.right&#x27;:False,&#x27;axes.spines.top&#x27;:False})
+   45      fig=plt.figure(figsize=(17,8));axs=[fig.add_axes([.065+.5*i,.23,.278,.59]) for i in range(2)]
+   46      evidence=[];col=[&#x27;#287e96&#x27;,&#x27;#d3704e&#x27;]
+   47      for i,(ax,k) in enumerate(zip(axs,[&#x27;VM&#x27;,&#x27;NC&#x27;])):
+   48          s=d[d.unit.eq(k)];a=s.AERMOD_P95.to_numpy();b=s.CALPUFF_P95.to_numpy();inside=s.P95_within_factor_2.to_numpy(bool)
+   49          score=next(x for x in summary[&#x27;rows&#x27;] if x[&#x27;unit&#x27;]==k and x[&#x27;distance_min_m&#x27;]==0 and x[&#x27;distance_max_m&#x27;]==1800)
+   50          xx=np.linspace(0,30,301);ax.fill_between(xx,.5*xx,np.minimum(2*xx,30),color=&#x27;#e4eeea&#x27;,zorder=0)
+   51          for selected,c in [(~inside,col[1]),(inside,col[0])]:ax.scatter(a[selected],b[selected],s=19,alpha=.72,c=c,linewidths=.2,edgecolors=&#x27;white&#x27;,zorder=3)
+   52          ax.plot([0,30],[0,30],color=&#x27;#526874&#x27;,ls=&#x27;--&#x27;,lw=1.2,zorder=1)
+   53          ax.set(xlim=(0,30),ylim=(0,30),xticks=[0,10,20,30],yticks=[0,10,20,30],xlabel=&#x27;AERMOD hourly P95 (µg/m³)&#x27;,ylabel=&#x27;CALPUFF hourly P95 (µg/m³)&#x27;)
+   54          ax.set_aspect(&#x27;equal&#x27;);ax.grid(alpha=.12,lw=.5);ax.xaxis.labelpad=11;ax.yaxis.labelpad=12;ax.tick_params(pad=5)
+   55          ax.set_title(f&#x27;WWTP {score[&quot;WWTP&quot;]}&#x27;,fontsize=16,fontweight=&#x27;bold&#x27;,pad=18)
+   56          fig.text(.375+.5*i,.43,f&#x27;Spearman ρ\n{score[&quot;Spearman_rho_P95&quot;]:.3f}\n\nWithin factor 2\n{score[&quot;within_factor_2_percent&quot;]:.1f}%\n\nn = {len(s)} receptors&#x27;,ha=&#x27;left&#x27;,va=&#x27;top&#x27;,fontsize=11.5,color=&#x27;#173445&#x27;,linespacing=1.35)
+   57  
+   58          inset=fig.add_axes([.375+.5*i,.51,.11,.234]);cap=500 if max(a.max(),b.max())&gt;200 else 200
+   59          xx=np.linspace(0,cap,101);inset.fill_between(xx,.5*xx,np.minimum(2*xx,cap),color=&#x27;#e4eeea&#x27;)
+   60          for selected,c in [(~inside,col[1]),(inside,col[0])]:inset.scatter(a[selected],b[selected],s=3.4,alpha=.7,c=c,linewidths=0,zorder=3)
+   61          inset.plot([0,cap],[0,cap],color=&#x27;#526874&#x27;,ls=&#x27;--&#x27;,lw=.65);inset.add_patch(Rectangle((0,0),30,30,fill=False,edgecolor=&#x27;#173445&#x27;,lw=.8))
+   62          inset.set(xlim=(0,cap),ylim=(0,cap),xticks=[0,cap],yticks=[0,cap]);inset.tick_params(labelsize=8,pad=2,length=2);inset.set_title(&#x27;Full range&#x27;,fontsize=9,pad=5);inset.set_aspect(&#x27;equal&#x27;)
+   63          visible=int(((a&lt;=30)&amp;(b&lt;=30)).sum());ax.text(.5,-.20,f&#x27;Zoom: 0–30 µg/m³ ({visible}/{len(s)} receptors shown)&#x27;,transform=ax.transAxes,ha=&#x27;center&#x27;,fontsize=10,color=&#x27;#536b77&#x27;)
+   64          evidence.append(dict(unit=k,n=len(s),n_visible_main=visible,n_in_full_range=len(s),full_range_max=cap,stats_all_receptors=True,Spearman_rho=score[&#x27;Spearman_rho_P95&#x27;],within_factor_2_percent=score[&#x27;within_factor_2_percent&#x27;]))
+   65      fig.suptitle(&#x27;Intermodel comparison at matched receptors · 2024&#x27;,fontsize=19,fontweight=&#x27;bold&#x27;,color=&#x27;#173445&#x27;,y=.975)
+   66      handles=[Line2D([],[],marker=&#x27;o&#x27;,ls=&#x27;&#x27;,color=col[0],label=&#x27;Within factor 2&#x27;),Line2D([],[],marker=&#x27;o&#x27;,ls=&#x27;&#x27;,color=col[1],label=&#x27;Outside factor 2&#x27;),Line2D([],[],ls=&#x27;--&#x27;,color=&#x27;#526874&#x27;,label=&#x27;Equal concentration (1:1)&#x27;),Patch(facecolor=&#x27;#e4eeea&#x27;,label=&#x27;Factor-of-two band&#x27;)]
+   67      fig.legend(handles=handles,loc=&#x27;upper center&#x27;,bbox_to_anchor=(.5,.92),ncol=4,frameon=False,fontsize=11)
+   68      fig.text(.5,.035,&#x27;Each point is the hourly P95 at one receptor within 1,800 m. Insets retain the full range; all receptors enter the statistics.\nThe two native hourly distributions are compared descriptively. Neither model is treated as an ambient observation.&#x27;,ha=&#x27;center&#x27;,fontsize=10,color=&#x27;#536b77&#x27;,linespacing=1.6)
+   69      for ext in [&#x27;svg&#x27;,&#x27;pdf&#x27;]:fig.savefig(F/f&#x27;Concordancia_P95_receptores.{ext}&#x27;,facecolor=&#x27;white&#x27;)
+   70      fig.savefig(F/&#x27;Concordancia_P95_receptores.png&#x27;,dpi=450,facecolor=&#x27;white&#x27;);fig.savefig(F/&#x27;Concordancia_P95_receptores_previa.png&#x27;,dpi=140,facecolor=&#x27;white&#x27;);plt.close(fig)
+   71      (F/&#x27;Concordancia_P95_receptores.json&#x27;).write_text(json.dumps(dict(source_sha256=hashlib.sha256((O/&#x27;Pares_concordancia_P95.csv&#x27;).read_bytes()).hexdigest(),main_axes=&#x27;Linear 0 to 30 ug/m3&#x27;,insets=&#x27;Linear full native range&#x27;,units=evidence),indent=2),encoding=&#x27;utf8&#x27;)
+   72      print(json.dumps(evidence,indent=2))
+   73  
+   74  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>

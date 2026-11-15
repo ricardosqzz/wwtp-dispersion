@@ -1,0 +1,102 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/geometria_ete.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/geometria_ete.py</h2>
+<p>Limites fornecidos e regularização geométrica autorizada dos UASB NC.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\geometria_ete.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>math</td><td>Funções matemáticas escalares.</td></tr><tr><td>numpy</td><td>Matrizes numéricas, máscaras de validade, transformações, percentis e estatísticas vetorizadas.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>pyproj</td><td>Dependência importada; conferir as chamadas efetivas abaixo e a instalação do ambiente correspondente.</td></tr><tr><td>shapely.geometry</td><td>Operações geométricas usadas nas áreas, distâncias, limites e relações espaciais.</td></tr><tr><td>shapely.ops</td><td>Operações geométricas usadas nas áreas, distâncias, limites e relações espaciais.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr><tr><td>xml.etree.ElementTree</td><td>Leitura/edição de XML de projetos e documentos.</td></tr><tr><td>zipfile</td><td>Leitura/empacotamento de arquivos ZIP e estruturas internas de documentos.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/&#x27;v_maria/vm_limite.kmz&#x27; if k == &#x27;VM&#x27; else &#x27;n_contagem/nc_limite.kmz&#x27; — chamada zipfile.ZipFile, linha 36.</li>
+<p><strong>Saídas.</strong></p>
+<p>Interface por parâmetros, retorno de funções ou programas chamados; os caminhos literais e as funções estão no inventário e no código integral.</p>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>cal: NC.</li>
+<li>d: area.</li>
+<li>record: sources.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>d: area, old_area, xy.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>limite(k)</td><td>34-41</td><td>Chamadas efetivas: r.findall, str, transform, zipfile.ZipFile, ET.fromstring, polygons.append, unary_union, z.read Retorno: transform(TO_UTM.transform, unary_union(polygons)).</td></tr><tr><td>regularizar(aer, cal)</td><td>43-68</td><td>Chamadas efetivas: np.array, centres.mean, np.linalg.svd, float, dict, limite, enumerate, Polygon Retorno: record.</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/geometria_ete.py, linhas 45-51.</p>
+<pre><code>    centres=np.array([[p.centroid.x,p.centroid.y] for p in old]);mid=centres.mean(axis=0)
+    _,_,vh=np.linalg.svd(centres-mid);along=vh[0]
+    if np.dot(along,centres[2]-centres[0])&lt;0:along=-along
+    across=np.array([-along[1],along[0]])
+
+    widths=[]
+    for p in old:</code></pre>
+<p>Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</p>
+<p>Decomposição em valores singulares. Na PCA, a matriz centrada é decomposta em U, s e V; a proporção de variância é s²/Σs². É uma descrição da variação, não teste causal.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<li>svd: Decomposição em valores singulares. Na PCA, a matriz centrada é decomposta em U, s e V; a proporção de variância é s²/Σs². É uma descrição da variação, não teste causal.</li>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/&#x27;v_maria/vm_limite.kmz&#x27; if k == &#x27;VM&#x27; else &#x27;n_contagem/nc_limite.kmz&#x27; | zipfile.ZipFile.
+    5  # Campos/chaves em cal: NC.
+    6  # Campos/chaves em d: area.
+    7  # Campos/chaves em record: sources.
+    8  # Saídas: retorno de funções, verificações ou arquivos definidos pelo chamador.
+    9  # Campos/chaves gerados em d: area, old_area, xy.
+   10  # CÓDIGO DO PROCESSAMENTO
+   11  
+   12  &quot;&quot;&quot;Limites fornecidos e regularização geométrica autorizada dos UASB NC.&quot;&quot;&quot;
+   13  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   14  import sys as _cp_sys
+   15  from pathlib import Path as _cp_Path
+   16  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   17  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   18      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   19      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   20          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   21          break
+   22  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   23  # FIM DOS CAMINHOS PORTÁTEIS
+   24  
+   25  from pathlib import Path
+   26  import zipfile,xml.etree.ElementTree as ET,math
+   27  import numpy as np
+   28  from shapely.geometry import Polygon
+   29  from shapely.ops import transform,unary_union
+   30  from pyproj import Transformer
+   31  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));NS={&#x27;k&#x27;:&#x27;http://www.opengis.net/kml/2.2&#x27;}
+   32  TO_UTM=Transformer.from_crs(4326,32723,always_xy=True)
+   33  # Limite
+   34  def limite(k):
+   35      p=R/(&#x27;v_maria/vm_limite.kmz&#x27; if k==&#x27;VM&#x27; else &#x27;n_contagem/nc_limite.kmz&#x27;)
+   36      with zipfile.ZipFile(p) as z:r=ET.fromstring(z.read(next(n for n in z.namelist() if n.endswith(&#x27;.kml&#x27;))))
+   37      polygons=[]
+   38      for c in r.findall(&#x27;.//k:Polygon/k:outerBoundaryIs/k:LinearRing/k:coordinates&#x27;,NS):
+   39          xy=[tuple(map(float,v.split(&#x27;,&#x27;)[:2])) for v in c.text.split()];polygons.append(Polygon(xy))
+   40      assert polygons,str(p)
+   41      return transform(TO_UTM.transform,unary_union(polygons))
+   42  # Regularizar
+   43  def regularizar(aer,cal):
+   44      keys=[&#x27;NC_UASB1&#x27;,&#x27;NC_UASB2&#x27;,&#x27;NC_UASB3&#x27;];old=[Polygon(aer[n][&#x27;xy&#x27;]) for n in keys]
+   45      centres=np.array([[p.centroid.x,p.centroid.y] for p in old]);mid=centres.mean(axis=0)
+   46      _,_,vh=np.linalg.svd(centres-mid);along=vh[0]
+   47      if np.dot(along,centres[2]-centres[0])&lt;0:along=-along
+   48      across=np.array([-along[1],along[0]])
+   49  
+   50      widths=[]
+   51      for p in old:
+   52          corners=np.asarray(p.minimum_rotated_rectangle.exterior.coords)[:-1]
+   53          edges=np.roll(corners,-1,axis=0)-corners
+   54          widths.append(float(np.max(np.abs(edges@across))))
+   55      width=float(np.mean(widths));area=sum(p.area for p in old)/3;depth=area/width
+   56      step=float(np.dot(centres[2]-centres[0],along)/2)
+   57      record=dict(method=&#x27;Three congruent rectangles; common alignment and equal centre spacing; original total area preserved&#x27;,total_area_m2=area*3,each_area_m2=area,width_m=width,depth_m=depth,centre_spacing_m=step,clear_gap_m=step-depth,reference=&#x27;regularization of supplied coordinates; no independent field survey&#x27;,sources=[])
+   58      boundary=limite(&#x27;NC&#x27;)
+   59      for i,n in enumerate(keys):
+   60          center=mid+(i-1)*step*along
+   61          xy=[center+sx*width/2*across+sy*depth/2*along for sx,sy in [(-1,-1),(1,-1),(1,1),(-1,1)]]
+   62          xy=[(float(v[0]),float(v[1])) for v in xy];poly=Polygon(xy)
+   63          assert poly.is_valid and boundary.covers(poly),(n,&#x27;outside supplied boundary&#x27;)
+   64          for d in [aer[n],cal[&#x27;NC&#x27;][n]]:
+   65              d[&#x27;old_area&#x27;]=d[&#x27;area&#x27;];d[&#x27;xy&#x27;]=xy;d[&#x27;area&#x27;]=poly.area
+   66              if &#x27;x&#x27; in d:d[&#x27;x&#x27;],d[&#x27;y&#x27;]=xy[0]
+   67          record[&#x27;sources&#x27;].append(dict(id=n,old_xy=[list(v) for v in old[i].exterior.coords][:-1],xy=xy,centroid=[float(v) for v in center],area_m2=poly.area,shift_m=float(np.linalg.norm(center-centres[i]))))
+   68      return record</code></pre></article></html>

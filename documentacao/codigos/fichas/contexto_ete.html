@@ -1,0 +1,166 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/contexto_ete.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/contexto_ete.py</h2>
+<p>Contexto vetorial sem rótulos: vias/edificações externas e limite fornecido.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\contexto_ete.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>geometria_ete</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>geopandas</td><td>Camadas vetoriais com referência espacial, reprojeção, recorte e interseção de geometrias.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>matplotlib.collections</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>pyproj</td><td>Dependência importada; conferir as chamadas efetivas abaixo e a instalação do ambiente correspondente.</td></tr><tr><td>shapely.geometry</td><td>Operações geométricas usadas nas áreas, distâncias, limites e relações espaciais.</td></tr><tr><td>shapely.ops</td><td>Operações geométricas usadas nas áreas, distâncias, limites e relações espaciais.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/in/cartografia_contexto/OSM_{k}.json — chamada p.read_text, linha 53.</li>
+<li>E:/copasa_map/CMAS/vias/malha_viaria.shp — chamada gpd.read_file, linha 75.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/auditoria/Contexto_cartografico.json — chamada .write_text, linha 137.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>data: elements.</li>
+<li>v: lat, lon.</li>
+<li>tags: highway.</li>
+<li>st: color, style, width.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>road_class(kind)</td><td>42-46</td><td>Organiza parâmetros, expressões ou retorno sem chamada externa. Retorno: &#x27;other&#x27;, &#x27;primary&#x27;.</td></tr><tr><td>layers(k)</td><td>48-98</td><td>lê dados Retorno: CACHE[k], CACHE[k].</td></tr><tr><td>line_parts(g)</td><td>100-104</td><td>Chamadas efetivas: hasattr, line_parts</td></tr><tr><td>draw(ax, k, to_geo, plume=False)</td><td>106-131</td><td>Chamadas efetivas: layers, line_parts, ax.add_collection, ax.set_xlim, ax.set_ylim, ax.get_xlim, ax.get_ylim, b.append</td></tr><tr><td>export_metadata()</td><td>133-138</td><td>grava produtos Retorno: result.</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/contexto_ete.py, linhas 135-138.</p>
+<pre><code>    for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+        b,r,h=layers(k);result[k]=dict(boundary_file=&#x27;v_maria/vm_limite.kmz&#x27; if k==&#x27;VM&#x27; else &#x27;n_contagem/nc_limite.kmz&#x27;,boundary_area_m2=b.area,road_features=len(r),road_classes={c:sum(road_class(t)==c for g,t in r) for c in ROAD_STYLES},classification=&#x27;Provided hier_legal: arterial/rodovia primary and secondary; coletora principal/vicinal collector. Municipal or missing hierarchy remains local/unclassified. OSM highway fills uncovered context.&#x27;,building_features=len(h),names_drawn=False,source=&#x27;Provided CMAS/vias/malha_viaria.shp (EPSG:31983), reprojected to EPSG:32723; © OpenStreetMap contributors&#x27;,cartographic_matching_tolerance_m=10,license=&#x27;OSM complement: ODbL; supplied road dataset provenance retained as received&#x27;,url=&#x27;https://www.openstreetmap.org/copyright&#x27;)
+    (R/&#x27;output/auditoria/Contexto_cartografico.json&#x27;).write_text(json.dumps(result,indent=2),encoding=&#x27;utf8&#x27;)
+    return result</code></pre>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/in/cartografia_contexto/OSM_{k}.json | p.read_text.
+    5  # Entrada: E:/copasa_map/CMAS/vias/malha_viaria.shp | gpd.read_file.
+    6  # Campos/chaves em data: elements.
+    7  # Campos/chaves em v: lat, lon.
+    8  # Campos/chaves em tags: highway.
+    9  # Campos/chaves em st: color, style, width.
+   10  # Saída: E:/copasa_map/output/auditoria/Contexto_cartografico.json | .write_text.
+   11  # CÓDIGO DO PROCESSAMENTO
+   12  
+   13  &quot;&quot;&quot;Contexto vetorial sem rótulos: vias/edificações externas e limite fornecido.&quot;&quot;&quot;
+   14  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   15  import sys as _cp_sys
+   16  from pathlib import Path as _cp_Path
+   17  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   18  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   19      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   20      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   21          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   22          break
+   23  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   24  # FIM DOS CAMINHOS PORTÁTEIS
+   25  
+   26  from pathlib import Path
+   27  import json
+   28  from shapely.geometry import Polygon,LineString,shape,mapping
+   29  from shapely.ops import transform,unary_union
+   30  from shapely.geometry import box
+   31  from pyproj import Transformer
+   32  from geometria_ete import limite
+   33  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));TO_UTM=Transformer.from_crs(4326,32723,always_xy=True)
+   34  CACHE={}
+   35  ROAD_STYLES={
+   36   &#x27;primary&#x27;:dict(color=&#x27;#95633d&#x27;,width=.85,style=&#x27;solid&#x27;,label=&#x27;Primary roads&#x27;),
+   37   &#x27;secondary&#x27;:dict(color=&#x27;#586f7c&#x27;,width=.65,style=(0,(5,2)),label=&#x27;Secondary roads&#x27;),
+   38   &#x27;collector&#x27;:dict(color=&#x27;#82959c&#x27;,width=.45,style=&#x27;solid&#x27;,label=&#x27;Collector roads&#x27;),
+   39   &#x27;other&#x27;:dict(color=&#x27;#b0b9bd&#x27;,width=.30,style=(0,(1.3,1.7)),label=&#x27;Local/unclassified roads&#x27;),
+   40  }
+   41  # Road class
+   42  def road_class(kind):
+   43      if kind in [&#x27;motorway&#x27;,&#x27;trunk&#x27;,&#x27;primary&#x27;,&#x27;motorway_link&#x27;,&#x27;trunk_link&#x27;,&#x27;primary_link&#x27;]:return &#x27;primary&#x27;
+   44      if kind in [&#x27;secondary&#x27;,&#x27;secondary_link&#x27;]:return &#x27;secondary&#x27;
+   45      if kind in [&#x27;tertiary&#x27;,&#x27;tertiary_link&#x27;]:return &#x27;collector&#x27;
+   46      return &#x27;other&#x27;
+   47  # Layers
+   48  def layers(k):
+   49      if k in CACHE:return CACHE[k]
+   50      border=limite(k);roads=[];buildings=[]
+   51      p=R/f&#x27;in/cartografia_contexto/OSM_{k}.json&#x27;
+   52      if p.exists():
+   53          data=json.loads(p.read_text(encoding=&#x27;utf8&#x27;))
+   54          for e in data[&#x27;elements&#x27;]:
+   55              tags=e.get(&#x27;tags&#x27;,{});coords=e.get(&#x27;geometry&#x27;)
+   56              if not coords:continue
+   57              xy=[(v[&#x27;lon&#x27;],v[&#x27;lat&#x27;]) for v in coords if &#x27;lon&#x27; in v and &#x27;lat&#x27; in v]
+   58              if len(xy)&lt;2:continue
+   59              if &#x27;highway&#x27; in tags:
+   60                  g=transform(TO_UTM.transform,LineString(xy)).difference(border)
+   61                  if not g.is_empty:roads.append((g,tags[&#x27;highway&#x27;]))
+   62              if &#x27;building&#x27; in tags and len(xy)&gt;=4:
+   63                  g=transform(TO_UTM.transform,Polygon(xy))
+   64                  if g.is_valid:
+   65                      g=g.difference(border)
+   66                      if not g.is_empty:buildings.append(g)
+   67  
+   68      import geopandas as gpd
+   69      supplied=R/&#x27;CMAS/vias/malha_viaria.shp&#x27;
+   70      if supplied.exists():
+   71          cx,cy=border.centroid.x,border.centroid.y
+   72          area=box(cx-2500,cy-2500,cx+2500,cy+2500)
+   73          to_sirgas=Transformer.from_crs(32723,31983,always_xy=True)
+   74          search=transform(to_sirgas.transform,area).bounds
+   75          shp=gpd.read_file(supplied,bbox=search).to_crs(32723)
+   76          known=[];unknown=[]
+   77          for _,v in shp.iterrows():
+   78              g=v.geometry.intersection(area).difference(border)
+   79              if g.is_empty:continue
+   80              name=str(v.get(&#x27;hier_legal&#x27;,&#x27;&#x27;)).upper().replace(&#x27; &#x27;,&#x27;&#x27;)
+   81              if name in [&#x27;ARTERIALPRIMARIA&#x27;,&#x27;RODOVIAPRIMARIA&#x27;]:kind=&#x27;primary&#x27;
+   82              elif name in [&#x27;ARTERIALSECUNDARIA&#x27;,&#x27;RODOVIASECUNDARIA&#x27;]:kind=&#x27;secondary&#x27;
+   83              elif name in [&#x27;COLETORAPRINCIPAL&#x27;,&#x27;COLETORAVICINAL&#x27;]:kind=&#x27;tertiary&#x27;
+   84              else:unknown.append((g,&#x27;local&#x27;));continue
+   85              known.append((g,kind))
+   86          known_mask=unary_union([g for g,t in known]).buffer(10)
+   87          osm=[]
+   88          for g,t in roads:
+   89              rest=g.difference(known_mask)
+   90              if not rest.is_empty:osm.append((rest,t))
+   91          identified_mask=unary_union([g for g,t in known+osm]).buffer(10)
+   92          local=[]
+   93          for g,t in unknown:
+   94              rest=g.difference(identified_mask)
+   95              if not rest.is_empty:local.append((rest,t))
+   96          roads=known+osm+local
+   97      CACHE[k]=(border,roads,buildings)
+   98      return CACHE[k]
+   99  # Line parts
+  100  def line_parts(g):
+  101      if g.geom_type in (&#x27;LineString&#x27;,&#x27;LinearRing&#x27;):yield g
+  102      elif g.geom_type==&#x27;Polygon&#x27;:yield g.exterior
+  103      elif hasattr(g,&#x27;geoms&#x27;):
+  104          for v in g.geoms:yield from line_parts(v)
+  105  # Draw
+  106  def draw(ax,k,to_geo,plume=False):
+  107      from matplotlib.collections import LineCollection
+  108      border,roads,buildings=layers(k)
+  109      limits=(ax.get_xlim(),ax.get_ylim())
+  110      outline=[]
+  111      for g in buildings:
+  112          for part in line_parts(g):
+  113              x,y=part.xy;outline.append(list(zip(*to_geo.transform(x,y))))
+  114      if outline:
+  115          if plume:ax.add_collection(LineCollection(outline,colors=&#x27;white&#x27;,linewidths=1.0,alpha=.6,zorder=8,clip_on=True))
+  116          ax.add_collection(LineCollection(outline,colors=&#x27;#81708b&#x27;,linewidths=.40,alpha=.8,zorder=8.2,clip_on=True))
+  117      for category in [&#x27;other&#x27;,&#x27;collector&#x27;,&#x27;secondary&#x27;,&#x27;primary&#x27;]:
+  118          arr=[]
+  119          for g,kind in roads:
+  120              if road_class(kind)!=category:continue
+  121              for part in line_parts(g):
+  122                  x,y=part.xy;arr.append(list(zip(*to_geo.transform(x,y))))
+  123          if arr:
+  124              st=ROAD_STYLES[category]
+  125              if category!=&#x27;other&#x27;:ax.add_collection(LineCollection(arr,colors=&#x27;white&#x27;,linewidths=st[&#x27;width&#x27;]+.6,alpha=.70,zorder=7,clip_on=True))
+  126              ax.add_collection(LineCollection(arr,colors=st[&#x27;color&#x27;],linewidths=st[&#x27;width&#x27;],linestyles=st[&#x27;style&#x27;],alpha=.88,zorder=7.2,clip_on=True))
+  127      b=[]
+  128      for part in line_parts(border):
+  129          x,y=part.xy;b.append(list(zip(*to_geo.transform(x,y))))
+  130      ax.add_collection(LineCollection(b,colors=&#x27;white&#x27;,linewidths=4.1 if plume else 3.0,alpha=1,zorder=24,clip_on=True));ax.add_collection(LineCollection(b,colors=&#x27;#122f40&#x27;,linewidths=2.3 if plume else 1.65,alpha=1,zorder=25,clip_on=True))
+  131      ax.set_xlim(*limits[0]);ax.set_ylim(*limits[1])
+  132  # Export metadata
+  133  def export_metadata():
+  134      result={}
+  135      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+  136          b,r,h=layers(k);result[k]=dict(boundary_file=&#x27;v_maria/vm_limite.kmz&#x27; if k==&#x27;VM&#x27; else &#x27;n_contagem/nc_limite.kmz&#x27;,boundary_area_m2=b.area,road_features=len(r),road_classes={c:sum(road_class(t)==c for g,t in r) for c in ROAD_STYLES},classification=&#x27;Provided hier_legal: arterial/rodovia primary and secondary; coletora principal/vicinal collector. Municipal or missing hierarchy remains local/unclassified. OSM highway fills uncovered context.&#x27;,building_features=len(h),names_drawn=False,source=&#x27;Provided CMAS/vias/malha_viaria.shp (EPSG:31983), reprojected to EPSG:32723; © OpenStreetMap contributors&#x27;,cartographic_matching_tolerance_m=10,license=&#x27;OSM complement: ODbL; supplied road dataset provenance retained as received&#x27;,url=&#x27;https://www.openstreetmap.org/copyright&#x27;)
+  137      (R/&#x27;output/auditoria/Contexto_cartografico.json&#x27;).write_text(json.dumps(result,indent=2),encoding=&#x27;utf8&#x27;)
+  138      return result</code></pre></article></html>

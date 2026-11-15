@@ -1,0 +1,76 @@
+{
+  "versao": 1,
+  "projeto": "copasa",
+  "raiz_original": "E:/copasa_map",
+  "raiz_projeto": "",
+  "modo_entrega": false,
+  "pastas": {
+    "calpuff": "calpuff",
+    "calpuff_horario": "calpuff_horario",
+    "cenario": "cenario",
+    "CMAS": "CMAS",
+    "codigo": "codigo",
+    "concentracao": "concentracao",
+    "ct_onca": "ct_onca",
+    "ct_pamp": "ct_pamp",
+    "in": "in",
+    "mod": "mod",
+    "n_contagem": "n_contagem",
+    "output": "output",
+    "pluma_1h": "pluma_1h",
+    "pluma_1h - original": "pluma_1h - original",
+    "Saida_Geral_Final_Word": "Saida_Geral_Final_Word",
+    "v_maria": "v_maria"
+  },
+  "arquivos": {},
+  "externos": {
+    "python_5ae2cb6": {
+      "chave": "python_5ae2cb6",
+      "original": "C:\\Users\\SEU_USUARIO\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python",
+      "caminho": "",
+      "descricao": "Arquivo ou programa externo utilizado em codigo/auditar_e_preparar.py"
+    },
+    "pwsh_exe_72a6651": {
+      "chave": "pwsh_exe_72a6651",
+      "original": "C:\\Users\\SEU_USUARIO\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.exe",
+      "caminho": "",
+      "descricao": "Arquivo ou programa externo utilizado em codigo/auditar_e_preparar.py"
+    },
+    "presentations_c7ee323": {
+      "chave": "presentations_c7ee323",
+      "original": "C:/Users/SEU_USUARIO/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations",
+      "caminho": "",
+      "descricao": "Arquivo ou programa externo utilizado em codigo/gerar_poster_copasa.mjs"
+    },
+    "arial_ttf_cd1b8ba": {
+      "chave": "arial_ttf_cd1b8ba",
+      "original": "C:\\Windows\\Fonts\\arial.ttf",
+      "caminho": "C:\\Windows\\Fonts\\arial.ttf",
+      "descricao": "Arquivo ou programa externo utilizado em codigo/guia_grade_poster.py"
+    },
+    "arialbd_ttf_7140766": {
+      "chave": "arialbd_ttf_7140766",
+      "original": "C:\\Windows\\Fonts\\arialbd.ttf",
+      "caminho": "C:\\Windows\\Fonts\\arialbd.ttf",
+      "descricao": "Arquivo ou programa externo utilizado em codigo/guia_grade_poster.py"
+    },
+    "arial_ttf_41a7a4d": {
+      "chave": "arial_ttf_41a7a4d",
+      "original": "C:/Windows/Fonts/arial.ttf",
+      "caminho": "C:/Windows/Fonts/arial.ttf",
+      "descricao": "Arquivo ou programa externo utilizado em codigo/relatorio_comparacao_modelos.py"
+    },
+    "arialbd_ttf_7dff968": {
+      "chave": "arialbd_ttf_7dff968",
+      "original": "C:/Windows/Fonts/arialbd.ttf",
+      "caminho": "C:/Windows/Fonts/arialbd.ttf",
+      "descricao": "Arquivo ou programa externo utilizado em codigo/relatorio_comparacao_modelos.py"
+    }
+  },
+  "ambiente": {
+    "python": "python",
+    "node": "node",
+    "python_documentos": "",
+    "node_modules": ""
+  }
+}

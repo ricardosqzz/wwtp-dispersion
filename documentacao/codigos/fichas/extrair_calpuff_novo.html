@@ -1,0 +1,115 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/extrair_calpuff_novo.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/extrair_calpuff_novo.py</h2>
+<p>Decodifica a nova saída CALPUFF recebida, preservando o cabeçalho, as espécies, os receptores e a sequência temporal para a comparação com o AERMOD.</p>
+<p><strong>Papel.</strong> Aquisição/leitura. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\extrair_calpuff_novo.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>comparar_modelos_cmas</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>extrair_eventos_24h</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>{C}/CALPUFF_{unit}_1h.json — chamada meta.read_text, linha 36.</li>
+<li>{C}/CALPUFF_{unit}_1h.npy — chamada np.load, linha 55.</li>
+<li>E:/copasa_map/CMAS/CALPUFF/RANK({unit})_ODOR_1HR_CONC_C.DAT — chamada np.loadtxt, linha 37.</li>
+<li>E:/copasa_map/CMAS/CALPUFF/CONC-{unit}.DAT — chamada path.open, linha 39.</li>
+<li>{O}/Campos_nativos.npz — chamada np.load, linha 58.</li>
+<li>E:/copasa_map/CMAS/CALPUFF/RANK({k})_ODOR_{token}HR_CONC_C.DAT — chamada np.loadtxt, linha 61.</li>
+<p><strong>Saídas.</strong></p>
+<li>{C}/CALPUFF_{k}_24h.npy — chamada np.save, linha 76.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>m: embedded_input, end_times, start_times, xy.</li>
+<li>v: max_abs_error, passed.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>caltime(b)</td><td>31-32</td><td>Chamadas efetivas: map, dt.datetime, dt.timedelta Retorno: dt.datetime(y, 1, 1) + dt.timedelta(days=j - 1, hours=h, seconds=s).</td></tr><tr><td>extract(unit)</td><td>34-55</td><td>lê dados; grava produtos Retorno: (np.load(cache, mmap_mode=&#x27;r&#x27;), m), (np.load(cache, mmap_mode=&#x27;r&#x27;), json.loads(meta.read_text())).</td></tr><tr><td>main()</td><td>57-80</td><td>lê dados; grava produtos</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/extrair_calpuff_novo.py, linhas 65-71.</p>
+<pre><code>        for offset in [0,1]:
+            size=(len(h)-offset)//24;d=np.asarray(h[offset:offset+24*size],dtype=&#x27;float64&#x27;).reshape(size,24,n).mean(axis=1);env=d.max(axis=0);ref=rank(&#x27;24&#x27;)
+            er=float(abs(env-ref).max());passed=bool(np.allclose(env,ref,rtol=6e-5,atol=1e-6));choices.append(dict(offset=offset,max_abs_error=er,passed=passed))
+        ok=[v for v in choices if v[&#x27;passed&#x27;]];assert ok,(k,choices);offset=min(ok,key=lambda v:v[&#x27;max_abs_error&#x27;])[&#x27;offset&#x27;];size=(len(h)-offset)//24
+        daily=np.asarray(h[offset:offset+size*24],dtype=&#x27;float64&#x27;).reshape(size,24,n).mean(axis=1);dstarts=[starts[offset+i*24] for i in range(size)]
+        mean=np.mean(h,axis=0,dtype=&#x27;float64&#x27;);ref=rank(&#x27;17517&#x27;);ermean=float(abs(mean-ref).max());assert np.allclose(mean,ref,rtol=6e-5,atol=1e-6),(k,ermean)
+        yrs=np.array([t.year for t in starts]);annual=[];yrmeta=[]</code></pre>
+<p>Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: {C}/CALPUFF_{unit}_1h.json | meta.read_text.
+    5  # Entrada: {C}/CALPUFF_{unit}_1h.npy | np.load.
+    6  # Entrada: E:/copasa_map/CMAS/CALPUFF/RANK({unit})_ODOR_1HR_CONC_C.DAT | np.loadtxt.
+    7  # Entrada: E:/copasa_map/CMAS/CALPUFF/CONC-{unit}.DAT | path.open.
+    8  # Entrada: {O}/Campos_nativos.npz | np.load.
+    9  # Entrada: E:/copasa_map/CMAS/CALPUFF/RANK({k})_ODOR_{token}HR_CONC_C.DAT | np.loadtxt.
+   10  # Campos/chaves em m: embedded_input, end_times, start_times, xy.
+   11  # Campos/chaves em v: max_abs_error, passed.
+   12  # Saída: {C}/CALPUFF_{k}_24h.npy | np.save.
+   13  # CÓDIGO DO PROCESSAMENTO
+   14  
+   15  &quot;&quot;&quot;Decodifica CONC.DAT atual e verifica cada campo contra RANK nativo.&quot;&quot;&quot;
+   16  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   17  import sys as _cp_sys
+   18  from pathlib import Path as _cp_Path
+   19  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   20  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   21      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   22      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   23          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   24          break
+   25  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   26  # FIM DOS CAMINHOS PORTÁTEIS
+   27  
+   28  from comparar_modelos_cmas import *
+   29  from extrair_eventos_24h import unpack_record,decode
+   30  # Caltime
+   31  def caltime(b):
+   32      y,j,h,s=map(int,b);return dt.datetime(y,1,1)+dt.timedelta(days=j-1,hours=h,seconds=s)
+   33  # Extract
+   34  def extract(unit):
+   35      path=R/f&#x27;CMAS/CALPUFF/CONC-{unit}.DAT&#x27;;cache=C/f&#x27;CALPUFF_{unit}_1h.npy&#x27;;meta=C/f&#x27;CALPUFF_{unit}_1h.json&#x27;
+   36      if cache.exists() and meta.exists() and json.loads(meta.read_text())[&#x27;source&#x27;]==ident(path):return np.load(cache,mmap_mode=&#x27;r&#x27;),json.loads(meta.read_text())
+   37      rank=np.loadtxt(R/f&#x27;CMAS/CALPUFF/RANK({unit})_ODOR_1HR_CONC_C.DAT&#x27;,skiprows=6);n=len(rank);nt=17517
+   38      arr=np.lib.format.open_memmap(cache,mode=&#x27;w+&#x27;,dtype=&#x27;float32&#x27;,shape=(nt,n));ends=[];starts=[]
+   39      with path.open(&#x27;rb&#x27;) as f:
+   40          assert unpack_record(f).startswith(b&#x27;CONC.DAT&#x27;);nlines=struct.unpack(&#x27;&lt;i&#x27;,unpack_record(f))[0]
+   41          embedded=[]
+   42          for _ in range(nlines):embedded.append(unpack_record(f).decode(&#x27;cp1252&#x27;).rstrip())
+   43          control=unpack_record(f);title=unpack_record(f);species=unpack_record(f);elevation=unpack_record(f);names=unpack_record(f)
+   44          i=0;previous=None
+   45          while True:
+   46              b=unpack_record(f)
+   47              if b is None:break
+   48              assert len(b)==32;st=struct.unpack(&#x27;&lt;8i&#x27;,b);start,end=caltime(st[:4]),caltime(st[4:]);assert end-start==dt.timedelta(hours=1)
+   49              assert previous is None or previous==start;previous=end
+   50              assert unpack_record(f)[8:13]==b&#x27;TOTAL&#x27;;chunks=[]
+   51              for _ in range(2):
+   52                  pack=struct.unpack(&#x27;&lt;i&#x27;,unpack_record(f))[0];b=unpack_record(f);assert (len(b)-15)//4==pack;chunks.append(decode(b))
+   53              z=np.concatenate(chunks);assert len(z)==n and np.isfinite(z).all() and (z&gt;=0).all();arr[i]=z;starts.append(start.isoformat());ends.append(end.isoformat());i+=1
+   54      assert i==nt;arr.flush();m=dict(source=ident(path),xy=(rank[:,:2]*1000).tolist(),start_times=starts,end_times=ends,hours=i,receptors=n,units=&#x27;ug/m3&#x27;,timezone=&#x27;UTC-03:00, XBTZ=3 in embedded control&#x27;,embedded_input=embedded)
+   55      dump(meta,m);print(&#x27;CALPUFF decoded&#x27;,unit,i,n,flush=True);return np.load(cache,mmap_mode=&#x27;r&#x27;),m
+   56  # Main
+   57  def main():
+   58      result={};fields=dict(np.load(O/&#x27;Campos_nativos.npz&#x27;));quality=[];summary=[]
+   59      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+   60          h,m=extract(k);starts=[dt.datetime.fromisoformat(s) for s in m[&#x27;start_times&#x27;]];ends=[dt.datetime.fromisoformat(s) for s in m[&#x27;end_times&#x27;]];n=h.shape[1];xy=np.array(m[&#x27;xy&#x27;]);prefix=f&#x27;{k}_CALPUFF&#x27;
+   61          rank=lambda token:np.loadtxt(R/f&#x27;CMAS/CALPUFF/RANK({k})_ODOR_{token}HR_CONC_C.DAT&#x27;,skiprows=6)[:,2]
+   62          one=h.max(axis=0);err1=float(np.max(abs(one-rank(&#x27;1&#x27;))));assert np.allclose(one,rank(&#x27;1&#x27;),rtol=6e-5,atol=1e-6),(k,err1)
+   63  
+   64          choices=[]
+   65          for offset in [0,1]:
+   66              size=(len(h)-offset)//24;d=np.asarray(h[offset:offset+24*size],dtype=&#x27;float64&#x27;).reshape(size,24,n).mean(axis=1);env=d.max(axis=0);ref=rank(&#x27;24&#x27;)
+   67              er=float(abs(env-ref).max());passed=bool(np.allclose(env,ref,rtol=6e-5,atol=1e-6));choices.append(dict(offset=offset,max_abs_error=er,passed=passed))
+   68          ok=[v for v in choices if v[&#x27;passed&#x27;]];assert ok,(k,choices);offset=min(ok,key=lambda v:v[&#x27;max_abs_error&#x27;])[&#x27;offset&#x27;];size=(len(h)-offset)//24
+   69          daily=np.asarray(h[offset:offset+size*24],dtype=&#x27;float64&#x27;).reshape(size,24,n).mean(axis=1);dstarts=[starts[offset+i*24] for i in range(size)]
+   70          mean=np.mean(h,axis=0,dtype=&#x27;float64&#x27;);ref=rank(&#x27;17517&#x27;);ermean=float(abs(mean-ref).max());assert np.allclose(mean,ref,rtol=6e-5,atol=1e-6),(k,ermean)
+   71          yrs=np.array([t.year for t in starts]);annual=[];yrmeta=[]
+   72          for y in [2024,2025]:
+   73              sel=yrs==y;expected=int((dt.datetime(y+1,1,1)-dt.datetime(y,1,1)).total_seconds()/3600);z=np.mean(h[sel],axis=0,dtype=&#x27;float64&#x27;);annual.append(z);fields[f&#x27;{prefix}_annual_{y}&#x27;]=z
+   74              yrmeta.append(dict(year=y,hours=int(sel.sum()),calendar_hours=expected,coverage_percent=100*int(sel.sum())/expected,period_first_start=min(t for t in starts if t.year==y).isoformat(),period_last_end=max(e for t,e in zip(starts,ends) if t.year==y).isoformat(),maximum=float(z.max())))
+   75          a=np.asarray(annual);fields[f&#x27;{prefix}_annual_calendar_max&#x27;]=a.max(axis=0)
+   76          np.save(C/f&#x27;CALPUFF_{k}_24h.npy&#x27;,daily);dump(C/f&#x27;CALPUFF_{k}_24h.json&#x27;,dict(start_times=[d.isoformat() for d in dstarts],offset=offset,rank_validation=choices))
+   77  
+   78          quality.append(dict(unit=k,hours=len(h),receptors=n,start=starts[0].isoformat(),end=ends[-1].isoformat(),rank_1h_max_error=err1,rank_24h=choices,rank_period_mean_max_error=ermean,annual=yrmeta,annual_qualification=&#x27;2025 is a near-complete calendar-year estimate, not a complete calendar year. No 8760h RANK substituted.&#x27;,input_identity=ident(R/f&#x27;CMAS/CALPUFF/CALPUFF-{k}.INP&#x27;),embedded_source_count=int(re.search(r&#x27;!\s*NAR1\s*=\s*(\d+)&#x27;,&#x27;\n&#x27;.join(m[&#x27;embedded_input&#x27;]))[1])))
+   79          for y,z in zip([2024,2025],a):summary.append(dict(unit=k,model=&#x27;CALPUFF&#x27;,year=y,maximum=float(z.max())))
+   80      np.savez_compressed(O/&#x27;Campos_nativos.npz&#x27;,**fields);dump(O/&#x27;CALPUFF_horario_validado.json&#x27;,quality);csvout(O/&#x27;CALPUFF_medias_anuais.csv&#x27;,summary);print(json.dumps(quality,ensure_ascii=False,indent=2))
+   81  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>

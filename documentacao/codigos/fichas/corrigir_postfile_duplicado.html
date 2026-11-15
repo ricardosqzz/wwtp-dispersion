@@ -1,0 +1,101 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/corrigir_postfile_duplicado.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/corrigir_postfile_duplicado.py</h2>
+<p>Corrige somente o conflito POSTFILE de animação, preservando a entrada recebida.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\corrigir_postfile_duplicado.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>collections</td><td>Estruturas de contagem, agrupamento e coleções auxiliares.</td></tr><tr><td>difflib</td><td>Dependência importada; conferir as chamadas efetivas abaixo e a instalação do ambiente correspondente.</td></tr><tr><td>hashlib</td><td>Assinaturas SHA-256 para identificar alterações de arquivos; não é validação do conteúdo científico.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/mod/AERMOD/H2S/H2S_TOTAL.ADI — chamada src.read_bytes, linha 70.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/entradas_corrigidas/correcao_postfile/H2S_TOTAL_POSTFILE_corrigido.ADI — chamada target.write_bytes, linha 48.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/correcao_postfile/Bloco_OU_corrigido.txt — chamada .write_text, linha 50.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/correcao_postfile/Verificacao_POSTFILE.json — chamada .write_text, linha 52.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/correcao_postfile/Alteracoes.diff — chamada .write_text, linha 53.</li>
+<li>E:/copasa_map/output/entradas_corrigidas/correcao_postfile/LEIA_PRIMEIRO.md — chamada .write_text, linha 54.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>audit: source_sha256.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>post(line)</td><td>32-35</td><td>Chamadas efetivas: .split, line.upper, len Retorno: q if len(q) &gt;= 5 and q[0] == &#x27;POSTFILE&#x27; else None.</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/corrigir_postfile_duplicado.py, linhas 32-40.</p>
+<pre><code>def post(line):
+    q=line.upper().split()
+    if q and q[0]==&#x27;OU&#x27;:q=q[1:]
+    return q if len(q)&gt;=5 and q[0]==&#x27;POSTFILE&#x27; else None
+posts=[(i+1,post(line)) for i,line in enumerate(lines) if post(line)]
+plot_keys={(q[1],q[2]) for n,q in posts if q[3]==&#x27;PLOT&#x27;}
+remove={n for n,q in posts if q[3]==&#x27;UNFORM&#x27; and (q[1],q[2]) in plot_keys}
+assert remove=={126,127,128},sorted(remove)
+fixed=&#x27;&#x27;.join(line for i,line in enumerate(lines,1) if i not in remove and &#x27;1-Hour Binary POSTFILE(s) for the Plume Animation&#x27; not in line)</code></pre>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/mod/AERMOD/H2S/H2S_TOTAL.ADI | src.read_bytes.
+    5  # Campos/chaves em audit: source_sha256.
+    6  # Saída: E:/copasa_map/output/entradas_corrigidas/correcao_postfile/H2S_TOTAL_POSTFILE_corrigido.ADI | target.write_bytes.
+    7  # Saída: E:/copasa_map/output/entradas_corrigidas/correcao_postfile/Bloco_OU_corrigido.txt | .write_text.
+    8  # Saída: E:/copasa_map/output/entradas_corrigidas/correcao_postfile/Verificacao_POSTFILE.json | .write_text.
+    9  # Saída: E:/copasa_map/output/entradas_corrigidas/correcao_postfile/Alteracoes.diff | .write_text.
+   10  # Saída: E:/copasa_map/output/entradas_corrigidas/correcao_postfile/LEIA_PRIMEIRO.md | .write_text.
+   11  # CÓDIGO DO PROCESSAMENTO
+   12  
+   13  &quot;&quot;&quot;Corrige somente o conflito POSTFILE de animação, preservando a entrada recebida.&quot;&quot;&quot;
+   14  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   15  import sys as _cp_sys
+   16  from pathlib import Path as _cp_Path
+   17  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   18  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   19      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   20      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   21          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   22          break
+   23  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   24  # FIM DOS CAMINHOS PORTÁTEIS
+   25  
+   26  from pathlib import Path
+   27  from collections import Counter
+   28  import json,hashlib,difflib
+   29  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));src=R/&#x27;mod/AERMOD/H2S/H2S_TOTAL.ADI&#x27;;out=R/&#x27;output/entradas_corrigidas/correcao_postfile&#x27;;out.mkdir(parents=True,exist_ok=True)
+   30  raw=src.read_bytes();text=raw.decode(&#x27;cp1252&#x27;);lines=text.splitlines(keepends=True)
+   31  # Post
+   32  def post(line):
+   33      q=line.upper().split()
+   34      if q and q[0]==&#x27;OU&#x27;:q=q[1:]
+   35      return q if len(q)&gt;=5 and q[0]==&#x27;POSTFILE&#x27; else None
+   36  posts=[(i+1,post(line)) for i,line in enumerate(lines) if post(line)]
+   37  plot_keys={(q[1],q[2]) for n,q in posts if q[3]==&#x27;PLOT&#x27;}
+   38  remove={n for n,q in posts if q[3]==&#x27;UNFORM&#x27; and (q[1],q[2]) in plot_keys}
+   39  assert remove=={126,127,128},sorted(remove)
+   40  fixed=&#x27;&#x27;.join(line for i,line in enumerate(lines,1) if i not in remove and &#x27;1-Hour Binary POSTFILE(s) for the Plume Animation&#x27; not in line)
+   41  remaining=[post(line) for line in fixed.splitlines() if post(line)]
+   42  keys=[(q[1],q[2]) for q in remaining]
+   43  assert len(keys)==len(set(keys))==9
+   44  before_ou=text.split(&#x27;OU STARTING&#x27;)[0];after_ou=fixed.split(&#x27;OU STARTING&#x27;)[0]
+   45  assert before_ou==after_ou
+   46  assert fixed.split(&#x27;OU FINISHED&#x27;,1)[1]==text.split(&#x27;OU FINISHED&#x27;,1)[1]
+   47  assert [l for l in lines if l.strip().startswith(&#x27;PLOTFILE&#x27;)]==[l for l in fixed.splitlines(keepends=True) if l.strip().startswith(&#x27;PLOTFILE&#x27;)]
+   48  target=out/&#x27;H2S_TOTAL_POSTFILE_corrigido.ADI&#x27;;target.write_bytes(fixed.encode(&#x27;cp1252&#x27;))
+   49  ou=fixed.split(&#x27;OU STARTING&#x27;,1)[1].split(&#x27;OU FINISHED&#x27;,1)[0]
+   50  (out/&#x27;Bloco_OU_corrigido.txt&#x27;).write_text(&#x27;OU STARTING&#x27;+ou+&#x27;OU FINISHED\n&#x27;,encoding=&#x27;ascii&#x27;)
+   51  audit=dict(source=str(src),corrected=str(target),source_sha256=hashlib.sha256(raw).hexdigest(),removed_postfile_lines=sorted(remove),remaining_postfiles=len(keys),duplicate_period_group_pairs=0,source_receptor_meteorology_unchanged=True,plotfile_requests_unchanged=True,native_model_execution=False,reason=&#x27;1h PLOT plus 1h UNFORM for the same ALL/WWTP2/WWTP1 pairs; the latter are generated for Plume Animation&#x27;,references=[&#x27;https://www.weblakes.com/Newsletter/2025/Dec2025.html&#x27;,&#x27;https://gaftp.epa.gov/Air/aqmg/SCRAM/models/preferred/aermod/aermod_userguide.pdf&#x27;])
+   52  (out/&#x27;Verificacao_POSTFILE.json&#x27;).write_text(json.dumps(audit,indent=2),encoding=&#x27;utf8&#x27;)
+   53  (out/&#x27;Alteracoes.diff&#x27;).write_text(&#x27;&#x27;.join(difflib.unified_diff(text.splitlines(keepends=True),fixed.splitlines(keepends=True),fromfile=&#x27;H2S_TOTAL.ADI&#x27;,tofile=target.name)),encoding=&#x27;utf8&#x27;)
+   54  (out/&#x27;LEIA_PRIMEIRO.md&#x27;).write_text(_cp_adaptar(&#x27;&#x27;&#x27;# Correção E211 POSTFILE
+   55  
+   56  O arquivo original foi preservado. A cópia corrigida retira somente as três linhas de POSTFILE 1h UNFORM criadas para Plume Animation, que repetem os pares 1h/ALL, 1h/WWTP2 e 1h/WWTP1 já solicitados como PLOT. O comentário do bloco de animação foi retirado. Permanecem nove POSTFILE PLOT, para 1h, 24h e anual dos três grupos, e todos os PLOTFILE existentes. Fontes, taxas, receptores, meteorologia e demais parâmetros permanecem iguais.
+   57  
+   58  ## Correção permanente no AERMOD View
+   59  
+   60  Em Output Pathway &gt; Lakes Tools &gt; Plume Animation, desativar a geração dos POSTFILE de animação para ALL, WWTP1 e WWTP2. Manter as séries horárias já configuradas em Post-Processing Files. Gerar a entrada novamente e conferir que há somente um POSTFILE por combinação de período e grupo. PLOTFILE é outra opção e deve ser mantido.
+   61  
+   62  ## Execução pelo Batcher
+   63  
+   64  H2S_TOTAL_POSTFILE_corrigido.ADI conserva os caminhos relativos originais. Antes de executar, copiar a cópia corrigida para E:/copasa_map/mod/AERMOD/H2S e selecioná-la no Batcher, mantendo essa pasta como diretório de execução. Não é necessário sobrescrever o ADI original. O ROU, os arquivos meteorológicos e a pasta de saída H2S_TOTAL.AD devem continuar acessíveis pelos caminhos originais. Se o View recriar o ADI, é preciso desativar a opção na interface; editar somente o texto gerado não persiste a configuração do projeto.
+   65  
+   66  E901 indica a interrupção dos processos MPI em consequência do erro de configuração. Este E211 não é uma colisão FUNIT. Trocar nomes de arquivo ou unidades Fortran não remove o par período/grupo repetido. O ADO é saída de diagnóstico e não deve ser editado para corrigir a entrada.
+   67  
+   68  A verificação da cópia foi textual/estrutural, sem nova execução do modelo. Esta correção se limita ao erro E211 e não confirma que os demais parâmetros desta entrada estejam harmonizados com a auditoria anterior.
+   69  &#x27;&#x27;&#x27;),encoding=&#x27;utf8&#x27;)
+   70  assert hashlib.sha256(src.read_bytes()).hexdigest()==audit[&#x27;source_sha256&#x27;]
+   71  print(json.dumps(audit))</code></pre></article></html>

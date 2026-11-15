@@ -1,0 +1,159 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/perfis_comparacao_modelos.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/perfis_comparacao_modelos.py</h2>
+<p>Agrupa pares por distância à superfície emissora, resume mediana e quartis do P95 e interpola apenas as curvas gráficas entre as faixas.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\perfis_comparacao_modelos.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>hashlib</td><td>Assinaturas SHA-256 para identificar alterações de arquivos; não é validação do conteúdo científico.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>matplotlib</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.colors</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.lines</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.patches</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.pyplot</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>numpy</td><td>Matrizes numéricas, máscaras de validade, transformações, percentis e estatísticas vetorizadas.</td></tr><tr><td>pandas</td><td>Leitura tabular, chaves de junção, agrupamento por período e exportação de indicadores.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>scipy.interpolate</td><td>Agrupamento, matrizes esparsas, distâncias, interpolação e estatísticas; conferir as chamadas na ficha.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv — chamada pd.read_csv, linha 51.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv — chamada source.read_bytes, linha 70.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/cmas_poster/figuras/Perfis_comparacao_modelos.json — chamada .write_text, linha 71.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Perfis_P95_faixas_distancia.csv — chamada .to_csv, linha 76.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Perfis_comparacao_modelos.{ext} — chamada fig.savefig, linha 104.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Perfis_comparacao_modelos.png — chamada fig.savefig, linha 105.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Perfis_comparacao_modelos_previa.png — chamada fig.savefig, linha 105.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>data: unit.</li>
+<li>b: AERMOD, CALPUFF, high_m, label, low_m, median_difference_CAL_minus_AER, n.</li>
+<li>yy: median, q1, q3.</li>
+<li>u: WWTP, bins, n, samples, unit.</li>
+<li>sample: median, model, q1, q3, x.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>b: median_difference_CAL_minus_AER.</li>
+<li>yy: q1, q3.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>main()</td><td>50-106</td><td>lê dados; grava produtos; Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.; Interpolação cúbica que preserva a forma local. Nos perfis COPASA suaviza a apresentação entre estatísticas já calculadas.</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/perfis_comparacao_modelos.py, linhas 58-64.</p>
+<pre><code>            for model in COL:
+                q=z[model+&#x27;_P95&#x27;].quantile([.25,.5,.75]).to_numpy()
+                b[model]=dict(q1=float(q[0]),median=float(q[1]),q3=float(q[2]))
+            b[&#x27;median_difference_CAL_minus_AER&#x27;]=b[&#x27;CALPUFF&#x27;][&#x27;median&#x27;]-b[&#x27;AERMOD&#x27;][&#x27;median&#x27;];bins.append(b)
+        assert sum(b[&#x27;n&#x27;] for b in bins)==len(s)
+        samples=[];xs=np.linspace(0,5,181)
+        for model in COL:</code></pre>
+<p>Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.</p>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p>Trecho de codigo/perfis_comparacao_modelos.py, linhas 65-71.</p>
+<pre><code>
+            yy={stat:PchipInterpolator(np.arange(6),[b[model][stat] for b in bins])(xs) for stat in [&#x27;q1&#x27;,&#x27;median&#x27;,&#x27;q3&#x27;]}
+            yy[&#x27;q1&#x27;]=np.minimum(yy[&#x27;q1&#x27;],yy[&#x27;median&#x27;]);yy[&#x27;q3&#x27;]=np.maximum(yy[&#x27;q3&#x27;],yy[&#x27;median&#x27;])
+            samples.append(dict(model=model,x=xs.tolist(),q1=yy[&#x27;q1&#x27;].tolist(),median=yy[&#x27;median&#x27;].tolist(),q3=yy[&#x27;q3&#x27;].tolist()))
+        out.append(dict(unit=unit,WWTP=1 if unit==&#x27;VM&#x27; else 2,n=len(s),bins=bins,samples=samples))
+    payload=dict(reference_year=2024,statistic=&#x27;Hourly P95 per receptor, then spatial median and quartiles within distance bands&#x27;,distance=&#x27;Distance to closest emitting footprint&#x27;,scope=&#x27;All unique paired receptors within 1800 m; no concentration filter&#x27;,band_axes=&#x27;Categorical; equal display width does not imply equal distance width&#x27;,ribbons=&#x27;Spatial interquartile range, not confidence intervals&#x27;,interpolation=&#x27;Shape-preserving PCHIP for display only, no interpolation of model concentrations&#x27;,source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),units=out)
+    (F/&#x27;Perfis_comparacao_modelos.json&#x27;).write_text(json.dumps(payload,indent=2),encoding=&#x27;utf8&#x27;)</code></pre>
+<p>Interpolação cúbica que preserva a forma local. Nos perfis COPASA suaviza a apresentação entre estatísticas já calculadas.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>quantile: Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.</li>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<li>PchipInterpolator: Interpolação cúbica que preserva a forma local. Nos perfis COPASA suaviza a apresentação entre estatísticas já calculadas.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv | pd.read_csv.
+    5  # Entrada: E:/copasa_map/output/comparacao_modelos/Pares_concordancia_P95.csv | source.read_bytes.
+    6  # Campos/chaves em data: unit.
+    7  # Campos/chaves em b: AERMOD, CALPUFF, high_m, label, low_m, median_difference_CAL_minus_AER, n.
+    8  # Campos/chaves em yy: median, q1, q3.
+    9  # Campos/chaves em u: WWTP, bins, n, samples, unit.
+   10  # Campos/chaves em sample: median, model, q1, q3, x.
+   11  # Saída: E:/copasa_map/output/cmas_poster/figuras/Perfis_comparacao_modelos.json | .write_text.
+   12  # Saída: E:/copasa_map/output/comparacao_modelos/Perfis_P95_faixas_distancia.csv | .to_csv.
+   13  # Saída: E:/copasa_map/output/cmas_poster/figuras/Perfis_comparacao_modelos.{ext} | fig.savefig.
+   14  # Saída: E:/copasa_map/output/cmas_poster/figuras/Perfis_comparacao_modelos.png | fig.savefig.
+   15  # Saída: E:/copasa_map/output/cmas_poster/figuras/Perfis_comparacao_modelos_previa.png | fig.savefig.
+   16  # Campos/chaves gerados em b: median_difference_CAL_minus_AER.
+   17  # Campos/chaves gerados em yy: q1, q3.
+   18  # CÓDIGO DO PROCESSAMENTO
+   19  
+   20  &quot;&quot;&quot;Perfis espaciais descritivos de P95 em pares nativos, sem ajuste do modelo.&quot;&quot;&quot;
+   21  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   22  import sys as _cp_sys
+   23  from pathlib import Path as _cp_Path
+   24  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   25  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   26      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   27      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   28          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   29          break
+   30  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   31  # FIM DOS CAMINHOS PORTÁTEIS
+   32  
+   33  from pathlib import Path
+   34  import json,hashlib
+   35  import numpy as np
+   36  import pandas as pd
+   37  import matplotlib
+   38  matplotlib.use(&#x27;Agg&#x27;)
+   39  import matplotlib.pyplot as plt
+   40  from matplotlib.colors import LinearSegmentedColormap,TwoSlopeNorm
+   41  from matplotlib.patches import Rectangle
+   42  from matplotlib.lines import Line2D
+   43  from scipy.interpolate import PchipInterpolator
+   44  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/comparacao_modelos&#x27;;F=R/&#x27;output/cmas_poster/figuras&#x27;
+   45  EDGES=[0,50,100,200,300,500,1800]
+   46  LABELS=[&#x27;0–50&#x27;,&#x27;50–100&#x27;,&#x27;100–200&#x27;,&#x27;200–300&#x27;,&#x27;300–500&#x27;,&#x27;500–1,800&#x27;]
+   47  COL={&#x27;AERMOD&#x27;:&#x27;#347fc0&#x27;,&#x27;CALPUFF&#x27;:&#x27;#e18c39&#x27;}
+   48  
+   49  # Main
+   50  def main():
+   51      source=O/&#x27;Pares_concordancia_P95.csv&#x27;;data=pd.read_csv(source);out=[]
+   52      for unit in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+   53          s=data[data.unit.eq(unit)].copy();bins=[]
+   54          for j,(lo,hi) in enumerate(zip(EDGES[:-1],EDGES[1:])):
+   55              z=s[s.distance_m.ge(lo)&amp;s.distance_m.lt(hi)]
+   56              assert len(z)&gt;=5
+   57              b=dict(index=j,label=LABELS[j],low_m=lo,high_m=hi,n=len(z),median_distance_m=float(z.distance_m.median()))
+   58              for model in COL:
+   59                  q=z[model+&#x27;_P95&#x27;].quantile([.25,.5,.75]).to_numpy()
+   60                  b[model]=dict(q1=float(q[0]),median=float(q[1]),q3=float(q[2]))
+   61              b[&#x27;median_difference_CAL_minus_AER&#x27;]=b[&#x27;CALPUFF&#x27;][&#x27;median&#x27;]-b[&#x27;AERMOD&#x27;][&#x27;median&#x27;];bins.append(b)
+   62          assert sum(b[&#x27;n&#x27;] for b in bins)==len(s)
+   63          samples=[];xs=np.linspace(0,5,181)
+   64          for model in COL:
+   65  
+   66              yy={stat:PchipInterpolator(np.arange(6),[b[model][stat] for b in bins])(xs) for stat in [&#x27;q1&#x27;,&#x27;median&#x27;,&#x27;q3&#x27;]}
+   67              yy[&#x27;q1&#x27;]=np.minimum(yy[&#x27;q1&#x27;],yy[&#x27;median&#x27;]);yy[&#x27;q3&#x27;]=np.maximum(yy[&#x27;q3&#x27;],yy[&#x27;median&#x27;])
+   68              samples.append(dict(model=model,x=xs.tolist(),q1=yy[&#x27;q1&#x27;].tolist(),median=yy[&#x27;median&#x27;].tolist(),q3=yy[&#x27;q3&#x27;].tolist()))
+   69          out.append(dict(unit=unit,WWTP=1 if unit==&#x27;VM&#x27; else 2,n=len(s),bins=bins,samples=samples))
+   70      payload=dict(reference_year=2024,statistic=&#x27;Hourly P95 per receptor, then spatial median and quartiles within distance bands&#x27;,distance=&#x27;Distance to closest emitting footprint&#x27;,scope=&#x27;All unique paired receptors within 1800 m; no concentration filter&#x27;,band_axes=&#x27;Categorical; equal display width does not imply equal distance width&#x27;,ribbons=&#x27;Spatial interquartile range, not confidence intervals&#x27;,interpolation=&#x27;Shape-preserving PCHIP for display only, no interpolation of model concentrations&#x27;,source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),units=out)
+   71      (F/&#x27;Perfis_comparacao_modelos.json&#x27;).write_text(json.dumps(payload,indent=2),encoding=&#x27;utf8&#x27;)
+   72      rows=[]
+   73      for u in out:
+   74          for b in u[&#x27;bins&#x27;]:
+   75              for model in COL:rows.append(dict(unit=u[&#x27;unit&#x27;],model=model,low_m=b[&#x27;low_m&#x27;],high_m=b[&#x27;high_m&#x27;],n=b[&#x27;n&#x27;],**b[model]))
+   76      pd.DataFrame(rows).to_csv(O/&#x27;Perfis_P95_faixas_distancia.csv&#x27;,index=False,encoding=&#x27;utf-8-sig&#x27;)
+   77      plt.rcParams.update({&#x27;font.family&#x27;:&#x27;Arial&#x27;,&#x27;font.size&#x27;:12,&#x27;svg.fonttype&#x27;:&#x27;path&#x27;,&#x27;pdf.fonttype&#x27;:42,&#x27;axes.spines.right&#x27;:False,&#x27;axes.spines.top&#x27;:False})
+   78      fig=plt.figure(figsize=(17.5,8.2));difference_cmap=LinearSegmentedColormap.from_list(&#x27;model_difference&#x27;,[&#x27;#6da6d3&#x27;,&#x27;#f4f4ef&#x27;,&#x27;#edb579&#x27;]);norm=TwoSlopeNorm(vmin=-40,vcenter=0,vmax=40)
+   79      for i,u in enumerate(out):
+   80          ax=fig.add_axes([.065+.50*i,.30,.40,.49]);ax.set_ylim(0,80);ax.set_xlim(-.4,5.4)
+   81          ax.set_yticks([0,20,40,60,80]);ax.set_xticks(range(6),[f&quot;{b[&#x27;label&#x27;]}\nn={b[&#x27;n&#x27;]}&quot; for b in u[&#x27;bins&#x27;]],fontsize=10)
+   82          ax.set_ylabel(&#x27;Receptor hourly P95 (µg/m³)&#x27;,labelpad=11);ax.tick_params(pad=6);ax.grid(axis=&#x27;y&#x27;,color=&#x27;#e3eaed&#x27;,lw=.8)
+   83          ax.set_title(f&quot;WWTP {u[&#x27;WWTP&#x27;]} · {u[&#x27;n&#x27;]} paired receptors&quot;,fontsize=17,weight=&#x27;bold&#x27;,pad=20,color=&#x27;#173445&#x27;)
+   84          for sample in u[&#x27;samples&#x27;]:
+   85              model=sample[&#x27;model&#x27;];color=COL[model]
+   86              ax.fill_between(sample[&#x27;x&#x27;],sample[&#x27;q1&#x27;],sample[&#x27;q3&#x27;],color=color,alpha=.17,zorder=2)
+   87              ax.plot(sample[&#x27;x&#x27;],sample[&#x27;median&#x27;],color=color,lw=3,zorder=3)
+   88              vals=[b[model][&#x27;median&#x27;] for b in u[&#x27;bins&#x27;]];ax.scatter(range(6),vals,s=52,c=color,edgecolors=&#x27;white&#x27;,linewidths=1,zorder=4)
+   89  
+   90          z=ax.inset_axes([.43,.43,.54,.49]);z.set_facecolor(&#x27;#ffffff&#x27;)
+   91          for model,color in COL.items():z.plot(range(4),[b[model][&#x27;median&#x27;] for b in u[&#x27;bins&#x27;][2:]],&#x27;o-&#x27;,color=color,lw=2,ms=4)
+   92          z.set(xlim=(-.25,3.25),ylim=(0,4),yticks=[0,2,4]);z.set_xticks(range(4),[&#x27;100–200&#x27;,&#x27;200–300&#x27;,&#x27;300–500&#x27;,&#x27;500–1,800&#x27;],fontsize=8)
+   93          z.set_title(&#x27;Median zoom ≥100 m (µg/m³)&#x27;,fontsize=10,pad=8);z.grid(axis=&#x27;y&#x27;,color=&#x27;#e9edef&#x27;,lw=.6);z.tick_params(labelsize=8,pad=4)
+   94          delta=fig.add_axes([.065+.5*i,.16,.40,.052]);delta.set_xlim(-.4,5.4);delta.set_ylim(0,1);delta.set_axis_off()
+   95          for j,b in enumerate(u[&#x27;bins&#x27;]):
+   96              v=b[&#x27;median_difference_CAL_minus_AER&#x27;];delta.add_patch(Rectangle((j-.47,0),.94,1,facecolor=difference_cmap(norm(v)),edgecolor=&#x27;white&#x27;,lw=1))
+   97              label=f&#x27;{v:+.1f}&#x27; if abs(v)&gt;=1 else f&#x27;{v:+.2f}&#x27;;delta.text(j,.5,label,ha=&#x27;center&#x27;,va=&#x27;center&#x27;,fontsize=11,color=&#x27;#173445&#x27;,weight=&#x27;bold&#x27;)
+   98          fig.text(.065+.5*i,.13,&#x27;Δ median = CALPUFF − AERMOD (µg/m³)&#x27;,fontsize=10.5,color=&#x27;#536b77&#x27;)
+   99      fig.suptitle(&#x27;How the model contrast changes with distance · 2024&#x27;,fontsize=21,fontweight=&#x27;bold&#x27;,color=&#x27;#173445&#x27;,y=.97)
+  100      handles=[Line2D([],[],color=c,lw=3,marker=&#x27;o&#x27;,label=m) for m,c in COL.items()]
+  101      fig.legend(handles=handles,loc=&#x27;upper center&#x27;,bbox_to_anchor=(.5,.925),ncol=2,frameon=False,fontsize=13)
+  102      fig.text(.5,.855,&#x27;Lines: spatial medians     Shaded bands: middle 50% of receptor P95     Points: calculated band summaries&#x27;,ha=&#x27;center&#x27;,fontsize=11,color=&#x27;#536b77&#x27;)
+  103      fig.text(.5,.055,&#x27;Distance bands are in metres and have equal display widths. All paired receptors within 1,800 m enter the summaries.\nInsets magnify medians only. Shaded bands describe spatial variability, not confidence intervals or model accuracy.&#x27;,ha=&#x27;center&#x27;,fontsize=10.5,color=&#x27;#536b77&#x27;,linespacing=1.5)
+  104      for ext in [&#x27;svg&#x27;,&#x27;pdf&#x27;]:fig.savefig(F/f&#x27;Perfis_comparacao_modelos.{ext}&#x27;,facecolor=&#x27;white&#x27;)
+  105      fig.savefig(F/&#x27;Perfis_comparacao_modelos.png&#x27;,dpi=450,facecolor=&#x27;white&#x27;);fig.savefig(F/&#x27;Perfis_comparacao_modelos_previa.png&#x27;,dpi=140,facecolor=&#x27;white&#x27;);plt.close(fig)
+  106      print(json.dumps([dict(unit=u[&#x27;unit&#x27;],n=u[&#x27;n&#x27;],bins=[b[&#x27;n&#x27;] for b in u[&#x27;bins&#x27;]]) for u in out]))
+  107  
+  108  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>

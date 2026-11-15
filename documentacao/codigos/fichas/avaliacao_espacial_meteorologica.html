@@ -1,0 +1,206 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/avaliacao_espacial_meteorologica.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/avaliacao_espacial_meteorologica.py</h2>
+<p>Gráficos científicos e descritores condicionais dos dois modelos.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\avaliacao_espacial_meteorologica.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>cartografia_copasa</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>comparar_modelos_cmas</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>geometria_ete</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>matplotlib</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.lines</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.pyplot</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>pandas</td><td>Leitura tabular, chaves de junção, agrupamento por período e exportação de indicadores.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>{O}/Comparacao_consolidada.json — chamada .read_text, linha 64.</li>
+<li>{O}/Campos_nativos.npz — chamada np.load, linha 64.</li>
+<li>{O}/Entradas_executadas_fontes.csv — chamada .open, linha 64.</li>
+<li>{O}/Meteorologia_AERMET.csv — chamada pd.read_csv, linha 65.</li>
+<li>{O}/Meteorologia_CALMET.csv — chamada pd.read_csv, linha 65.</li>
+<li>{C}/AERMOD_{k}_1h.npy — chamada np.load, linha 67.</li>
+<li>{C}/AERMOD_{k}_1h.json — chamada .read_text, linha 67.</li>
+<li>{C}/CALPUFF_{k}_1h.npy — chamada np.load, linha 70.</li>
+<li>{C}/CALPUFF_{k}_1h.json — chamada .read_text, linha 70.</li>
+<li>E:/copasa_map/CMAS/CALPUFF/CALPUFF-{k}.LST — chamada .read_text, linha 76.</li>
+<li>{O}/Pares_nativos_{k}_24h.csv — chamada pd.read_csv, linha 141.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/cmas_poster/figuras/{stem}.{ext} — chamada fig.savefig, linha 60.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/{stem}.png — chamada fig.savefig, linha 61.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/{stem}_previa.png — chamada fig.savefig, linha 61.</li>
+<li>{C}/CALPUFF_{k}_executado.INP — chamada embedded.write_text, linha 72.</li>
+<li>{fig} — chamada savefig, linha 142.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>meta: codes, xy.</li>
+<li>met: calm, missing, time_end.</li>
+<li>cmeta: embedded_input, end_times, start_times, xy.</li>
+<li>p: AERMOD, CALPUFF, distance_m, x, y.</li>
+<li>cm: unit.</li>
+<li>weather: clock.</li>
+<li>aa: calm, direction, missing, speed.</li>
+<li>bb: direction, speed.</li>
+<li>df: category, distance_min_m, model, unit.</li>
+<li>s: mean.</li>
+<li>v: max_distance_m, min_distance_m.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>met: clock.</li>
+<li>own: clock.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>savefig(fig, stem)</td><td>59-61</td><td>grava produtos</td></tr><tr><td>main()</td><td>63-143</td><td>lê dados; grava produtos; Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.; Associação por postos. Mede ordenação conjunta, não igualdade de magnitude nem desempenho frente a observações ausentes.</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/avaliacao_espacial_meteorologica.py, linhas 83-89.</p>
+<pre><code>            month=clocks.dt.month.to_numpy() if hasattr(clocks,&#x27;dt&#x27;) else clocks.month.to_numpy()
+            meteorological.append(dict(unit=k,model=model,hours=int(ok.sum()),median_wind_m_s=float(np.median(ws[ok])),mean_wind_m_s=float(np.mean(ws[ok])),low_wind_below_1_percent=float(100*np.mean(ws[ok]&lt;1)),wind_p90_m_s=float(np.quantile(ws[ok],.9))))
+            for lo,hi in [(0,100),(100,500),(500,1800)]:
+                pick=(p.distance_m&gt;=lo)&amp;(p.distance_m&lt;hi);ix=indices[pick]
+                if not len(ix):continue
+                response=np.mean(arr[:,ix],axis=1)
+                for category,cat in [(&#x27;speed&#x27;,np.digitize(ws,[1,2,4,6])),(&#x27;direction&#x27;,np.floor((wd+22.5)%360/45).astype(int)),(&#x27;hour&#x27;,clockhour),(&#x27;month&#x27;,month)]:</code></pre>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p>Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</p>
+<p>Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.</p>
+<p>Associa valores a intervalos definidos pelos cortes do código, inclusive classes de relevo ou faixas de distância.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<li>quantile: Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.</li>
+<li>digitize: Associa valores a intervalos definidos pelos cortes do código, inclusive classes de relevo ou faixas de distância.</li>
+<li>spearmanr: Associação por postos. Mede ordenação conjunta, não igualdade de magnitude nem desempenho frente a observações ausentes.</li>
+<li>bincount: Conta ocorrências ou soma pesos por identificador inteiro. O vetor weights define se há contagem ou acumulação ponderada.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: {O}/Comparacao_consolidada.json | .read_text.
+    5  # Entrada: {O}/Campos_nativos.npz | np.load.
+    6  # Entrada: {O}/Entradas_executadas_fontes.csv | .open.
+    7  # Entrada: {O}/Meteorologia_AERMET.csv | pd.read_csv.
+    8  # Entrada: {O}/Meteorologia_CALMET.csv | pd.read_csv.
+    9  # Entrada: {C}/AERMOD_{k}_1h.npy | np.load.
+   10  # Entrada: {C}/AERMOD_{k}_1h.json | .read_text.
+   11  # Entrada: {C}/CALPUFF_{k}_1h.npy | np.load.
+   12  # Entrada: {C}/CALPUFF_{k}_1h.json | .read_text.
+   13  # Entrada: E:/copasa_map/CMAS/CALPUFF/CALPUFF-{k}.LST | .read_text.
+   14  # Entrada: {O}/Pares_nativos_{k}_24h.csv | pd.read_csv.
+   15  # Campos/chaves em meta: codes, xy.
+   16  # Campos/chaves em met: calm, missing, time_end.
+   17  # Campos/chaves em cmeta: embedded_input, end_times, start_times, xy.
+   18  # Campos/chaves em p: AERMOD, CALPUFF, distance_m, x, y.
+   19  # Campos/chaves em cm: unit.
+   20  # Campos/chaves em weather: clock.
+   21  # Campos/chaves em aa: calm, direction, missing, speed.
+   22  # Campos/chaves em bb: direction, speed.
+   23  # Campos/chaves em df: category, distance_min_m, model, unit.
+   24  # Campos/chaves em s: mean.
+   25  # Campos/chaves em v: max_distance_m, min_distance_m.
+   26  # Saída: E:/copasa_map/output/cmas_poster/figuras/{stem}.{ext} | fig.savefig.
+   27  # Saída: E:/copasa_map/output/cmas_poster/figuras/{stem}.png | fig.savefig.
+   28  # Saída: E:/copasa_map/output/cmas_poster/figuras/{stem}_previa.png | fig.savefig.
+   29  # Saída: {C}/CALPUFF_{k}_executado.INP | embedded.write_text.
+   30  # Saída: {fig} | savefig.
+   31  # Campos/chaves gerados em met: clock.
+   32  # Campos/chaves gerados em own: clock.
+   33  # CÓDIGO DO PROCESSAMENTO
+   34  
+   35  &quot;&quot;&quot;Gráficos científicos e descritores condicionais dos dois modelos.&quot;&quot;&quot;
+   36  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   37  import sys as _cp_sys
+   38  from pathlib import Path as _cp_Path
+   39  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   40  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   41      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   42      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   43          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   44          break
+   45  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   46  # FIM DOS CAMINHOS PORTÁTEIS
+   47  
+   48  from comparar_modelos_cmas import *
+   49  import matplotlib
+   50  matplotlib.use(&#x27;Agg&#x27;)
+   51  import matplotlib.pyplot as plt
+   52  from matplotlib.lines import Line2D
+   53  import pandas as pd
+   54  from cartografia_copasa import centre
+   55  from geometria_ete import limite
+   56  plt.rcParams.update({&#x27;font.family&#x27;:&#x27;Arial&#x27;,&#x27;pdf.fonttype&#x27;:42,&#x27;svg.fonttype&#x27;:&#x27;path&#x27;,&#x27;font.size&#x27;:10,&#x27;axes.spines.top&#x27;:False,&#x27;axes.spines.right&#x27;:False})
+   57  F=R/&#x27;output/cmas_poster/figuras&#x27;;COLORS={&#x27;AERMOD&#x27;:&#x27;#234f7d&#x27;,&#x27;CALPUFF&#x27;:&#x27;#27a69d&#x27;};UNITS={&#x27;VM&#x27;:&#x27;WWTP 1&#x27;,&#x27;NC&#x27;:&#x27;WWTP 2&#x27;}
+   58  # Savefig
+   59  def savefig(fig,stem):
+   60      for ext in [&#x27;pdf&#x27;,&#x27;svg&#x27;]:fig.savefig(F/f&#x27;{stem}.{ext}&#x27;,facecolor=&#x27;white&#x27;)
+   61      fig.savefig(F/f&#x27;{stem}.png&#x27;,dpi=450,facecolor=&#x27;white&#x27;);fig.savefig(F/f&#x27;{stem}_previa.png&#x27;,dpi=130,facecolor=&#x27;white&#x27;);plt.close(fig)
+   62  # Main
+   63  def main():
+   64      data=json.loads((O/&#x27;Comparacao_consolidada.json&#x27;).read_text(encoding=&#x27;utf8&#x27;));fields=dict(np.load(O/&#x27;Campos_nativos.npz&#x27;));inputrows=list(csv.DictReader((O/&#x27;Entradas_executadas_fontes.csv&#x27;).open(encoding=&#x27;utf-8-sig&#x27;)));external=[]
+   65      met=pd.read_csv(O/&#x27;Meteorologia_AERMET.csv&#x27;);cm=pd.read_csv(O/&#x27;Meteorologia_CALMET.csv&#x27;);conditional=[];meteorological=[];lagscan=[];annualstats=[];source_check=[];bins=[0,25,50,100,250,500,1000,1800]
+   66      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+   67          h=np.load(C/f&#x27;AERMOD_{k}_1h.npy&#x27;,mmap_mode=&#x27;r&#x27;);meta=json.loads((C/f&#x27;AERMOD_{k}_1h.json&#x27;).read_text());xy=np.array(meta[&#x27;xy&#x27;]);codes=np.array(meta[&#x27;codes&#x27;]);valid=~met[&#x27;calm&#x27;].to_numpy()&amp;~met[&#x27;missing&#x27;].to_numpy();years=codes//1000000
+   68          ann=np.array([np.asarray(h[years==y],dtype=&#x27;float64&#x27;).sum(axis=0)/valid[years==y].sum() for y in [24,25]])
+   69          fields[f&#x27;{k}_AERMOD_annual_2024&#x27;]=ann[0];fields[f&#x27;{k}_AERMOD_annual_2025&#x27;]=ann[1]
+   70          cal=np.load(C/f&#x27;CALPUFF_{k}_1h.npy&#x27;,mmap_mode=&#x27;r&#x27;);cmeta=json.loads((C/f&#x27;CALPUFF_{k}_1h.json&#x27;).read_text());cxy=np.array(cmeta[&#x27;xy&#x27;])
+   71  
+   72          embedded=C/f&#x27;CALPUFF_{k}_executado.INP&#x27;;embedded.write_text(&#x27;\n&#x27;.join(cmeta[&#x27;embedded_input&#x27;]),encoding=&#x27;cp1252&#x27;);_,cs=parse_cal(embedded);_,loose=parse_cal(R/f&#x27;CMAS/CALPUFF/CALPUFF-{k}.INP&#x27;)
+   73          assert set(cs)==set(loose)
+   74          for sid,v in cs.items():
+   75              for key in [&#x27;old_flux&#x27;,&#x27;height&#x27;,&#x27;sigma&#x27;,&#x27;area&#x27;]:assert np.isclose(v[key],loose[sid][key],rtol=1e-10,atol=1e-9),(sid,key)
+   76          source_check.append(dict(unit=k,embedded_matches_received=True,source_count=len(cs),normal_end=&#x27;End of run -- Clock time:&#x27; in (R/f&#x27;CMAS/CALPUFF/CALPUFF-{k}.LST&#x27;).read_text(encoding=&#x27;cp1252&#x27;)))
+   77          p=pd.read_csv(O/f&#x27;Pares_nativos_{k}_24h.csv&#x27;);tree=cKDTree(xy);err,ai=tree.query(p[[&#x27;x&#x27;,&#x27;y&#x27;]]);err2,ci=cKDTree(cxy).query(p[[&#x27;x&#x27;,&#x27;y&#x27;]]);assert max(err)&lt;1e-5 and max(err2)&lt;=.75
+   78          own=cm[cm.unit==k].copy();own.index=pd.to_datetime(own.time_end);own=own.loc[pd.to_datetime(cmeta[&#x27;end_times&#x27;])];assert len(own)==len(cal)
+   79          met[&#x27;clock&#x27;]=pd.to_datetime(met.time_end)-pd.Timedelta(minutes=30);own[&#x27;clock&#x27;]=pd.to_datetime(cmeta[&#x27;start_times&#x27;])+pd.Timedelta(minutes=30)
+   80  
+   81          for model,arr,indices,weather,ok in [(&#x27;AERMOD&#x27;,h,ai,met,valid),(&#x27;CALPUFF&#x27;,cal,ci,own,np.ones(len(cal),dtype=bool))]:
+   82              ws=weather.speed.to_numpy();wd=weather.direction.to_numpy();clocks=pd.to_datetime(weather[&#x27;clock&#x27;]);clockhour=clocks.dt.hour.to_numpy() if hasattr(clocks,&#x27;dt&#x27;) else clocks.hour.to_numpy()
+   83              month=clocks.dt.month.to_numpy() if hasattr(clocks,&#x27;dt&#x27;) else clocks.month.to_numpy()
+   84              meteorological.append(dict(unit=k,model=model,hours=int(ok.sum()),median_wind_m_s=float(np.median(ws[ok])),mean_wind_m_s=float(np.mean(ws[ok])),low_wind_below_1_percent=float(100*np.mean(ws[ok]&lt;1)),wind_p90_m_s=float(np.quantile(ws[ok],.9))))
+   85              for lo,hi in [(0,100),(100,500),(500,1800)]:
+   86                  pick=(p.distance_m&gt;=lo)&amp;(p.distance_m&lt;hi);ix=indices[pick]
+   87                  if not len(ix):continue
+   88                  response=np.mean(arr[:,ix],axis=1)
+   89                  for category,cat in [(&#x27;speed&#x27;,np.digitize(ws,[1,2,4,6])),(&#x27;direction&#x27;,np.floor((wd+22.5)%360/45).astype(int)),(&#x27;hour&#x27;,clockhour),(&#x27;month&#x27;,month)]:
+   90                      for v in np.unique(cat[ok]):
+   91                          s=ok&amp;(cat==v);z=response[s];conditional.append(dict(unit=k,model=model,distance_min_m=lo,distance_max_m=hi,category=category,bin=int(v),hours=len(z),receptors=len(ix),mean=float(z.mean()),median=float(np.median(z)),p90=float(np.quantile(z,.9))))
+   92  
+   93          aa=met.set_index(pd.to_datetime(met.time_end));cc=cm[cm.unit==k].set_index(pd.to_datetime(cm[cm.unit==k].time_end))
+   94          for lag in range(-4,5):
+   95              bb=cc.copy();bb.index=bb.index+pd.Timedelta(hours=lag);pair=aa[[&#x27;speed&#x27;,&#x27;direction&#x27;,&#x27;calm&#x27;,&#x27;missing&#x27;]].join(bb[[&#x27;speed&#x27;,&#x27;direction&#x27;]],lsuffix=&#x27;_AER&#x27;,rsuffix=&#x27;_CAL&#x27;,how=&#x27;inner&#x27;);pair=pair[~pair.calm&amp;~pair.missing];ad=abs((pair.direction_AER-pair.direction_CAL+180)%360-180)
+   96              lagscan.append(dict(unit=k,CALMET_label_shift_hours=lag,n=len(pair),wind_speed_rho=float(spearmanr(pair.speed_AER,pair.speed_CAL).statistic),median_abs_speed_difference=float(abs(pair.speed_AER-pair.speed_CAL).median()),median_abs_direction_difference_deg=float(ad.median())))
+   97  
+   98          for per in [&#x27;annual_calendar_max&#x27;,&#x27;annual_2024&#x27;,&#x27;annual_2025&#x27;]:
+   99              av=fields[f&#x27;{k}_AERMOD_{per}&#x27;][ai];cv=fields[f&#x27;{k}_CALPUFF_{per}&#x27;][ci]
+  100              for lo,hi in [(0,100),(100,500),(500,1800),(0,1800)]:
+  101                  sel=(p.distance_m&gt;=lo)&amp;(p.distance_m&lt;hi);a=av[sel];c=cv[sel]
+  102                  if len(a)&lt;3:continue
+  103                  pos=(a&gt;0)&amp;(c&gt;0);annualstats.append(dict(unit=k,period=per,min_distance_m=lo,max_distance_m=hi,n=len(a),median_AERMOD=float(np.median(a)),median_CALPUFF=float(np.median(c)),median_CAL_over_AER=float(np.median(c[pos]/a[pos])),spearman_rho=float(spearmanr(a,c).statistic)))
+  104          footprint=limite(k)
+  105          for model in [&#x27;AERMOD&#x27;,&#x27;CALPUFF&#x27;]:
+  106              xx=fields[f&#x27;{k}_{model}_xy&#x27;];_,ix=np.unique(xx,axis=0,return_index=True);outside=np.array([not footprint.covers(Point(x,y)) for x,y in xx[ix]])
+  107              for period in [&#x27;24h&#x27;,&#x27;annual_calendar_max&#x27;]:
+  108                  values=fields[f&#x27;{k}_{model}_{period}&#x27;][ix];j=int(values.argmax());external.append(dict(unit=k,model=model,period=period,unique_receptors=len(ix),outside_receptors=int(outside.sum()),peak_inside_plant=not bool(outside[j]),maximum_all=float(values.max()),maximum_outside=float(values[outside].max())))
+  109      np.savez_compressed(O/&#x27;Campos_nativos.npz&#x27;,**fields);csvout(O/&#x27;Resposta_meteorologica_dois_modelos.csv&#x27;,conditional);csvout(O/&#x27;Descritores_meteorologia.csv&#x27;,meteorological);csvout(O/&#x27;Diagnostico_defasagem_relogios.csv&#x27;,lagscan);csvout(O/&#x27;Comparacao_anual_pares.csv&#x27;,annualstats);csvout(O/&#x27;Maximos_fora_limite_ETE.csv&#x27;,external)
+  110      dump(O/&#x27;Conferencia_entradas_embutidas.json&#x27;,source_check)
+  111      df=pd.DataFrame(conditional);fig,axs=plt.subplots(1,2,figsize=(11.7,5.8));fig.subplots_adjust(left=.09,right=.98,top=.83,bottom=.19,wspace=.30)
+  112      for ax,k in zip(axs,[&#x27;VM&#x27;,&#x27;NC&#x27;]):
+  113          p=pd.read_csv(O/f&#x27;Pares_nativos_{k}_24h.csv&#x27;)
+  114          for model in [&#x27;AERMOD&#x27;,&#x27;CALPUFF&#x27;]:
+  115              rows=[]
+  116              for lo,hi in zip(bins,bins[1:]):
+  117                  z=p.loc[(p.distance_m&gt;=lo)&amp;(p.distance_m&lt;hi),model]
+  118                  if len(z)&gt;=3:rows.append([max(12.5,(lo+hi)/2),*np.quantile(z,[.25,.5,.75])])
+  119              z=np.array(rows);ax.fill_between(z[:,0],z[:,1],z[:,3],color=COLORS[model],alpha=.14,lw=0);ax.plot(z[:,0],z[:,2],marker=&#x27;o&#x27;,ms=4,lw=2,color=COLORS[model],label=model)
+  120          ax.set_xscale(&#x27;symlog&#x27;,linthresh=50);ax.set_ylim(bottom=0);ax.set_xticks([25,100,250,500,1000,1800]);ax.set_xticklabels([&#x27;25&#x27;,&#x27;100&#x27;,&#x27;250&#x27;,&#x27;500&#x27;,&#x27;1,000&#x27;,&#x27;1,800&#x27;]);ax.set_xlim(0,1800);ax.set_title(UNITS[k],weight=&#x27;bold&#x27;,pad=9,fontsize=13);ax.set_xlabel(&#x27;Distance to nearest emitting footprint (m)&#x27;,labelpad=7,fontsize=11);ax.grid(axis=&#x27;y&#x27;,alpha=.16);ax.tick_params(labelsize=12)
+  121      axs[0].set_ylabel(&#x27;Maximum 24 h H$_2$S (µg/m³)&#x27;,fontsize=13,labelpad=8);fig.legend([Line2D([],[],color=COLORS[m],lw=2) for m in COLORS],list(COLORS),ncol=2,loc=&#x27;upper center&#x27;,bbox_to_anchor=(.52,.97),frameon=False,fontsize=11);savefig(fig,&#x27;Comparacao_distancia_poster&#x27;)
+  122  
+  123      fig,axs=plt.subplots(2,2,figsize=(11.7,8.3));fig.subplots_adjust(left=.09,right=.96,top=.92,bottom=.11,hspace=.47,wspace=.27)
+  124      for j,k in enumerate([&#x27;VM&#x27;,&#x27;NC&#x27;]):
+  125          for model,weather,ok in [(&#x27;AERMOD&#x27;,met,~met.calm&amp;~met.missing),(&#x27;CALPUFF&#x27;,cm[cm.unit==k],np.ones(sum(cm.unit==k),dtype=bool))]:
+  126              ws=weather.speed.to_numpy()[ok];dire=weather.direction.to_numpy()[ok];v=np.sort(ws);axs[0,j].plot(v,np.arange(1,len(v)+1)/len(v)*100,color=COLORS[model],label=model,lw=1.8)
+  127              sectors=np.floor((dire+22.5)%360/45).astype(int);cnt=np.bincount(sectors,minlength=8)/len(sectors)*100;axs[1,j].plot(range(8),cnt,marker=&#x27;o&#x27;,color=COLORS[model],lw=1.8,label=model)
+  128          axs[0,j].set(title=UNITS[k],xlabel=&#x27;Wind speed (m/s)&#x27;,ylabel=&#x27;Cumulative frequency (%)&#x27;);axs[0,j].grid(alpha=.15);axs[1,j].set_xticks(range(8),[&#x27;N&#x27;,&#x27;NE&#x27;,&#x27;E&#x27;,&#x27;SE&#x27;,&#x27;S&#x27;,&#x27;SW&#x27;,&#x27;W&#x27;,&#x27;NW&#x27;]);axs[1,j].set(xlabel=&#x27;Wind from direction&#x27;,ylabel=&#x27;Frequency (%)&#x27;);axs[1,j].grid(axis=&#x27;y&#x27;,alpha=.15)
+  129      axs[0,0].legend(frameon=False);savefig(fig,&#x27;Meteorologia_comparada&#x27;)
+  130      fig,axs=plt.subplots(2,2,figsize=(11.7,8.3));fig.subplots_adjust(left=.095,right=.96,top=.9,bottom=.12,hspace=.5,wspace=.25)
+  131      for j,k in enumerate([&#x27;VM&#x27;,&#x27;NC&#x27;]):
+  132          for i,cat in enumerate([&#x27;speed&#x27;,&#x27;hour&#x27;]):
+  133              for model in COLORS:
+  134                  s=df[(df.unit==k)&amp;(df.model==model)&amp;(df.distance_min_m==0)&amp;(df.category==cat)].sort_values(&#x27;bin&#x27;);axs[i,j].plot(s.bin,s[&#x27;mean&#x27;],marker=&#x27;o&#x27;,ms=3,color=COLORS[model],lw=1.8,label=model)
+  135              axs[i,j].set_ylim(bottom=0);axs[i,j].grid(axis=&#x27;y&#x27;,alpha=.15);axs[i,j].set_title(UNITS[k]+&#x27; · receptors &lt;100 m&#x27;,fontsize=11);axs[i,j].set_ylabel(&#x27;Mean H$_2$S (µg/m³)&#x27;)
+  136              if cat==&#x27;speed&#x27;:axs[i,j].set_xticks(range(5),[&#x27;&lt;1&#x27;,&#x27;1–2&#x27;,&#x27;2–4&#x27;,&#x27;4–6&#x27;,&#x27;≥6&#x27;]);axs[i,j].set_xlabel(&#x27;Wind speed class used by each model (m/s)&#x27;)
+  137              else:axs[i,j].set_xticks([0,4,8,12,16,20,23]);axs[i,j].set_xlabel(&#x27;Hour on each model’s executed clock&#x27;)
+  138      axs[0,0].legend(frameon=False);savefig(fig,&#x27;Resposta_meteorologica&#x27;)
+  139      fig,axs=plt.subplots(1,2,figsize=(11.7,5.2));fig.subplots_adjust(left=.085,right=.98,top=.90,bottom=.16,wspace=.3)
+  140      for ax,k in zip(axs,[&#x27;VM&#x27;,&#x27;NC&#x27;]):
+  141          p=pd.read_csv(O/f&#x27;Pares_nativos_{k}_24h.csv&#x27;);p=p[p.distance_m&lt;1800];z=ax.scatter(p.AERMOD,p.CALPUFF,c=p.distance_m,cmap=&#x27;viridis&#x27;,s=12,alpha=.75,edgecolors=&#x27;none&#x27;);ax.set_xlim(left=0);ax.set_ylim(bottom=0);low=min(p[[&#x27;AERMOD&#x27;,&#x27;CALPUFF&#x27;]].min());high=max(p[[&#x27;AERMOD&#x27;,&#x27;CALPUFF&#x27;]].max());ax.plot([low,high],[low,high],color=&#x27;#88949b&#x27;,lw=1,ls=&#x27;--&#x27;);ax.set(title=UNITS[k],xlabel=&#x27;AERMOD max. 24 h (µg/m³)&#x27;,ylabel=&#x27;CALPUFF max. 24 h (µg/m³)&#x27;);ax.grid(alpha=.12)
+  142      cb=fig.colorbar(z,ax=axs,shrink=.8,pad=.03);cb.set_label(&#x27;Distance (m)&#x27;);savefig(fig,&#x27;Dispersao_pares_24h&#x27;)
+  143      print(json.dumps(dict(meteorology=meteorological,source_check=source_check,annual_near=[v for v in annualstats if v[&#x27;min_distance_m&#x27;]==0 and v[&#x27;max_distance_m&#x27;]==1800]),ensure_ascii=False,indent=2))
+  144  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>

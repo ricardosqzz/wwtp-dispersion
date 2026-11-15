@@ -1,0 +1,291 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/comparar_modelos_cmas.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/comparar_modelos_cmas.py</h2>
+<p>Lê saídas horárias AERMOD, interpreta os registros de concentração CALPUFF e organiza séries, coordenadas, códigos temporais, campos diários e anuais para comparação.</p>
+<p><strong>Papel.</strong> Processamento ou módulo de apoio. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\comparar_modelos_cmas.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>auditar_e_preparar</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>cartografia_copasa</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>csv</td><td>Leitura/escrita de tabelas delimitadas com separador e codificação explícitos.</td></tr><tr><td>datetime</td><td>Calendários, datas e duração dos períodos avaliados.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>numpy</td><td>Matrizes numéricas, máscaras de validade, transformações, percentis e estatísticas vetorizadas.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>re</td><td>Extração e validação de padrões textuais, datas, identificadores e linhas dos modelos.</td></tr><tr><td>scipy.spatial</td><td>Agrupamento, matrizes esparsas, distâncias, interpolação e estatísticas; conferir as chamadas na ficha.</td></tr><tr><td>scipy.stats</td><td>Agrupamento, matrizes esparsas, distâncias, interpolação e estatísticas; conferir as chamadas na ficha.</td></tr><tr><td>shapely.geometry</td><td>Operações geométricas usadas nas áreas, distâncias, limites e relações espaciais.</td></tr><tr><td>shapely.ops</td><td>Operações geométricas usadas nas áreas, distâncias, limites e relações espaciais.</td></tr><tr><td>struct</td><td>Decodificação binária com tipos, tamanhos e ordem de bytes definidos.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr><tr><td>time</td><td>Medição de duração e acompanhamento de tarefas.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/in/CALMET.DAT — chamada p.open, linha 141.</li>
+<li>E:/copasa_map/temp/cache_nova_modelagem/CALMET_extracao.json — chamada meta.read_text, linha 133.</li>
+<li>E:/copasa_map/temp/cache_nova_modelagem/AERMOD_{unit}_1h.npy — chamada np.load, linha 108.</li>
+<li>E:/copasa_map/CMAS/AERMOD/H2S_TOTAL.ADO — chamada p.read_bytes, linha 114.</li>
+<li>E:/copasa_map/mod/AERMOD/H2S/H2S_TOTAL.ADO — chamada .read_bytes, linha 114.</li>
+<li>E:/copasa_map/mod/AERMOD/H2S/H2S_TOTAL.err — chamada err.read_text, linha 116.</li>
+<li>E:/copasa_map/in/AERMOD/AERMET/AERMET_COP.SFC — chamada path.read_text, linha 121.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Meteorologia_CALMET.csv — chamada cache.open, linha 133.</li>
+<li>E:/copasa_map/output/auditoria/CALMET_DAT_verificado.json — chamada .read_text, linha 135.</li>
+<li>E:/copasa_map/CMAS/CALPUFF/RANK({k})_ODOR_{token}HR_CONC_C.DAT — chamada np.loadtxt, linha 215.</li>
+<p><strong>Saídas.</strong></p>
+<li>{p} — chamada p.write_text, linha 56.</li>
+<li>{p} — chamada p.open, linha 60.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>m: codes, nx, ny, origin_x_m, origin_y_m, source, spacing_m, xy.</li>
+<li>mm: c, code, x, y.</li>
+<li>v: area, height, ix0, iy0, mass_g_s, max_distance_m, min_distance_m, model, old_flux, params, sigma, type, u, unit, v, x, xy, y.</li>
+<li>totals: AERMOD, CALPUFF.</li>
+<li>r: code, direction, speed.</li>
+<li>hmeta: last_end, start_end.</li>
+<li>all_fields: 24h, AERMOD, CALPUFF.</li>
+<li>result: elapsed_seconds.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>v: direction, speed.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>dump(p, v)</td><td>56-56</td><td>grava produtos</td></tr><tr><td>csvout(p, rows)</td><td>58-61</td><td>Chamadas efetivas: p.open, csv.DictWriter, w.writeheader, w.writerows, list</td></tr><tr><td>ident(p)</td><td>63-63</td><td>Chamadas efetivas: dict, str, p.stat Retorno: dict(path=str(p), bytes=p.stat().st_size, mtime_ns=p.stat().st_mtime_ns).</td></tr><tr><td>stamp(code)</td><td>65-66</td><td>Chamadas efetivas: int, dt.datetime.strptime, dt.timedelta, str Retorno: dt.datetime.strptime(str(code // 100), &#x27;%y%m%d&#x27;) + dt.timedelta(hours=h).</td></tr><tr><td>native(p)</td><td>68-75</td><td>Chamadas efetivas: p.open, np.array, l.split, rows.append, codes.append, .startswith, header.append, list Retorno: (np.array(rows), np.array(codes), header).</td></tr><tr><td>hourly(unit)</td><td>77-108</td><td>lê dados; grava produtos Retorno: (np.load(cache, mmap_mode=&#x27;r&#x27;), xy, codes, m), (np.load(cache, mmap_mode=&#x27;r&#x27;), np.array(m[&#x27;xy&#x27;]), np.array(m[&#x27;codes&#x27;]), m).</td></tr><tr><td>met_aermet()</td><td>111-127</td><td>lê dados Retorno: (rows, missing, calm).</td></tr><tr><td>met_calmet()</td><td>130-168</td><td>lê dados; grava produtos Retorno: (rows, metaobj), (list(csv.DictReader(f)), json.loads(meta.read_text())).</td></tr><tr><td>main()</td><td>171-238</td><td>lê dados; grava produtos; Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.; Associação por postos. Mede ordenação conjunta, não igualdade de magnitude nem desempenho frente a observações ausentes.</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/comparar_modelos_cmas.py, linhas 208-214.</p>
+<pre><code>            series=np.mean(h[:,si],axis=1)
+            for typ,cat in [(&#x27;speed&#x27;,np.digitize(ws,[1,2,4,6])),(&#x27;direction&#x27;,(np.floor((wd+22.5)%360/45)).astype(int)),(&#x27;hour&#x27;,hr)]:
+                for v in np.unique(cat[valid]):
+                    z=series[valid&amp;(cat==v)];conditional.append(dict(unit=k,model=&#x27;AERMOD&#x27;,distance_min_m=lo,distance_max_m=hi,category=typ,bin=int(v),hours=len(z),receptors=len(si),median=float(np.median(z)),p90=float(np.quantile(z,.9)),mean=float(z.mean())))
+        for per,values in vals.items():
+            npz[f&#x27;{k}_AERMOD_{per}&#x27;]=values;all_fields[k,&#x27;AERMOD&#x27;,per]=(xy,values)
+        for per,token in [(&#x27;1h&#x27;,&#x27;1&#x27;),(&#x27;24h&#x27;,&#x27;24&#x27;),(&#x27;rank8760_max&#x27;,&#x27;8760&#x27;),(&#x27;period_mean&#x27;,&#x27;17517&#x27;)]:</code></pre>
+<p>Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</p>
+<p>Associa valores a intervalos definidos pelos cortes do código, inclusive classes de relevo ou faixas de distância.</p>
+<p>Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<li>digitize: Associa valores a intervalos definidos pelos cortes do código, inclusive classes de relevo ou faixas de distância.</li>
+<li>quantile: Quantil da amostra fornecida. O eixo e o conjunto de dados da chamada definem se o quantil é temporal ou espacial.</li>
+<li>spearmanr: Associação por postos. Mede ordenação conjunta, não igualdade de magnitude nem desempenho frente a observações ausentes.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/in/CALMET.DAT | p.open.
+    5  # Entrada: E:/copasa_map/temp/cache_nova_modelagem/CALMET_extracao.json | meta.read_text.
+    6  # Entrada: E:/copasa_map/temp/cache_nova_modelagem/AERMOD_{unit}_1h.npy | np.load.
+    7  # Entrada: E:/copasa_map/CMAS/AERMOD/H2S_TOTAL.ADO | p.read_bytes.
+    8  # Entrada: E:/copasa_map/mod/AERMOD/H2S/H2S_TOTAL.ADO | .read_bytes.
+    9  # Entrada: E:/copasa_map/mod/AERMOD/H2S/H2S_TOTAL.err | err.read_text.
+   10  # Entrada: E:/copasa_map/in/AERMOD/AERMET/AERMET_COP.SFC | path.read_text.
+   11  # Entrada: E:/copasa_map/output/comparacao_modelos/Meteorologia_CALMET.csv | cache.open.
+   12  # Entrada: E:/copasa_map/output/auditoria/CALMET_DAT_verificado.json | .read_text.
+   13  # Entrada: E:/copasa_map/CMAS/CALPUFF/RANK({k})_ODOR_{token}HR_CONC_C.DAT | np.loadtxt.
+   14  # Campos/chaves em m: codes, nx, ny, origin_x_m, origin_y_m, source, spacing_m, xy.
+   15  # Campos/chaves em mm: c, code, x, y.
+   16  # Campos/chaves em v: area, height, ix0, iy0, mass_g_s, max_distance_m, min_distance_m, model, old_flux, params, sigma, type, u, unit, v, x, xy, y.
+   17  # Campos/chaves em totals: AERMOD, CALPUFF.
+   18  # Campos/chaves em r: code, direction, speed.
+   19  # Campos/chaves em hmeta: last_end, start_end.
+   20  # Campos/chaves em all_fields: 24h, AERMOD, CALPUFF.
+   21  # Campos/chaves em result: elapsed_seconds.
+   22  # Saída: {p} | p.write_text.
+   23  # Saída: {p} | p.open.
+   24  # Campos/chaves gerados em v: direction, speed.
+   25  # CÓDIGO DO PROCESSAMENTO
+   26  
+   27  &quot;&quot;&quot;Auditoria e comparação descritiva das novas saídas COPASA.
+   28  
+   29  Mantém as grades nativas para estatísticas. Interpolação é somente cartográfica.
+   30  Os RANK não são séries temporais e não permitem atribuir máximos à meteorologia.
+   31  &quot;&quot;&quot;
+   32  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   33  import sys as _cp_sys
+   34  from pathlib import Path as _cp_Path
+   35  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   36  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   37      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   38      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   39          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   40          break
+   41  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   42  # FIM DOS CAMINHOS PORTÁTEIS
+   43  
+   44  from pathlib import Path
+   45  import re,json,csv,struct,datetime as dt,time,sys
+   46  import numpy as np
+   47  from scipy.spatial import cKDTree
+   48  from scipy.stats import spearmanr
+   49  from shapely.geometry import Polygon,Point
+   50  from shapely.ops import unary_union
+   51  from auditar_e_preparar import parse_aer,parse_cal
+   52  
+   53  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/comparacao_modelos&#x27;;C=R/&#x27;temp/cache_nova_modelagem&#x27;
+   54  O.mkdir(parents=True,exist_ok=True);C.mkdir(parents=True,exist_ok=True)
+   55  # Dump
+   56  def dump(p,v):p.write_text(json.dumps(v,ensure_ascii=False,indent=2,allow_nan=False),encoding=&#x27;utf8&#x27;)
+   57  # Csvout
+   58  def csvout(p,rows):
+   59      if not rows:return
+   60      with p.open(&#x27;w&#x27;,newline=&#x27;&#x27;,encoding=&#x27;utf-8-sig&#x27;) as f:
+   61          w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
+   62  # Ident
+   63  def ident(p):return dict(path=str(p),bytes=p.stat().st_size,mtime_ns=p.stat().st_mtime_ns)
+   64  # Stamp
+   65  def stamp(code):
+   66      code=int(code);h=code%100;return dt.datetime.strptime(str(code//100),&#x27;%y%m%d&#x27;)+dt.timedelta(hours=h)
+   67  # Native
+   68  def native(p):
+   69      rows=[];codes=[];header=[]
+   70      with p.open(encoding=&#x27;cp1252&#x27;) as f:
+   71          for l in f:
+   72              q=l.split()
+   73              if not q or q[0].startswith(&#x27;*&#x27;):header.append(l.rstrip());continue
+   74              rows.append(list(map(float,q[:3])));codes.append(int(q[8]))
+   75      return np.array(rows),np.array(codes),header
+   76  # Hourly
+   77  def hourly(unit):
+   78      p=R/f&#x27;CMAS/AERMOD/01_GWWTP{1 if unit==&quot;VM&quot; else 2}.POS&#x27;;cache=C/f&#x27;AERMOD_{unit}_1h.npy&#x27;;meta=C/f&#x27;AERMOD_{unit}_1h.json&#x27;
+   79      if cache.exists() and meta.exists():
+   80          m=json.loads(meta.read_text(encoding=&#x27;utf8&#x27;))
+   81          if m[&#x27;source&#x27;]==ident(p):return np.load(cache,mmap_mode=&#x27;r&#x27;),np.array(m[&#x27;xy&#x27;]),np.array(m[&#x27;codes&#x27;]),m
+   82      with p.open(&#x27;rb&#x27;) as f:
+   83          header=[]
+   84          while True:
+   85              pos=f.tell();l=f.readline()
+   86              if not l.startswith(b&#x27;*&#x27;):break
+   87              header.append(l.decode(&#x27;cp1252&#x27;).rstrip())
+   88      n=int(re.search(r&#x27;TOTAL OF\s+(\d+) RECEPTORS&#x27;,&#x27; &#x27;.join(header))[1]);width=len(l)
+   89      toks=list(re.finditer(rb&#x27;\S+&#x27;,l));assert len(toks)&gt;=9 and toks[6].group()==b&#x27;1-HR&#x27;
+   90      off=[toks[i].start() for i in [0,1,2,8]];sizes=[toks[i].end()-off[j] for j,i in enumerate([0,1,2,8])]
+   91  
+   92      fmt=np.dtype({&#x27;names&#x27;:[&#x27;x&#x27;,&#x27;y&#x27;,&#x27;c&#x27;,&#x27;code&#x27;],&#x27;formats&#x27;:[&#x27;S14&#x27;,&#x27;S14&#x27;,&#x27;S14&#x27;,&#x27;S8&#x27;],&#x27;offsets&#x27;:[0,14,28,toks[8].start()],&#x27;itemsize&#x27;:width})
+   93      rows=(p.stat().st_size-pos)//width;assert (p.stat().st_size-pos)%width==0 and rows%n==0
+   94      mm=np.memmap(p,mode=&#x27;r&#x27;,offset=pos,dtype=fmt,shape=(rows,));nh=rows//n
+   95      xy=np.column_stack([mm[&#x27;x&#x27;][:n].astype(float),mm[&#x27;y&#x27;][:n].astype(float)]);codes=mm[&#x27;code&#x27;][::n].astype(&#x27;i8&#x27;)
+   96      times=[stamp(v) for v in codes];assert all(b-a==dt.timedelta(hours=1) for a,b in zip(times,times[1:]))
+   97      arr=np.lib.format.open_memmap(cache,mode=&#x27;w+&#x27;,dtype=&#x27;float32&#x27;,shape=(nh,n))
+   98      for i in range(0,nh,96):
+   99          j=min(i+96,nh);ss=slice(i*n,j*n)
+  100          values=mm[&#x27;c&#x27;][ss].astype(&#x27;float32&#x27;).reshape(j-i,n)
+  101          assert np.isfinite(values).all() and (values&gt;=0).all()
+  102          cc=mm[&#x27;code&#x27;][ss].astype(&#x27;i8&#x27;).reshape(j-i,n);assert np.all(cc==codes[i:j,None])
+  103          assert np.allclose(mm[&#x27;x&#x27;][i*n:(i+1)*n].astype(float),xy[:,0])
+  104          arr[i:j]=values
+  105      arr.flush();del arr,mm
+  106      m=dict(source=ident(p),xy=xy.tolist(),codes=codes.tolist(),hours=nh,receptors=n,row_bytes=width,header_bytes=pos,start_end=times[0].isoformat(),last_end=times[-1].isoformat())
+  107      dump(meta,m);print(&#x27;AERMOD hourly cached&#x27;,unit,nh,n,flush=True)
+  108      return np.load(cache,mmap_mode=&#x27;r&#x27;),xy,codes,m
+  109  
+  110  # Met aermet
+  111  def met_aermet():
+  112      p=R/&#x27;CMAS/AERMOD/H2S_TOTAL.ADO&#x27;;err=R/&#x27;mod/AERMOD/H2S/H2S_TOTAL.err&#x27;
+  113  
+  114      assert p.read_bytes()==(err.parent/&#x27;H2S_TOTAL.ADO&#x27;).read_bytes()
+  115      missing=[];calm=[]
+  116      for l in err.read_text(encoding=&#x27;cp1252&#x27;).splitlines():
+  117          if &#x27;I460&#x27; in l:missing.append(int(l.split()[-1])%100000000)
+  118          if &#x27;I440&#x27; in l:calm.append(int(l.split()[-1])%100000000)
+  119      assert len(missing)==309 and len(calm)==124
+  120      path=R/&#x27;in/AERMOD/AERMET/AERMET_COP.SFC&#x27;;rows=[]
+  121      for l in path.read_text(encoding=&#x27;cp1252&#x27;).splitlines()[1:]:
+  122          q=l.split();v=list(map(float,q[:25]));code=int(q[0]+f&#x27;{int(q[1]):02}{int(q[2]):02}{int(q[4]):02}&#x27;)
+  123          rows.append(dict(code=code,time_end=stamp(code).isoformat(),speed=v[15],direction=v[16],wind_height_m=v[17],temperature_K=v[18],L=v[11],mix_convective_m=v[9],mix_mechanical_m=v[10],ustar=v[6],calm=code in calm,missing=code in missing))
+  124  
+  125      assert rows[0][&#x27;speed&#x27;]==5.66 and rows[0][&#x27;direction&#x27;]==86
+  126      csvout(O/&#x27;Meteorologia_AERMET.csv&#x27;,rows)
+  127      return rows,missing,calm
+  128  
+  129  # Met calmet
+  130  def met_calmet():
+  131      cache=O/&#x27;Meteorologia_CALMET.csv&#x27;;meta=C/&#x27;CALMET_extracao.json&#x27;;p=R/&#x27;in/CALMET.DAT&#x27;
+  132      if meta.exists() and cache.exists() and json.loads(meta.read_text())[&#x27;source&#x27;]==ident(p):
+  133          with cache.open(encoding=&#x27;utf-8-sig&#x27;) as f:return list(csv.DictReader(f)),json.loads(meta.read_text())
+  134      from cartografia_copasa import centre
+  135      m=json.loads((R/&#x27;output/auditoria/CALMET_DAT_verificado.json&#x27;).read_text())[&#x27;header&#x27;];nx=m[&#x27;nx&#x27;];ny=m[&#x27;ny&#x27;];spacing=m[&#x27;spacing_m&#x27;]
+  136      cells={}
+  137      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+  138          x,y=centre(k);ix=int(np.floor((x-m[&#x27;origin_x_m&#x27;])/spacing));iy=int(np.floor((y-m[&#x27;origin_y_m&#x27;])/spacing))
+  139          cells[k]=dict(ix0=ix,iy0=iy,x_m=m[&#x27;origin_x_m&#x27;]+(ix+.5)*spacing,y_m=m[&#x27;origin_y_m&#x27;]+(iy+.5)*spacing)
+  140      rows=[];current={};count=0
+  141      with p.open(&#x27;rb&#x27;) as f:
+  142          while True:
+  143              a=f.read(4)
+  144              if not a:break
+  145              n=struct.unpack(&#x27;&lt;i&#x27;,a)[0];assert 0&lt;=n&lt;10000000
+  146              b=f.read(min(n,12));label=b[:8];capture=label in [b&#x27;U-LEV  1&#x27;,b&#x27;V-LEV  1&#x27;,b&#x27;ZI      &#x27;,b&#x27;IPGT    &#x27;,b&#x27;USTAR   &#x27;,b&#x27;T-LEV  1&#x27;]
+  147              if capture:
+  148                  assert n==12+nx*ny*4;b+=f.read(n-len(b));code=struct.unpack(&#x27;&lt;i&#x27;,b[8:12])[0]
+  149                  year=code//100000;day=(code%100000)//100;hour=code%100
+  150                  ts=dt.datetime(year,1,1)+dt.timedelta(days=day-1,hours=hour)
+  151                  vals=np.frombuffer(b[12:],dtype=&#x27;&lt;i4&#x27; if label==b&#x27;IPGT    &#x27; else &#x27;&lt;f4&#x27;).reshape(ny,nx)
+  152                  if label==b&#x27;U-LEV  1&#x27;:
+  153                      if current:
+  154                          for k,v in current.items():
+  155                              v[&#x27;speed&#x27;]=float(np.hypot(v[&#x27;u&#x27;],v[&#x27;v&#x27;]));v[&#x27;direction&#x27;]=float(np.degrees(np.arctan2(-v[&#x27;u&#x27;],-v[&#x27;v&#x27;]))%360);rows.append(v)
+  156                      current={k:dict(unit=k,time_end=ts.isoformat(),u=float(vals[v[&#x27;iy0&#x27;],v[&#x27;ix0&#x27;]])) for k,v in cells.items()}
+  157                  else:
+  158                      key={b&#x27;V-LEV  1&#x27;:&#x27;v&#x27;,b&#x27;ZI      &#x27;:&#x27;mixing_m&#x27;,b&#x27;IPGT    &#x27;:&#x27;stability_PG&#x27;,b&#x27;USTAR   &#x27;:&#x27;ustar&#x27;,b&#x27;T-LEV  1&#x27;:&#x27;temperature_K&#x27;}[label]
+  159                      for k,v in cells.items():current[k][key]=float(vals[v[&#x27;iy0&#x27;],v[&#x27;ix0&#x27;]])
+  160              else:f.seek(n-len(b),1)
+  161              assert struct.unpack(&#x27;&lt;i&#x27;,f.read(4))[0]==n;count+=1
+  162      if current:
+  163          for k,v in current.items():v[&#x27;speed&#x27;]=float(np.hypot(v[&#x27;u&#x27;],v[&#x27;v&#x27;]));v[&#x27;direction&#x27;]=float(np.degrees(np.arctan2(-v[&#x27;u&#x27;],-v[&#x27;v&#x27;]))%360);rows.append(v)
+  164      assert len(rows)==17517*2 and count==859399
+  165  
+  166      keys=list(dict.fromkeys(k for v in rows for k in v));rows=[{k:v.get(k,&#x27;&#x27;) for k in keys} for v in rows]
+  167      csvout(cache,rows);metaobj=dict(source=ident(p),records_checked=count,cells=cells,wind_level=&#x27;first CALMET layer, 0-20 m; centre at 10 m AGL&#x27;,timezone=&#x27;UTC-03:00 declared by CALMET&#x27;,time_label=&#x27;hour end as encoded in CALMET&#x27;,selection=&#x27;containing cell at each plant, no spatial interpolation&#x27;)
+  168      dump(meta,metaobj);print(&#x27;CALMET extracted&#x27;,len(rows),flush=True);return rows,metaobj
+  169  
+  170  # Main
+  171  def main():
+  172      start=time.monotonic();source_t,aer=parse_aer(R/&#x27;CMAS/AERMOD/H2S_TOTAL.ADI&#x27;);audit={};massrows=[];geo={}
+  173      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+  174          _,cal=parse_cal(R/f&#x27;CMAS/CALPUFF/CALPUFF-{k}.INP&#x27;);polys=[]
+  175          for n,v in aer.items():
+  176              if not n.startswith(k+&#x27;_&#x27;):continue
+  177              polys.append(Point(v[&#x27;x&#x27;],v[&#x27;y&#x27;]).buffer(v[&#x27;params&#x27;][2],quad_segs=100) if v[&#x27;type&#x27;]==&#x27;AREACIRC&#x27; else Polygon(v[&#x27;xy&#x27;]))
+  178              massrows.append(dict(unit=k,model=&#x27;AERMOD&#x27;,source=n,area_m2=v[&#x27;area&#x27;],mass_g_s=v[&#x27;old_flux&#x27;]*v[&#x27;area&#x27;],height_m=v[&#x27;height&#x27;],sigma_z_m=v[&#x27;params&#x27;][-1]))
+  179          geo[k]=unary_union(polys)
+  180          for n,v in cal.items():massrows.append(dict(unit=k,model=&#x27;CALPUFF&#x27;,source=n,area_m2=v[&#x27;area&#x27;],mass_g_s=v[&#x27;old_flux&#x27;]*v[&#x27;area&#x27;],height_m=v[&#x27;height&#x27;],sigma_z_m=v[&#x27;sigma&#x27;]))
+  181          totals={m:sum(v[&#x27;mass_g_s&#x27;] for v in massrows if v[&#x27;unit&#x27;]==k and v[&#x27;model&#x27;]==m) for m in [&#x27;AERMOD&#x27;,&#x27;CALPUFF&#x27;]}
+  182          audit[k]=dict(totals_g_s=totals,mass_difference_percent=(totals[&#x27;CALPUFF&#x27;]/totals[&#x27;AERMOD&#x27;]-1)*100)
+  183      csvout(O/&#x27;Entradas_executadas_fontes.csv&#x27;,massrows)
+  184      met,missing,calm=met_aermet();calmet,meta_cal=met_calmet();descriptors=[];paired=[];radial=[];quality=[];fieldmeta=[];conditional=[]
+  185      all_fields={};npz={};distance_bins=[0,25,50,100,250,500,1000,1800,5000,10000,100000]
+  186      for k in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+  187          g=1 if k==&#x27;VM&#x27; else 2;h,xy,codes,hmeta=hourly(k);nh,n=h.shape
+  188          assert len(met)==nh and np.array_equal(codes,[r[&#x27;code&#x27;] for r in met])
+  189          valid=~np.isin(codes,missing+calm);year=codes//1000000;day=codes//100;unique_days=np.unique(day)
+  190  
+  191          dd=[]
+  192          for d in unique_days:
+  193              sel=day==d;den=max(int(valid[sel].sum()),18);dd.append(np.asarray(h[sel],dtype=&#x27;float64&#x27;).sum(axis=0)/den)
+  194          dd=np.asarray(dd);tab,dc,_=native(R/f&#x27;CMAS/AERMOD/24_GWWTP{g}.POS&#x27;)
+  195          assert len(tab)==len(dd)*n and np.array_equal(dc[::n]//100,unique_days)
+  196          daily=tab[:,2].reshape(len(dd),n);err=float(np.max(np.abs(daily-dd)));assert err&lt;.00002,(k,err)
+  197          ann,ac,ah=native(R/f&#x27;CMAS/AERMOD/AN_GWWTP{g}.POS&#x27;);years=np.unique(year);annarr=ann[:,2].reshape(len(years),n)
+  198          yy=np.array([np.asarray(h[year==y],dtype=&#x27;float64&#x27;).sum(axis=0)/valid[year==y].sum() for y in years]);ae=float(abs(yy-annarr).max());assert ae&lt;.00002,(k,ae)
+  199          quality.append(dict(unit=k,hours=nh,calm_hours=int(np.isin(codes,calm).sum()),missing_hours=int(np.isin(codes,missing).sum()),daily_native_max_abs_error_ug_m3=err,annual_native_max_abs_error_ug_m3=ae,annual_by_year=[dict(year=2000+int(y),valid_hours=int(valid[year==y].sum()),expected_hours=int((year==y).sum())) for y in years],start=hmeta[&#x27;start_end&#x27;],end=hmeta[&#x27;last_end&#x27;]))
+  200          npz[f&#x27;{k}_AERMOD_xy&#x27;]=xy
+  201          vals={&#x27;1h&#x27;:np.asarray(h).max(axis=0),&#x27;24h&#x27;:daily.max(axis=0),&#x27;annual_calendar_max&#x27;:annarr.max(axis=0),&#x27;period_mean&#x27;:np.asarray(h,dtype=&#x27;float64&#x27;).sum(axis=0)/valid.sum()}
+  202          times=[stamp(c)-dt.timedelta(minutes=30) for c in codes];ws=np.array([r[&#x27;speed&#x27;] for r in met]);wd=np.array([r[&#x27;direction&#x27;] for r in met]);hr=np.array([t.hour for t in times])
+  203          distances=np.array([geo[k].distance(Point(x,y)) for x,y in xy]);_,keep=np.unique(xy,axis=0,return_index=True)
+  204  
+  205          for lo,hi in [(0,100),(100,500),(500,1800)]:
+  206              si=keep[(distances[keep]&gt;=lo)&amp;(distances[keep]&lt;hi)]
+  207              if not len(si):continue
+  208              series=np.mean(h[:,si],axis=1)
+  209              for typ,cat in [(&#x27;speed&#x27;,np.digitize(ws,[1,2,4,6])),(&#x27;direction&#x27;,(np.floor((wd+22.5)%360/45)).astype(int)),(&#x27;hour&#x27;,hr)]:
+  210                  for v in np.unique(cat[valid]):
+  211                      z=series[valid&amp;(cat==v)];conditional.append(dict(unit=k,model=&#x27;AERMOD&#x27;,distance_min_m=lo,distance_max_m=hi,category=typ,bin=int(v),hours=len(z),receptors=len(si),median=float(np.median(z)),p90=float(np.quantile(z,.9)),mean=float(z.mean())))
+  212          for per,values in vals.items():
+  213              npz[f&#x27;{k}_AERMOD_{per}&#x27;]=values;all_fields[k,&#x27;AERMOD&#x27;,per]=(xy,values)
+  214          for per,token in [(&#x27;1h&#x27;,&#x27;1&#x27;),(&#x27;24h&#x27;,&#x27;24&#x27;),(&#x27;rank8760_max&#x27;,&#x27;8760&#x27;),(&#x27;period_mean&#x27;,&#x27;17517&#x27;)]:
+  215              p=R/f&#x27;CMAS/CALPUFF/RANK({k})_ODOR_{token}HR_CONC_C.DAT&#x27;;tab=np.loadtxt(p,skiprows=6);xx=tab[:,:2]*1000;cc=tab[:,2]
+  216              assert np.isfinite(tab).all() and (cc&gt;=0).all();npz[f&#x27;{k}_CALPUFF_{per}&#x27;]=cc;npz[f&#x27;{k}_CALPUFF_xy&#x27;]=xx;all_fields[k,&#x27;CALPUFF&#x27;,per]=(xx,cc)
+  217              fieldmeta.append(dict(unit=k,model=&#x27;CALPUFF&#x27;,period=per,source=ident(p),records=len(tab),maximum=float(cc.max())))
+  218          for model,per in [(m,p) for m in [&#x27;AERMOD&#x27;,&#x27;CALPUFF&#x27;] for p in [&#x27;1h&#x27;,&#x27;24h&#x27;,&#x27;period_mean&#x27;]]+[(&#x27;AERMOD&#x27;,&#x27;annual_calendar_max&#x27;),(&#x27;CALPUFF&#x27;,&#x27;rank8760_max&#x27;)]:
+  219              xx,cc=all_fields[k,model,per];_,ix=np.unique(xx,axis=0,return_index=True);dist=np.array([geo[k].distance(Point(x,y)) for x,y in xx[ix]])
+  220              for i in range(len(distance_bins)-1):
+  221                  lo,hi=distance_bins[i:i+2];sel=(dist&gt;=lo)&amp;(dist&lt;hi);v=cc[ix][sel]
+  222                  if len(v):radial.append(dict(unit=k,model=model,period=per,min_distance_m=lo,max_distance_m=hi,n=len(v),p25=float(np.quantile(v,.25)),median=float(np.median(v)),p75=float(np.quantile(v,.75)),p90=float(np.quantile(v,.9)),maximum=float(v.max())))
+  223              descriptors.append(dict(unit=k,model=model,period=per,records=len(cc),unique_positions=len(ix),maximum=float(cc.max()),distance_at_peak_m=float(geo[k].distance(Point(xx[cc.argmax()]))),inside_source_receptors=int((dist==0).sum()),median_near_500m=float(np.median(cc[ix][dist&lt;=500]))))
+  224  
+  225          xx,cc=all_fields[k,&#x27;CALPUFF&#x27;,&#x27;24h&#x27;];_,ix=np.unique(xx,axis=0,return_index=True);xx=xx[ix];tree=cKDTree(xx)
+  226          near,ii=tree.query(xy[keep]);accept=near&lt;=.75;ai=keep[accept];ci=ix[ii[accept]]
+  227          assert len(set(ci))==len(ci),&#x27;Ambiguous coordinate matching&#x27;
+  228          for per in [&#x27;1h&#x27;,&#x27;24h&#x27;]:
+  229              av=all_fields[k,&#x27;AERMOD&#x27;,per][1][ai];cv=all_fields[k,&#x27;CALPUFF&#x27;,per][1][ci];d=distances[ai]
+  230              for lo,hi in [(0,100),(100,500),(500,1800),(0,1800),(0,100000)]:
+  231                  z=(d&gt;=lo)&amp;(d&lt;hi);a=av[z];c=cv[z];positive=(a&gt;0)&amp;(c&gt;0);tot=a+c
+  232                  if len(a)&lt;3:continue
+  233                  rho=float(spearmanr(a,c).statistic);fac=float(np.mean((a[positive]/c[positive]&gt;=.5)&amp;(a[positive]/c[positive]&lt;=2))) if positive.any() else None
+  234                  paired.append(dict(unit=k,period=per,min_distance_m=lo,max_distance_m=hi,n=len(a),positive_pairs=int(positive.sum()),spearman_rho=rho if np.isfinite(rho) else None,median_AERMOD=float(np.median(a)),median_CALPUFF=float(np.median(c)),median_CALPUFF_over_AERMOD=float(np.median(c[positive]/a[positive])) if positive.any() else None,factor_two_agreement_positive=fac,symmetric_mean_difference_CAL_minus_AER=float(2*(c.mean()-a.mean())/(c.mean()+a.mean())) if tot.sum()&gt;0 else None))
+  235              csvout(O/f&#x27;Pares_nativos_{k}_{per}.csv&#x27;,[dict(x=float(xy[ia,0]),y=float(xy[ia,1]),distance_m=float(distances[ia]),AERMOD=float(all_fields[k,&#x27;AERMOD&#x27;,per][1][ia]),CALPUFF=float(all_fields[k,&#x27;CALPUFF&#x27;,per][1][ic]),match_error_m=float(ne)) for ia,ic,ne in zip(ai,ci,near[accept])])
+  236      np.savez_compressed(O/&#x27;Campos_nativos.npz&#x27;,**npz);csvout(O/&#x27;Perfis_distancia.csv&#x27;,radial);csvout(O/&#x27;Estatisticas_pares.csv&#x27;,paired);csvout(O/&#x27;Descritores_campos.csv&#x27;,descriptors);csvout(O/&#x27;Resposta_meteorologica_AERMOD.csv&#x27;,conditional)
+  237      result=dict(execution_inputs=audit,quality_AERMOD=quality,fields=descriptors,paired=paired,CALMET=meta_cal,elapsed_seconds=round(time.monotonic()-start,2),annual_CALPUFF_status=&#x27;Derived from new CONC by extrair_calpuff_novo.py; RANK 8760 not substituted&#x27;,hourly_CALPUFF_status=&#x27;New CONC and LST available; see CALPUFF_horario_validado.json&#x27;,AERMET_time_zone=&#x27;LOCATION 0 is a time adjustment, not proof of UTC. Supplied SAMSON header declares zone 0; original clock convention needs confirmation against CALMET UTC-3. Compare each model conditional on its own executed meteorology; paired absolute event times remain provisional.&#x27;,spatial_method=&#x27;Unique native coordinates, tolerance &lt;=0.75 m for RANK coordinates rounded to 1 m. No interpolation in statistics. Distance to union of AERMOD emitting footprints. No inferential p values because spatial samples are dependent.&#x27;,comparison_status=&#x27;Model intercomparison, not validation against ambient measurements&#x27;)
+  238      dump(O/&#x27;Comparacao_consolidada.json&#x27;,result);print(json.dumps(dict(inputs=audit,quality=quality,selected_stats=[v for v in paired if v[&#x27;min_distance_m&#x27;]==0 and v[&#x27;max_distance_m&#x27;]==1800],elapsed=result[&#x27;elapsed_seconds&#x27;]),ensure_ascii=False,indent=2))
+  239  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>

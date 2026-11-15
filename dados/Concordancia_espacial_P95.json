@@ -1,0 +1,126 @@
+{
+  "reference_year": 2024,
+  "metric": "Spatial agreement of model-native hourly P95 at unique coincident receptors",
+  "scope": "All unique coincident receptors within 1800 m; no low-concentration filtering",
+  "factor_2_definition": "0.5*AERMOD_P95 <= CALPUFF_P95 <= 2*AERMOD_P95",
+  "zero_policy": "Both zero agree; exactly one zero disagrees",
+  "inference": "Descriptive, no spatially independent p values or pass/fail acceptance criterion; neither model is an observation",
+  "rows": [
+    {
+      "unit": "VM",
+      "WWTP": 1,
+      "distance_min_m": 0,
+      "distance_max_m": 1800,
+      "n": 562,
+      "within_factor_2_count": 202,
+      "within_factor_2_percent": 35.94306049822064,
+      "Spearman_rho_P95": 0.5736705269178846,
+      "both_zero": 0,
+      "one_zero": 20
+    },
+    {
+      "unit": "VM",
+      "WWTP": 1,
+      "distance_min_m": 0,
+      "distance_max_m": 100,
+      "n": 169,
+      "within_factor_2_count": 18,
+      "within_factor_2_percent": 10.650887573964498,
+      "Spearman_rho_P95": -0.05581522549848343,
+      "both_zero": 0,
+      "one_zero": 0
+    },
+    {
+      "unit": "VM",
+      "WWTP": 1,
+      "distance_min_m": 100,
+      "distance_max_m": 500,
+      "n": 362,
+      "within_factor_2_count": 178,
+      "within_factor_2_percent": 49.171270718232044,
+      "Spearman_rho_P95": 0.7976134432892987,
+      "both_zero": 0,
+      "one_zero": 12
+    },
+    {
+      "unit": "VM",
+      "WWTP": 1,
+      "distance_min_m": 500,
+      "distance_max_m": 1800,
+      "n": 31,
+      "within_factor_2_count": 6,
+      "within_factor_2_percent": 19.35483870967742,
+      "Spearman_rho_P95": 0.8583070216783638,
+      "both_zero": 0,
+      "one_zero": 8
+    },
+    {
+      "unit": "NC",
+      "WWTP": 2,
+      "distance_min_m": 0,
+      "distance_max_m": 1800,
+      "n": 556,
+      "within_factor_2_count": 138,
+      "within_factor_2_percent": 24.820143884892087,
+      "Spearman_rho_P95": 0.6263302195086391,
+      "both_zero": 0,
+      "one_zero": 11
+    },
+    {
+      "unit": "NC",
+      "WWTP": 2,
+      "distance_min_m": 0,
+      "distance_max_m": 100,
+      "n": 246,
+      "within_factor_2_count": 31,
+      "within_factor_2_percent": 12.601626016260163,
+      "Spearman_rho_P95": 0.5707292890494796,
+      "both_zero": 0,
+      "one_zero": 0
+    },
+    {
+      "unit": "NC",
+      "WWTP": 2,
+      "distance_min_m": 100,
+      "distance_max_m": 500,
+      "n": 289,
+      "within_factor_2_count": 97,
+      "within_factor_2_percent": 33.56401384083045,
+      "Spearman_rho_P95": 0.7483461981879824,
+      "both_zero": 0,
+      "one_zero": 7
+    },
+    {
+      "unit": "NC",
+      "WWTP": 2,
+      "distance_min_m": 500,
+      "distance_max_m": 1800,
+      "n": 21,
+      "within_factor_2_count": 10,
+      "within_factor_2_percent": 47.61904761904761,
+      "Spearman_rho_P95": 0.909451078809808,
+      "both_zero": 0,
+      "one_zero": 4
+    }
+  ],
+  "sensitivity_P95_ge_0_7": [
+    {
+      "unit": "VM",
+      "n": 408,
+      "selection": "At least one model P95 >= 0.7 ug/m3",
+      "within_factor_2_percent": 38.970588235294116,
+      "Spearman_rho_P95": 0.18684773970262247
+    },
+    {
+      "unit": "NC",
+      "n": 451,
+      "selection": "At least one model P95 >= 0.7 ug/m3",
+      "within_factor_2_percent": 23.059866962305986,
+      "Spearman_rho_P95": 0.3586205678629593
+    }
+  ],
+  "sources": [
+    "https://www.cerc.co.uk/environmental-software/assets/data/doc_userguides/Model_Evaluation_Toolkit_User_Guide.pdf",
+    "https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html"
+  ]
+}

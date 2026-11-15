@@ -1,0 +1,655 @@
+{
+  "execution_inputs": {
+    "VM": {
+      "totals_g_s": {
+        "AERMOD": 0.05727946754550503,
+        "CALPUFF": 0.057289218273981334
+      },
+      "mass_difference_percent": 0.017023078066413788
+    },
+    "NC": {
+      "totals_g_s": {
+        "AERMOD": 0.06865839933587994,
+        "CALPUFF": 0.06866838170000432
+      },
+      "mass_difference_percent": 0.014539173969874142
+    }
+  },
+  "quality_AERMOD": [
+    {
+      "unit": "VM",
+      "hours": 17544,
+      "calm_hours": 124,
+      "missing_hours": 309,
+      "daily_native_max_abs_error_ug_m3": 8.587813852045656e-06,
+      "annual_native_max_abs_error_ug_m3": 5.028632081405249e-06,
+      "annual_by_year": [
+        {
+          "year": 2024,
+          "valid_hours": 8496,
+          "expected_hours": 8784
+        },
+        {
+          "year": 2025,
+          "valid_hours": 8615,
+          "expected_hours": 8760
+        }
+      ],
+      "start": "2024-01-01T01:00:00",
+      "end": "2026-01-01T00:00:00"
+    },
+    {
+      "unit": "NC",
+      "hours": 17544,
+      "calm_hours": 124,
+      "missing_hours": 309,
+      "daily_native_max_abs_error_ug_m3": 7.462502551902617e-06,
+      "annual_native_max_abs_error_ug_m3": 5.00414821491546e-06,
+      "annual_by_year": [
+        {
+          "year": 2024,
+          "valid_hours": 8496,
+          "expected_hours": 8784
+        },
+        {
+          "year": 2025,
+          "valid_hours": 8615,
+          "expected_hours": 8760
+        }
+      ],
+      "start": "2024-01-01T01:00:00",
+      "end": "2026-01-01T00:00:00"
+    }
+  ],
+  "fields": [
+    {
+      "unit": "VM",
+      "model": "AERMOD",
+      "period": "1h",
+      "records": 1790,
+      "unique_positions": 1789,
+      "maximum": 2058.572509765625,
+      "distance_at_peak_m": 16.098111690537298,
+      "inside_source_receptors": 10,
+      "median_near_500m": 297.2213134765625
+    },
+    {
+      "unit": "VM",
+      "model": "AERMOD",
+      "period": "24h",
+      "records": 1790,
+      "unique_positions": 1789,
+      "maximum": 338.09146,
+      "distance_at_peak_m": 0.8744930528387955,
+      "inside_source_receptors": 10,
+      "median_near_500m": 18.14531
+    },
+    {
+      "unit": "VM",
+      "model": "AERMOD",
+      "period": "period_mean",
+      "records": 1790,
+      "unique_positions": 1789,
+      "maximum": 163.43756035008798,
+      "distance_at_peak_m": 0.8744930528387955,
+      "inside_source_receptors": 10,
+      "median_near_500m": 1.0209312032513926
+    },
+    {
+      "unit": "VM",
+      "model": "CALPUFF",
+      "period": "1h",
+      "records": 2836,
+      "unique_positions": 2836,
+      "maximum": 317.53,
+      "distance_at_peak_m": 217.60697539873996,
+      "inside_source_receptors": 11,
+      "median_near_500m": 57.864000000000004
+    },
+    {
+      "unit": "VM",
+      "model": "CALPUFF",
+      "period": "24h",
+      "records": 2836,
+      "unique_positions": 2836,
+      "maximum": 21.051,
+      "distance_at_peak_m": 209.40663041860242,
+      "inside_source_receptors": 11,
+      "median_near_500m": 3.7981
+    },
+    {
+      "unit": "VM",
+      "model": "CALPUFF",
+      "period": "period_mean",
+      "records": 2836,
+      "unique_positions": 2836,
+      "maximum": 1.4255,
+      "distance_at_peak_m": 174.26358541017518,
+      "inside_source_receptors": 11,
+      "median_near_500m": 0.321615
+    },
+    {
+      "unit": "VM",
+      "model": "AERMOD",
+      "period": "annual_calendar_max",
+      "records": 1790,
+      "unique_positions": 1789,
+      "maximum": 163.5327,
+      "distance_at_peak_m": 0.8744930528387955,
+      "inside_source_receptors": 10,
+      "median_near_500m": 1.17155
+    },
+    {
+      "unit": "VM",
+      "model": "CALPUFF",
+      "period": "rank8760_max",
+      "records": 2836,
+      "unique_positions": 2836,
+      "maximum": 1.4075,
+      "distance_at_peak_m": 174.26358541017518,
+      "inside_source_receptors": 11,
+      "median_near_500m": 0.349525
+    },
+    {
+      "unit": "NC",
+      "model": "AERMOD",
+      "period": "1h",
+      "records": 1790,
+      "unique_positions": 1789,
+      "maximum": 1181.4119873046875,
+      "distance_at_peak_m": 11.521136937279742,
+      "inside_source_receptors": 11,
+      "median_near_500m": 158.0333251953125
+    },
+    {
+      "unit": "NC",
+      "model": "AERMOD",
+      "period": "24h",
+      "records": 1790,
+      "unique_positions": 1789,
+      "maximum": 160.07312,
+      "distance_at_peak_m": 11.521136937279742,
+      "inside_source_receptors": 11,
+      "median_near_500m": 10.51
+    },
+    {
+      "unit": "NC",
+      "model": "AERMOD",
+      "period": "period_mean",
+      "records": 1790,
+      "unique_positions": 1789,
+      "maximum": 53.786595232047056,
+      "distance_at_peak_m": 12.177573785748459,
+      "inside_source_receptors": 11,
+      "median_near_500m": 0.7551154017198866
+    },
+    {
+      "unit": "NC",
+      "model": "CALPUFF",
+      "period": "1h",
+      "records": 2830,
+      "unique_positions": 2829,
+      "maximum": 509.21,
+      "distance_at_peak_m": 103.15782481255043,
+      "inside_source_receptors": 11,
+      "median_near_500m": 67.389
+    },
+    {
+      "unit": "NC",
+      "model": "CALPUFF",
+      "period": "24h",
+      "records": 2830,
+      "unique_positions": 2829,
+      "maximum": 31.179,
+      "distance_at_peak_m": 106.92494625680905,
+      "inside_source_receptors": 11,
+      "median_near_500m": 4.7797
+    },
+    {
+      "unit": "NC",
+      "model": "CALPUFF",
+      "period": "period_mean",
+      "records": 2830,
+      "unique_positions": 2829,
+      "maximum": 8.0124,
+      "distance_at_peak_m": 82.21085166820676,
+      "inside_source_receptors": 11,
+      "median_near_500m": 0.41449
+    },
+    {
+      "unit": "NC",
+      "model": "AERMOD",
+      "period": "annual_calendar_max",
+      "records": 1790,
+      "unique_positions": 1789,
+      "maximum": 55.82872,
+      "distance_at_peak_m": 12.177573785748459,
+      "inside_source_receptors": 11,
+      "median_near_500m": 0.82996
+    },
+    {
+      "unit": "NC",
+      "model": "CALPUFF",
+      "period": "rank8760_max",
+      "records": 2830,
+      "unique_positions": 2829,
+      "maximum": 8.1256,
+      "distance_at_peak_m": 82.21085166820676,
+      "inside_source_receptors": 11,
+      "median_near_500m": 0.47086
+    }
+  ],
+  "paired": [
+    {
+      "unit": "VM",
+      "period": "1h",
+      "min_distance_m": 0,
+      "max_distance_m": 100,
+      "n": 169,
+      "positive_pairs": 169,
+      "spearman_rho": -0.5574113669136295,
+      "median_AERMOD": 538.0928344726562,
+      "median_CALPUFF": 54.25,
+      "median_CALPUFF_over_AERMOD": 0.100460295064751,
+      "factor_two_agreement_positive": 0.005917159763313609,
+      "symmetric_mean_difference_CAL_minus_AER": -1.7006162825065938
+    },
+    {
+      "unit": "VM",
+      "period": "1h",
+      "min_distance_m": 100,
+      "max_distance_m": 500,
+      "n": 362,
+      "positive_pairs": 362,
+      "spearman_rho": -0.5709299250303018,
+      "median_AERMOD": 181.58058166503906,
+      "median_CALPUFF": 59.86,
+      "median_CALPUFF_over_AERMOD": 0.2853958924951292,
+      "factor_two_agreement_positive": 0.212707182320442,
+      "symmetric_mean_difference_CAL_minus_AER": -0.8606662850816548
+    },
+    {
+      "unit": "VM",
+      "period": "1h",
+      "min_distance_m": 500,
+      "max_distance_m": 1800,
+      "n": 31,
+      "positive_pairs": 31,
+      "spearman_rho": -0.6201612903225807,
+      "median_AERMOD": 11.759140014648438,
+      "median_CALPUFF": 67.072,
+      "median_CALPUFF_over_AERMOD": 6.1267243402100835,
+      "factor_two_agreement_positive": 0.06451612903225806,
+      "symmetric_mean_difference_CAL_minus_AER": 0.7712167270169485
+    },
+    {
+      "unit": "VM",
+      "period": "1h",
+      "min_distance_m": 0,
+      "max_distance_m": 1800,
+      "n": 562,
+      "positive_pairs": 562,
+      "spearman_rho": -0.4916003979318388,
+      "median_AERMOD": 277.6240234375,
+      "median_CALPUFF": 58.046499999999995,
+      "median_CALPUFF_over_AERMOD": 0.1845686918378523,
+      "factor_two_agreement_positive": 0.1423487544483986,
+      "symmetric_mean_difference_CAL_minus_AER": -1.2916022722999414
+    },
+    {
+      "unit": "VM",
+      "period": "1h",
+      "min_distance_m": 0,
+      "max_distance_m": 100000,
+      "n": 1236,
+      "positive_pairs": 1236,
+      "spearman_rho": 0.7942691572191918,
+      "median_AERMOD": 0.7655199766159058,
+      "median_CALPUFF": 0.54421,
+      "median_CALPUFF_over_AERMOD": 0.935267755775921,
+      "factor_two_agreement_positive": 0.30339805825242716,
+      "symmetric_mean_difference_CAL_minus_AER": -1.2897425824343196
+    },
+    {
+      "unit": "VM",
+      "period": "24h",
+      "min_distance_m": 0,
+      "max_distance_m": 100,
+      "n": 169,
+      "positive_pairs": 169,
+      "spearman_rho": -0.6428422256476556,
+      "median_AERMOD": 44.4393,
+      "median_CALPUFF": 3.4841,
+      "median_CALPUFF_over_AERMOD": 0.07721275265942792,
+      "factor_two_agreement_positive": 0.005917159763313609,
+      "symmetric_mean_difference_CAL_minus_AER": -1.7798584530445432
+    },
+    {
+      "unit": "VM",
+      "period": "24h",
+      "min_distance_m": 100,
+      "max_distance_m": 500,
+      "n": 362,
+      "positive_pairs": 362,
+      "spearman_rho": -0.5245124417542286,
+      "median_AERMOD": 12.249685,
+      "median_CALPUFF": 4.0397,
+      "median_CALPUFF_over_AERMOD": 0.32906418517405156,
+      "factor_two_agreement_positive": 0.2292817679558011,
+      "symmetric_mean_difference_CAL_minus_AER": -0.9599874894497717
+    },
+    {
+      "unit": "VM",
+      "period": "24h",
+      "min_distance_m": 500,
+      "max_distance_m": 1800,
+      "n": 31,
+      "positive_pairs": 31,
+      "spearman_rho": -0.44919354838709685,
+      "median_AERMOD": 0.80029,
+      "median_CALPUFF": 3.386,
+      "median_CALPUFF_over_AERMOD": 5.510265473415057,
+      "factor_two_agreement_positive": 0.06451612903225806,
+      "symmetric_mean_difference_CAL_minus_AER": 0.66428202966114
+    },
+    {
+      "unit": "VM",
+      "period": "24h",
+      "min_distance_m": 0,
+      "max_distance_m": 1800,
+      "n": 562,
+      "positive_pairs": 562,
+      "spearman_rho": -0.43635795269392574,
+      "median_AERMOD": 17.157809999999998,
+      "median_CALPUFF": 3.75625,
+      "median_CALPUFF_over_AERMOD": 0.20944323896616124,
+      "factor_two_agreement_positive": 0.15302491103202848,
+      "symmetric_mean_difference_CAL_minus_AER": -1.4489938302489125
+    },
+    {
+      "unit": "VM",
+      "period": "24h",
+      "min_distance_m": 0,
+      "max_distance_m": 100000,
+      "n": 1236,
+      "positive_pairs": 1236,
+      "spearman_rho": 0.8154935647045559,
+      "median_AERMOD": 0.037245,
+      "median_CALPUFF": 0.048889,
+      "median_CALPUFF_over_AERMOD": 1.1897304236200257,
+      "factor_two_agreement_positive": 0.24757281553398058,
+      "symmetric_mean_difference_CAL_minus_AER": -1.4466141884693087
+    },
+    {
+      "unit": "NC",
+      "period": "1h",
+      "min_distance_m": 0,
+      "max_distance_m": 100,
+      "n": 246,
+      "positive_pairs": 246,
+      "spearman_rho": -0.3664816020216717,
+      "median_AERMOD": 306.1578063964844,
+      "median_CALPUFF": 54.331999999999994,
+      "median_CALPUFF_over_AERMOD": 0.15932443714508085,
+      "factor_two_agreement_positive": 0.06910569105691057,
+      "symmetric_mean_difference_CAL_minus_AER": -1.1003386460939597
+    },
+    {
+      "unit": "NC",
+      "period": "1h",
+      "min_distance_m": 100,
+      "max_distance_m": 500,
+      "n": 289,
+      "positive_pairs": 289,
+      "spearman_rho": -0.6801226981664876,
+      "median_AERMOD": 53.458309173583984,
+      "median_CALPUFF": 85.171,
+      "median_CALPUFF_over_AERMOD": 1.8814810340931616,
+      "factor_two_agreement_positive": 0.11418685121107267,
+      "symmetric_mean_difference_CAL_minus_AER": 0.22460740064112972
+    },
+    {
+      "unit": "NC",
+      "period": "1h",
+      "min_distance_m": 500,
+      "max_distance_m": 1800,
+      "n": 21,
+      "positive_pairs": 21,
+      "spearman_rho": -0.43376623376623374,
+      "median_AERMOD": 19.91105079650879,
+      "median_CALPUFF": 43.833,
+      "median_CALPUFF_over_AERMOD": 2.2014408203752707,
+      "factor_two_agreement_positive": 0.09523809523809523,
+      "symmetric_mean_difference_CAL_minus_AER": 0.320560965840633
+    },
+    {
+      "unit": "NC",
+      "period": "1h",
+      "min_distance_m": 0,
+      "max_distance_m": 1800,
+      "n": 556,
+      "positive_pairs": 556,
+      "spearman_rho": -0.5706679103318345,
+      "median_AERMOD": 143.9284210205078,
+      "median_CALPUFF": 66.2925,
+      "median_CALPUFF_over_AERMOD": 0.2947118247462216,
+      "factor_two_agreement_positive": 0.09352517985611511,
+      "symmetric_mean_difference_CAL_minus_AER": -0.5437861360881935
+    },
+    {
+      "unit": "NC",
+      "period": "1h",
+      "min_distance_m": 0,
+      "max_distance_m": 100000,
+      "n": 1229,
+      "positive_pairs": 1229,
+      "spearman_rho": 0.8268223879691231,
+      "median_AERMOD": 1.6542400121688843,
+      "median_CALPUFF": 0.593,
+      "median_CALPUFF_over_AERMOD": 0.16508367009883643,
+      "factor_two_agreement_positive": 0.08624898291293735,
+      "symmetric_mean_difference_CAL_minus_AER": -0.5453273438675426
+    },
+    {
+      "unit": "NC",
+      "period": "24h",
+      "min_distance_m": 0,
+      "max_distance_m": 100,
+      "n": 246,
+      "positive_pairs": 246,
+      "spearman_rho": -0.18793610693904267,
+      "median_AERMOD": 24.362665,
+      "median_CALPUFF": 3.68035,
+      "median_CALPUFF_over_AERMOD": 0.11866386592895464,
+      "factor_two_agreement_positive": 0.08130081300813008,
+      "symmetric_mean_difference_CAL_minus_AER": -1.344534374162438
+    },
+    {
+      "unit": "NC",
+      "period": "24h",
+      "min_distance_m": 100,
+      "max_distance_m": 500,
+      "n": 289,
+      "positive_pairs": 289,
+      "spearman_rho": -0.5066405792169554,
+      "median_AERMOD": 4.60433,
+      "median_CALPUFF": 5.5018,
+      "median_CALPUFF_over_AERMOD": 1.5395152703466952,
+      "factor_two_agreement_positive": 0.10726643598615918,
+      "symmetric_mean_difference_CAL_minus_AER": 0.1018979320176721
+    },
+    {
+      "unit": "NC",
+      "period": "24h",
+      "min_distance_m": 500,
+      "max_distance_m": 1800,
+      "n": 21,
+      "positive_pairs": 21,
+      "spearman_rho": -0.4,
+      "median_AERMOD": 1.12933,
+      "median_CALPUFF": 2.0481,
+      "median_CALPUFF_over_AERMOD": 1.6228206104504441,
+      "factor_two_agreement_positive": 0.19047619047619047,
+      "symmetric_mean_difference_CAL_minus_AER": 0.29169348748561574
+    },
+    {
+      "unit": "NC",
+      "period": "24h",
+      "min_distance_m": 0,
+      "max_distance_m": 1800,
+      "n": 556,
+      "positive_pairs": 556,
+      "spearman_rho": -0.37378981106894804,
+      "median_AERMOD": 10.077570000000001,
+      "median_CALPUFF": 4.6097,
+      "median_CALPUFF_over_AERMOD": 0.2754059330952042,
+      "factor_two_agreement_positive": 0.09892086330935251,
+      "symmetric_mean_difference_CAL_minus_AER": -0.8664361512488817
+    },
+    {
+      "unit": "NC",
+      "period": "24h",
+      "min_distance_m": 0,
+      "max_distance_m": 100000,
+      "n": 1229,
+      "positive_pairs": 1229,
+      "spearman_rho": 0.8407726478642404,
+      "median_AERMOD": 0.08344,
+      "median_CALPUFF": 0.045428,
+      "median_CALPUFF_over_AERMOD": 0.27024832214765104,
+      "factor_two_agreement_positive": 0.15459723352318958,
+      "symmetric_mean_difference_CAL_minus_AER": -0.8658781418690804
+    }
+  ],
+  "CALMET": {
+    "source": {
+      "path": "E:\\copasa_map\\in\\CALMET.DAT",
+      "bytes": 5510677812,
+      "mtime_ns": 1794238816499470300
+    },
+    "records_checked": 859399,
+    "cells": {
+      "VM": {
+        "ix0": 25,
+        "iy0": 32,
+        "x_m": 614030.8125,
+        "y_m": 7834056.0
+      },
+      "NC": {
+        "ix0": 8,
+        "iy0": 13,
+        "x_m": 588530.8125,
+        "y_m": 7805556.0
+      }
+    },
+    "wind_level": "first CALMET layer, 0-20 m; centre at 10 m AGL",
+    "timezone": "UTC-03:00 declared by CALMET",
+    "time_label": "hour end as encoded in CALMET",
+    "selection": "containing cell at each plant, no spatial interpolation"
+  },
+  "elapsed_seconds": 33.31,
+  "annual_CALPUFF_status": "Derived from current hourly CONC, highest calendar-year mean at each receptor. 2024 complete; 2025 99.680365% available. No 8760h RANK substitution.",
+  "hourly_CALPUFF_status": "Decoded current CONC files and reproduced native RANK fields within printed precision. Embedded input matches supplied INP. Normal end confirmed in current LST.",
+  "AERMET_time_zone": "LOCATION 0 is a time adjustment, not proof of UTC. Supplied SAMSON header declares zone 0; original interval/clock convention needs confirmation against CALMET UTC-3. Each model is conditioned on its own executed meteorology. One-hour label offset is documented as a diagnostic, not imposed.",
+  "spatial_method": "Unique native coordinates, tolerance <=0.75 m for RANK coordinates rounded to 1 m. No interpolation in statistics. Distance to union of AERMOD emitting footprints. No inferential p values because spatial samples are dependent.",
+  "comparison_status": "Model intercomparison, not validation against ambient measurements",
+  "quality_CALPUFF": [
+    {
+      "unit": "VM",
+      "hours": 17517,
+      "receptors": 2836,
+      "start": "2023-12-31T23:00:00",
+      "end": "2025-12-30T20:00:00",
+      "rank_1h_max_error": 0.004956054687511369,
+      "rank_24h": [
+        {
+          "offset": 0,
+          "max_abs_error": 0.0004828302562298603,
+          "passed": true
+        },
+        {
+          "offset": 1,
+          "max_abs_error": 2.1265827493876923,
+          "passed": false
+        }
+      ],
+      "rank_period_mean_max_error": 4.9074729936204875e-05,
+      "annual": [
+        {
+          "year": 2024,
+          "hours": 8784,
+          "calendar_hours": 8784,
+          "coverage_percent": 100.0,
+          "period_first_start": "2024-01-01T00:00:00",
+          "period_last_end": "2025-01-01T00:00:00",
+          "maximum": 1.4054589805694122
+        },
+        {
+          "year": 2025,
+          "hours": 8732,
+          "calendar_hours": 8760,
+          "coverage_percent": 99.68036529680366,
+          "period_first_start": "2025-01-01T00:00:00",
+          "period_last_end": "2025-12-30T20:00:00",
+          "maximum": 1.4457032965409313
+        }
+      ],
+      "annual_qualification": "2025 is a near-complete calendar-year estimate, not a complete calendar year. No 8760h RANK substituted.",
+      "input_identity": {
+        "path": "E:\\copasa_map\\CMAS\\CALPUFF\\CALPUFF-VM.INP",
+        "bytes": 171866,
+        "mtime_ns": 1794312737749536900
+      },
+      "embedded_source_count": 6
+    },
+    {
+      "unit": "NC",
+      "hours": 17517,
+      "receptors": 2830,
+      "start": "2023-12-31T23:00:00",
+      "end": "2025-12-30T20:00:00",
+      "rank_1h_max_error": 0.004960327148438637,
+      "rank_24h": [
+        {
+          "offset": 0,
+          "max_abs_error": 0.0004988637218872327,
+          "passed": true
+        },
+        {
+          "offset": 1,
+          "max_abs_error": 2.881915728813037,
+          "passed": false
+        }
+      ],
+      "rank_period_mean_max_error": 6.290982431611525e-05,
+      "annual": [
+        {
+          "year": 2024,
+          "hours": 8784,
+          "calendar_hours": 8784,
+          "coverage_percent": 100.0,
+          "period_first_start": "2024-01-01T00:00:00",
+          "period_last_end": "2025-01-01T00:00:00",
+          "maximum": 8.119001902799322
+        },
+        {
+          "year": 2025,
+          "hours": 8732,
+          "calendar_hours": 8760,
+          "coverage_percent": 99.68036529680366,
+          "period_first_start": "2025-01-01T00:00:00",
+          "period_last_end": "2025-12-30T20:00:00",
+          "maximum": 7.905074771178999
+        }
+      ],
+      "annual_qualification": "2025 is a near-complete calendar-year estimate, not a complete calendar year. No 8760h RANK substituted.",
+      "input_identity": {
+        "path": "E:\\copasa_map\\CMAS\\CALPUFF\\CALPUFF-NC.INP",
+        "bytes": 171381,
+        "mtime_ns": 1794325746534390800
+      },
+      "embedded_source_count": 6
+    }
+  ],
+  "publication": "Current poster and gallery use CMAS/AERMOD and CMAS/CALPUFF new outputs supplied on 10 November 2026"
+}

@@ -1,0 +1,72 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/auditar_calmet_dat.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/auditar_calmet_dat.py</h2>
+<p>Inspeciona registros Fortran sem carregar o CALMET inteiro na memória.</p>
+<p><strong>Papel.</strong> Auditoria/diagnóstico. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\auditar_calmet_dat.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>datetime</td><td>Calendários, datas e duração dos períodos avaliados.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>struct</td><td>Decodificação binária com tipos, tamanhos e ordem de bytes definidos.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr><tr><td>time</td><td>Medição de duração e acompanhamento de tarefas.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/in/CALMET.DAT — chamada p.open, linha 26.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/auditoria/CALMET_DAT_verificado.json — chamada .write_text, linha 47.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>header: hours.</li>
+<p><strong>Sequência.</strong> A rotina executa no corpo principal. Os pontos de leitura/escrita acima e os trechos abaixo mostram a ordem de processamento. Não é uma função que possa ser importada sem considerar esses efeitos.</p>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/auditar_calmet_dat.py, linhas 25-33.</p>
+<pre><code>count=0;hours=[];header=None;lines=None
+with p.open(&#x27;rb&#x27;) as f:
+    while True:
+        marker=f.read(4)
+        if not marker:break
+        assert len(marker)==4,&#x27;Marcador incompleto&#x27;
+        n=struct.unpack(&#x27;&lt;i&#x27;,marker)[0];assert 0&lt;=n&lt;10000000,(f.tell(),n)
+        take=min(n,160 if count&lt;1200 else 12);v=f.read(take);f.seek(n-take,1)
+        tail=f.read(4);assert len(tail)==4 and struct.unpack(&#x27;&lt;i&#x27;,tail)[0]==n,(count,f.tell())</code></pre>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/in/CALMET.DAT | p.open.
+    5  # Campos/chaves em header: hours.
+    6  # Saída: E:/copasa_map/output/auditoria/CALMET_DAT_verificado.json | .write_text.
+    7  # CÓDIGO DO PROCESSAMENTO
+    8  
+    9  &quot;&quot;&quot;Inspeciona registros Fortran sem carregar o CALMET inteiro na memória.&quot;&quot;&quot;
+   10  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   11  import sys as _cp_sys
+   12  from pathlib import Path as _cp_Path
+   13  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   14  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   15      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   16      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   17          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   18          break
+   19  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   20  # FIM DOS CAMINHOS PORTÁTEIS
+   21  
+   22  from pathlib import Path
+   23  import struct,json,datetime,time
+   24  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));p=R/&#x27;in/CALMET.DAT&#x27;;start=time.monotonic()
+   25  count=0;hours=[];header=None;lines=None
+   26  with p.open(&#x27;rb&#x27;) as f:
+   27      while True:
+   28          marker=f.read(4)
+   29          if not marker:break
+   30          assert len(marker)==4,&#x27;Marcador incompleto&#x27;
+   31          n=struct.unpack(&#x27;&lt;i&#x27;,marker)[0];assert 0&lt;=n&lt;10000000,(f.tell(),n)
+   32          take=min(n,160 if count&lt;1200 else 12);v=f.read(take);f.seek(n-take,1)
+   33          tail=f.read(4);assert len(tail)==4 and struct.unpack(&#x27;&lt;i&#x27;,tail)[0]==n,(count,f.tell())
+   34          if count==0:assert v.startswith(b&#x27;CALMET.DAT&#x27;)
+   35          if count==1:lines=struct.unpack(&#x27;&lt;i&#x27;,v)[0]
+   36          if lines is not None and count==lines+2:
+   37              q=struct.unpack(&#x27;&lt;10i3f&#x27;,v[:52]);header=dict(year=q[0],month=q[1],day=q[2],hour_end=q[3],timezone_west_utc=q[4],hours=q[5],nx=q[7],ny=q[8],nz=q[9],spacing_m=q[10],origin_x_m=q[11],origin_y_m=q[12])
+   38          if v[:8]==b&#x27;U-LEV  1&#x27;:
+   39              code=struct.unpack(&#x27;&lt;i&#x27;,v[8:12])[0];year=code//100000;day=(code%100000)//100;hour=code%100
+   40              dt=datetime.datetime(year,1,1)+datetime.timedelta(days=day-1,hours=hour)
+   41              if hours:assert dt-hours[-1]==datetime.timedelta(hours=1),(dt,hours[-1])
+   42              hours.append(dt)
+   43          count+=1
+   44      assert f.tell()==p.stat().st_size
+   45  assert header and len(hours)==header[&#x27;hours&#x27;]
+   46  d=dict(passed=True,path=str(p),bytes=p.stat().st_size,fortran_records_checked=count,embedded_control_lines=lines,header=header,hours_verified=len(hours),first_hour_end=hours[0].isoformat(),last_hour_end=hours[-1].isoformat(),hourly_sequence_continuous=True,elapsed_seconds=round(time.monotonic()-start,2),concentrations_recalculated=False)
+   47  (R/&#x27;output/auditoria/CALMET_DAT_verificado.json&#x27;).write_text(json.dumps(d,indent=2),encoding=&#x27;utf8&#x27;);print(json.dumps(d))</code></pre></article></html>

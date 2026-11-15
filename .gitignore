@@ -1,0 +1,14 @@
+__pycache__/
+.venv/
+node_modules/
+output/
+temp/
+descontinuado/
+*.POS
+*.EMI
+*.DAT
+*.ADO
+*.ADI
+*.LST
+*.zip
+.chart-data-*/

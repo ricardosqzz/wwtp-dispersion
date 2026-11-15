@@ -1,0 +1,177 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/atualizar_cartografia_cmas.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/atualizar_cartografia_cmas.py</h2>
+<p>Produtos cartográficos da execução recebida em 10/11/2026.</p>
+<p><strong>Papel.</strong> Cartografia/apresentação. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\atualizar_cartografia_cmas.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>auditar_e_preparar</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>cartografia_copasa</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>geometria_ete</td><td>Módulo autoral local; sua ficha está neste relatório.</td></tr><tr><td>html</td><td>Escape e construção de páginas HTML de documentação/visualização.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>matplotlib.cm</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.colors</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.patches</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.patheffects</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>matplotlib.pyplot</td><td>Construção de gráficos, mapas, barras de cores e exportação vetorial/raster.</td></tr><tr><td>numpy</td><td>Matrizes numéricas, máscaras de validade, transformações, percentis e estatísticas vetorizadas.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>scipy.interpolate</td><td>Agrupamento, matrizes esparsas, distâncias, interpolação e estatísticas; conferir as chamadas na ficha.</td></tr><tr><td>shutil</td><td>Cópia e movimentação de arquivos, inclusive preservação de versões geradas.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>c.F/Cartografia_metadados.json — chamada .read_text, linha 47.</li>
+<li>c.R/output/comparacao_modelos/Campos_nativos.npz — chamada np.load, linha 79.</li>
+<p><strong>Saídas.</strong></p>
+<li>plt.figure(figsize=(wc / 2.54, hc / 2.54)) — chamada c.save, linha 125.</li>
+<li>c.F/Cartografia_metadados.json — chamada .write_text, linha 126.</li>
+<li>c.F/Faixas_concentracao_poster.json — chamada .write_text, linha 126.</li>
+<li>c.O/index.html — chamada .write_text, linha 141.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>c.META: Fontes_privacidade.</li>
+<p><strong>Campos e chaves gerados.</strong></p>
+<li>v: process.</li>
+<li>c.D: sources_aermod.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>main(only_methods=False)</td><td>42-133</td><td>lê dados; grava produtos</td></tr><tr><td>gallery()</td><td>135-141</td><td>grava produtos</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/atualizar_cartografia_cmas.py, linhas 79-85.</p>
+<pre><code>    fields=np.load(A/&#x27;Campos_nativos.npz&#x27;);records=[]
+    span,scale=1000,8500;side=span/scale*100;left,right,bottom,top=1.35,4.0,1.15,1.1;gaps=[.5,1.0,.5];wc=left+4*side+sum(gaps)+right;hc=bottom+side+top
+    cmap=LinearSegmentedColormap.from_list(&#x27;copasa_linear&#x27;,[&#x27;#cee9fa&#x27;,&#x27;#7cc2db&#x27;,&#x27;#72bc8c&#x27;,&#x27;#d4d96b&#x27;,&#x27;#f9df64&#x27;,&#x27;#f5a54b&#x27;,&#x27;#df503a&#x27;,&#x27;#b8182c&#x27;]);cmap.set_under(&#x27;#f2f4f4&#x27;);cmap.set_over(&#x27;#ae1325&#x27;)
+    for period,stem,vmin,vmax,ticks in [(&#x27;24h&#x27;,&#x27;Comparacao_24h_faixa&#x27;,.7,50,[.7,10,20,30,40,50]),(&#x27;annual_calendar_max&#x27;,&#x27;Comparacao_anual_faixa&#x27;,.7,10,[.7,2,4,6,8,10]),(&#x27;annual_2024&#x27;,&#x27;Comparacao_anual_2024&#x27;,.7,10,[.7,2,4,6,8,10])]:
+        fig=plt.figure(figsize=(wc/2.54,hc/2.54));axes=[]
+        for i,(unit,model) in enumerate([(&#x27;VM&#x27;,&#x27;AERMOD&#x27;),(&#x27;VM&#x27;,&#x27;CALPUFF&#x27;),(&#x27;NC&#x27;,&#x27;AERMOD&#x27;),(&#x27;NC&#x27;,&#x27;CALPUFF&#x27;)]):
+            ax=fig.add_axes([(left+i*side+sum(gaps[:i]))/wc,bottom/hc,side/wc,side/hc]);axes.append(ax);x0,y0,x1,y1=c.frame(ax,unit,span,scale)</code></pre>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: c.F/Cartografia_metadados.json | .read_text.
+    5  # Entrada: c.R/output/comparacao_modelos/Campos_nativos.npz | np.load.
+    6  # Campos/chaves em c.META: Fontes_privacidade.
+    7  # Saída: plt.figure(figsize=(wc / 2.54, hc / 2.54)) | c.save.
+    8  # Saída: c.F/Cartografia_metadados.json | .write_text.
+    9  # Saída: c.F/Faixas_concentracao_poster.json | .write_text.
+   10  # Saída: c.O/index.html | .write_text.
+   11  # Campos/chaves gerados em v: process.
+   12  # Campos/chaves gerados em c.D: sources_aermod.
+   13  # CÓDIGO DO PROCESSAMENTO
+   14  
+   15  &quot;&quot;&quot;Produtos cartográficos da execução recebida em 10/11/2026.&quot;&quot;&quot;
+   16  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   17  import sys as _cp_sys
+   18  from pathlib import Path as _cp_Path
+   19  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   20  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   21      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   22      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   23          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   24          break
+   25  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   26  # FIM DOS CAMINHOS PORTÁTEIS
+   27  
+   28  import json,html,shutil
+   29  from pathlib import Path
+   30  import numpy as np
+   31  import matplotlib.pyplot as plt
+   32  from matplotlib.colors import Normalize,LinearSegmentedColormap
+   33  from matplotlib.cm import ScalarMappable
+   34  from matplotlib.patches import Patch
+   35  from matplotlib.patches import Rectangle
+   36  import matplotlib.patheffects as pe
+   37  from scipy.interpolate import LinearNDInterpolator
+   38  import cartografia_copasa as c
+   39  from auditar_e_preparar import parse_aer
+   40  R=c.R;O=c.O;F=c.F;A=R/&#x27;output/comparacao_modelos&#x27;
+   41  # Main
+   42  def main(only_methods=False):
+   43      archive=R/&#x27;descontinuado/2026_11_10_estatistica_visual/figuras&#x27;;archive.mkdir(parents=True,exist_ok=True)
+   44      for stem in [&#x27;Fontes_privacidade&#x27;,&#x27;Comparacao_24h_faixa&#x27;,&#x27;Comparacao_anual_faixa&#x27;,&#x27;Comparacao_anual_2024&#x27;]:
+   45          for p in F.glob(stem+&#x27;*&#x27;):
+   46              if p.is_file() and not (archive/p.name).exists():shutil.copy2(p,archive/p.name)
+   47      c.META.update(json.loads((F/&#x27;Cartografia_metadados.json&#x27;).read_text(encoding=&#x27;utf8&#x27;)))
+   48      for key in [&#x27;Comparacao_24h_pre_harmonizacao&#x27;,&#x27;Comparacao_anual_8760h_pre_harmonizacao&#x27;,&#x27;Cenarios_24h_eventos_coerentes&#x27;,&#x27;Comparacao_anual_placeholder&#x27;]:c.META.pop(key,None)
+   49      _,src=parse_aer(R/&#x27;CMAS/AERMOD/H2S_TOTAL.ADI&#x27;)
+   50      for n,v in src.items():v[&#x27;process&#x27;]=next(p for p in [&#x27;VM_UASB&#x27;,&#x27;VM_PRE&#x27;,&#x27;VM_CALHA&#x27;,&#x27;NC_UASB&#x27;,&#x27;NC_PRE&#x27;,&#x27;NC_FB&#x27;] if n.startswith(p))
+   51      c.D[&#x27;sources_aermod&#x27;]=src
+   52      method_span,method_scale=400,2500
+   53      side,left,gap,bottom,top,wc=16.,1.35,2.,1.3,1.0,52.5
+   54      hc=bottom+side+top;fig=plt.figure(figsize=(wc/2.54,hc/2.54))
+   55      axs=[fig.add_axes([(left+i*(side+gap))/wc,bottom/hc,side/wc,side/hc]) for i in range(2)]
+   56      for ax,k,label in zip(axs,[&#x27;VM&#x27;,&#x27;NC&#x27;],[&#x27;WWTP 1&#x27;,&#x27;WWTP 2&#x27;]):
+   57          frame=c.frame(ax,k,method_span,method_scale);c.draw_context(ax,k,c.TO_GEO);c.sources(ax,k);ax.set_title(label,pad=9,fontweight=&#x27;bold&#x27;,fontsize=16,color=&#x27;#173445&#x27;)
+   58          ax.tick_params(labelsize=11,pad=2.5);ax.tick_params(axis=&#x27;y&#x27;,pad=5.)
+   59          for t in ax.texts:t.set_fontsize(10.5 if t.get_gid()!=&#x27;datum_scale&#x27; else 9)
+   60          for t in ax.texts:
+   61              if t.get_text()==&#x27;N&#x27;:t.set_fontsize(12)
+   62          from geometria_ete import limite
+   63          outline=np.asarray(limite(k).exterior.coords);ox,oy=c.TO_GEO.transform(outline[:,0],outline[:,1])
+   64          assert np.all((ox&gt;=frame[0])&amp;(ox&lt;=frame[2])&amp;(oy&gt;=frame[1])&amp;(oy&lt;=frame[3])), &#x27;Facility boundary clipped&#x27;
+   65      handles=[Patch(facecolor=color,edgecolor=&#x27;#25414d&#x27;,linewidth=.5,label={&#x27;PRE&#x27;:&#x27;Preliminary treatment&#x27;,&#x27;UASB&#x27;:&#x27;UASB reactors&#x27;,&#x27;FB&#x27;:&#x27;Trickling filters&#x27;,&#x27;CALHA&#x27;:&#x27;Outlet weir&#x27;}[p]) for p,color in c.COL.items()]+c.context_handles()
+   66      legend_x=37.15;map_top=bottom+side
+   67      fig.text(legend_x/wc,(map_top-.55)/hc,&#x27;Treatment units&#x27;,ha=&#x27;left&#x27;,va=&#x27;top&#x27;,fontsize=24,fontweight=&#x27;bold&#x27;,color=&#x27;#173445&#x27;)
+   68      legend_sources=fig.legend(handles=handles[:4],loc=&#x27;upper left&#x27;,bbox_to_anchor=(legend_x/wc,(map_top-1.65)/hc),borderaxespad=0,ncol=1,frameon=False,fontsize=25,labelspacing=.40,handlelength=1.65,handletextpad=.7,alignment=&#x27;left&#x27;)
+   69      fig.text(legend_x/wc,(map_top-7.0)/hc,&#x27;Map context&#x27;,ha=&#x27;left&#x27;,va=&#x27;top&#x27;,fontsize=23,fontweight=&#x27;bold&#x27;,color=&#x27;#173445&#x27;)
+   70      legend_context=fig.legend(handles=handles[4:],loc=&#x27;upper left&#x27;,bbox_to_anchor=(legend_x/wc,(map_top-8.1)/hc),borderaxespad=0,ncol=1,frameon=False,fontsize=22,labelspacing=.30,handlelength=1.8,handletextpad=.7,alignment=&#x27;left&#x27;)
+   71      fig.canvas.draw();renderer=fig.canvas.get_renderer();map_right=axs[-1].get_window_extent(renderer).x1
+   72      legend_clearance=min(v.get_window_extent(renderer).x0 for v in [legend_sources,legend_context])-map_right
+   73      assert legend_clearance&gt;0
+   74      c.credit(fig,.06/hc);c.save(fig,&#x27;Fontes_privacidade&#x27;,method_scale)
+   75      c.META[&#x27;Fontes_privacidade&#x27;].update(legend_position=&#x27;right&#x27;,legend_fontsize_poster_pt=25,legend_context_fontsize_pt=22,legend_grouped=True,facility_boundaries_complete=True,legend_map_clearance_cm=legend_clearance/fig.dpi*2.54)
+   76      if only_methods:
+   77          (F/&#x27;Cartografia_metadados.json&#x27;).write_text(json.dumps(c.META,indent=2),encoding=&#x27;utf8&#x27;)
+   78          return
+   79      fields=np.load(A/&#x27;Campos_nativos.npz&#x27;);records=[]
+   80      span,scale=1000,8500;side=span/scale*100;left,right,bottom,top=1.35,4.0,1.15,1.1;gaps=[.5,1.0,.5];wc=left+4*side+sum(gaps)+right;hc=bottom+side+top
+   81      cmap=LinearSegmentedColormap.from_list(&#x27;copasa_linear&#x27;,[&#x27;#cee9fa&#x27;,&#x27;#7cc2db&#x27;,&#x27;#72bc8c&#x27;,&#x27;#d4d96b&#x27;,&#x27;#f9df64&#x27;,&#x27;#f5a54b&#x27;,&#x27;#df503a&#x27;,&#x27;#b8182c&#x27;]);cmap.set_under(&#x27;#f2f4f4&#x27;);cmap.set_over(&#x27;#ae1325&#x27;)
+   82      for period,stem,vmin,vmax,ticks in [(&#x27;24h&#x27;,&#x27;Comparacao_24h_faixa&#x27;,.7,50,[.7,10,20,30,40,50]),(&#x27;annual_calendar_max&#x27;,&#x27;Comparacao_anual_faixa&#x27;,.7,10,[.7,2,4,6,8,10]),(&#x27;annual_2024&#x27;,&#x27;Comparacao_anual_2024&#x27;,.7,10,[.7,2,4,6,8,10])]:
+   83          fig=plt.figure(figsize=(wc/2.54,hc/2.54));axes=[]
+   84          for i,(unit,model) in enumerate([(&#x27;VM&#x27;,&#x27;AERMOD&#x27;),(&#x27;VM&#x27;,&#x27;CALPUFF&#x27;),(&#x27;NC&#x27;,&#x27;AERMOD&#x27;),(&#x27;NC&#x27;,&#x27;CALPUFF&#x27;)]):
+   85              ax=fig.add_axes([(left+i*side+sum(gaps[:i]))/wc,bottom/hc,side/wc,side/hc]);axes.append(ax);x0,y0,x1,y1=c.frame(ax,unit,span,scale)
+   86              ax.tick_params(labelsize=12,pad=2.5);ax.tick_params(axis=&#x27;y&#x27;,pad=5.2)
+   87              if i%2:ax.tick_params(axis=&#x27;y&#x27;,labelleft=False)
+   88              for t in ax.texts:t.set_fontsize(10 if t.get_gid()!=&#x27;datum_scale&#x27; else 9)
+   89              ax._datum.set_text(&#x27;WGS 84\nScale 1:8,500&#x27;);ax._compact_datum=True
+   90  
+   91              for patch in ax.patches:
+   92                  if isinstance(patch,Rectangle):patch.set_height(patch.get_height()*1.5);patch.set_linewidth(.7)
+   93              xy=fields[f&#x27;{unit}_{model}_xy&#x27;];values=fields[f&#x27;{unit}_{model}_{period}&#x27;];_,idx=np.unique(xy,axis=0,return_index=True);xy=xy[idx];values=values[idx];cx,cy=c.centre(unit)
+   94              near=(abs(xy[:,0]-cx)&lt;span*.7)&amp;(abs(xy[:,1]-cy)&lt;span*.7)
+   95              gx=np.unique(np.r_[np.linspace(cx-span*.65,cx+span*.65,401),xy[near,0]]);gy=np.unique(np.r_[np.linspace(cy-span*.65,cy+span*.65,401),xy[near,1]])
+   96              xx,yy=np.meshgrid(gx,gy);points=xy-[cx,cy];fun=LinearNDInterpolator(points,values,fill_value=np.nan);zz=fun(np.column_stack([xx.ravel()-cx,yy.ravel()-cy])).reshape(xx.shape)
+   97              lon,lat=c.TO_GEO.transform(xx,yy);inside=(lon&gt;=x0)&amp;(lon&lt;=x1)&amp;(lat&gt;=y0)&amp;(lat&lt;=y1);coverage=float(np.isfinite(zz[inside]).mean());assert coverage==1
+   98              m=ax.contourf(lon,lat,zz,levels=np.linspace(vmin,vmax,81),norm=Normalize(vmin,vmax),cmap=cmap,extend=&#x27;both&#x27;,zorder=2);m.set_edgecolor(&#x27;face&#x27;);m.set_linewidth(.1)
+   99              levels=[v for v in ([.7,3,7,15,30,50,100,200] if period==&#x27;24h&#x27; else [.7,1,2,4,7,10,20,50,100]) if v&lt;float(np.nanmax(zz))]
+  100              lines=ax.contour(lon,lat,zz,levels=levels,colors=&#x27;#35485a&#x27;,alpha=.65,linewidths=.65,zorder=4)
+  101              labels=ax.clabel(lines,levels=[v for v in levels if v in ([7,15,30,50] if period==&#x27;24h&#x27; else [1,4,7,10])],fontsize=9,inline=True,inline_spacing=3,fmt=&#x27;%g&#x27;)
+  102              for t in labels:t.set_path_effects([pe.withStroke(linewidth=1.4,foreground=&#x27;white&#x27;,alpha=.8)])
+  103              c.draw_context(ax,unit,c.TO_GEO,True);c.sources(ax,unit,False);ax.set_title(f&quot;WWTP {1 if unit==&#x27;VM&#x27; else 2} · {model}&quot;,y=1,pad=9,fontweight=&#x27;bold&#x27;,fontsize=14)
+  104              nl,nt=c.TO_GEO.transform(xy[:,0],xy[:,1]);vis=(nl&gt;=x0)&amp;(nl&lt;=x1)&amp;(nt&gt;=y0)&amp;(nt&lt;=y1);error=float(np.max(abs(fun(points)-values)));peak=float(np.nanmax(zz[inside]));assert error&lt;1e-4 and peak&gt;=values[vis].max()-1e-5
+  105              records.append(dict(unit=unit,model=model,period=period,native_receptors=len(values),maximum_native=float(values.max()),maximum_native_in_frame=float(values[vis].max()),maximum_displayed=peak,native_node_max_error=error,finite_coverage=coverage,scale=scale,current_run=True,color_norm=&#x27;linear&#x27;,display_lower_reference_ug_m3=.7,upper_open_color_class=vmax,values_not_clipped=True))
+  106  
+  107          barx=axes[-1].get_position().x1+1.65/wc;bar_bottom=bottom+.6;bar_length=side-1.2
+  108          cbax=fig.add_axes([barx,bar_bottom/hc,.58/wc,bar_length/hc]);cb=fig.colorbar(ScalarMappable(norm=m.norm,cmap=cmap),cax=cbax,orientation=&#x27;vertical&#x27;,ticks=ticks,extend=&#x27;neither&#x27;)
+  109          cb.outline.set_edgecolor(&#x27;#49606c&#x27;);cb.outline.set_linewidth(.65)
+  110          cb.ax.set_yticklabels([f&#x27;{v:g}&#x27; if v!=vmax else f&#x27;≥{v:g}&#x27; for v in ticks]);cb.ax.yaxis.set_ticks_position(&#x27;left&#x27;);cb.ax.tick_params(labelsize=15,length=3,pad=3,color=&#x27;#49606c&#x27;)
+  111  
+  112          ppb=cb.ax.secondary_yaxis(&#x27;right&#x27;,functions=(lambda ug:ug/1.40,lambda ppb:ppb*1.40))
+  113          ppb.set_yticks(np.asarray(ticks)/1.40)
+  114          ppb.set_yticklabels([(f&#x27;{v/1.40:.1f}&#x27;.rstrip(&#x27;0&#x27;).rstrip(&#x27;.&#x27;) if v!=vmax else f&#x27;≥{v/1.40:.1f}&#x27;) for v in ticks])
+  115          ppb.tick_params(labelsize=14,length=3,pad=3,color=&#x27;#49606c&#x27;)
+  116          unit_left=fig.text(barx-.10/wc,(bar_bottom+bar_length+.90)/hc,&#x27;µg/m³&#x27;,ha=&#x27;right&#x27;,va=&#x27;center&#x27;,fontsize=13,color=&#x27;#173445&#x27;)
+  117          unit_right=fig.text(barx+.78/wc,(bar_bottom+bar_length+.90)/hc,&#x27;ppb&#x27;,ha=&#x27;left&#x27;,va=&#x27;center&#x27;,fontsize=13,color=&#x27;#173445&#x27;)
+  118          for spine in ppb.spines.values():spine.set_visible(False)
+  119          fig.canvas.draw();renderer=fig.canvas.get_renderer();last_frame=axes[-1].get_window_extent(renderer)
+  120          labels=cb.ax.get_yticklabels()+ppb.get_yticklabels()+[unit_left,unit_right]
+  121          clear_cm=min(t.get_window_extent(renderer).x0-last_frame.x1 for t in labels)/fig.dpi*2.54
+  122          assert clear_cm&gt;.20, (stem,&#x27;Colourbar labels overlap map&#x27;,clear_cm)
+  123          assert max(t.get_window_extent(renderer).x1 for t in labels)&lt;fig.bbox.x1, &#x27;Colourbar labels clipped&#x27;
+  124  
+  125          c.save(fig,stem,scale);c.META[stem].update(placeholder=False,panels=4,colorbar_orientation=&#x27;vertical&#x27;,colorbar_end_shape=&#x27;flat&#x27;,colorbar_length_cm=bar_length,colorbar_thickness_cm=.58,colorbar_map_gap_cm=1.65,colorbar_text_clearance_cm=clear_cm,statistic=period,concentrations_plotted=True,current_run=True,color_norm=&#x27;linear&#x27;,display_lower_reference_ug_m3=.7,upper_open_color_class=vmax,context_legend=False,secondary_unit=&#x27;ppb&#x27;,ug_m3_per_ppb=1.40,conversion_reference=&#x27;NIOSH rounded factor; 25 C, 1 atm; ppb equivalent, not meteorology-dependent conversion&#x27;,primary_ticks_ug_m3=ticks,secondary_ticks_ppb=(np.asarray(ticks)/1.40).tolist())
+  126      (F/&#x27;Cartografia_metadados.json&#x27;).write_text(json.dumps(c.META,indent=2),encoding=&#x27;utf8&#x27;);(F/&#x27;Faixas_concentracao_poster.json&#x27;).write_text(json.dumps(dict(current_fields=records,annual_status=&#x27;Derived from native hourly outputs by calendar year; CALPUFF 2025 coverage 99.68%&#x27;,annual_statistic=&#x27;Highest 2024 or 2025 annual mean per receptor; native model averaging rules retained&#x27;,poster_scale=scale),indent=2),encoding=&#x27;utf8&#x27;)
+  127  
+  128      for p in F.glob(&#x27;Comparacao_anual_placeholder*&#x27;):
+  129          target=archive/p.name
+  130          if p.is_file():
+  131              if target.exists():p.unlink()
+  132              else:shutil.move(str(p),str(target))
+  133      gallery();print(json.dumps(records,indent=2))
+  134  # Gallery
+  135  def gallery():
+  136      cards=[(&#x27;Perfis_comparacao_modelos&#x27;,&#x27;How the model contrast changes with distance&#x27;,&#x27;Spatial medians and interquartile bands of hourly receptor P95 in six distance classes, using all 562/556 coincident receptors within 1800 m. Insets magnify smaller medians; the lower strip shows the difference of the two medians. These are descriptive spatial summaries, not confidence intervals.&#x27;),(&#x27;Concordancia_P95_receptores&#x27;,&#x27;Receptor-level P95 comparison&#x27;,&#x27;Each point compares the hourly P95 at the same receptor in 2024. Main panels show a 0–30 ug/m3 zoom; separate full-range insets retain every extreme. Dashed line: equal concentrations. Shading: factor-of-two agreement. Indicators use every paired receptor within 1,800 m.&#x27;),(&#x27;Fontes_privacidade&#x27;,&#x27;Sources and location&#x27;,&#x27;Current source geometry. Anonymous surrounding roads and buildings. Source map scale 1:2,500 at its intended poster dimensions. Treatment-unit and contextual keys are grouped separately.&#x27;),(&#x27;Comparacao_24h_faixa&#x27;,&#x27;Maximum 24 h concentration envelopes&#x27;,&#x27;New native AERMOD POST and CALPOST RANK. Linear colours from light blue through green, yellow and orange to red, with an open upper class at 50 µg/m³. Grey is below 0.7 µg/m³. Each receptor may select a different date. CALPOST uses 24 h blocks starting at 23:00; AERMOD uses native calendar-day blocks.&#x27;),(&#x27;Comparacao_anual_faixa&#x27;,&#x27;Highest annual mean per receptor, 2024–2025&#x27;,&#x27;Calculated from hourly outputs, not from 8,760 h RANK. CALPUFF includes all 8,784 hours of 2024 and 8,732 hours in 2025 (99.68%). Native model denominators are retained. Linear colour scale, open upper class at 10 µg/m³. The 0.7 µg/m³ display reference does not diagnose odour perception from annual means.&#x27;),(&#x27;Boxplot_comparacao_poster&#x27;,&#x27;Hourly distributions: receptor P95 by distance&#x27;,&#x27;Complete year 2024. Each value is the hourly P95 at one receptor. Boxes describe the spatial distribution of these P95 values within each distance class. Tukey whiskers, outlier markers omitted. Concentrations remain on ordinary linear axes.&#x27;),(&#x27;Boxplots_monitoramento_VM&#x27;,&#x27;WWTP 1: hourly boxplots at monitoring locations&#x27;,&#x27;Each pair shows the temporal distribution at one native location. Boxes are Q25–Q75, lines are medians and whiskers are P5–P95. No small values are deleted within selected points. Data are model predictions, not observed measurements.&#x27;),(&#x27;Boxplots_monitoramento_NC&#x27;,&#x27;WWTP 2: hourly boxplots at monitoring locations&#x27;,&#x27;The two originally coincident monitoring IDs are represented by one spatial distribution. Every individual result remains in the detailed CSV and boxplot atlas.&#x27;),(&#x27;Comparacao_distancia_poster&#x27;,&#x27;Concentration versus distance&#x27;,&#x27;Median and interquartile range of native maximum 24 h concentrations on coincident receptors. Different maxima may occur at different times.&#x27;),(&#x27;Comparacao_anual_2024&#x27;,&#x27;Sensitivity: complete calendar year 2024 only&#x27;,&#x27;Avoids the incomplete last 28 hours of CALPUFF 2025. Complementary comparison.&#x27;),(&#x27;Meteorologia_comparada&#x27;,&#x27;AERMET and CALMET meteorological distributions&#x27;,&#x27;Wind speed and direction distributions used by each model. CALMET first-layer centre: 10 m AGL. No event-time alignment assumed.&#x27;),(&#x27;Resposta_meteorologica&#x27;,&#x27;Response conditional on each model’s weather&#x27;,&#x27;Concentrations at fixed common receptors within 100 m, grouped by wind speed and model-clock hour. Ordinary concentration axes.&#x27;),(&#x27;Dispersao_pares_24h&#x27;,&#x27;Spatial comparison of 24 h maxima&#x27;,&#x27;Native unique coincident receptors. Colours indicate distance. This compares predictions, not accuracy against observations.&#x27;)]
+  137      s=[&#x27;&lt;!doctype html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;title&gt;WWTP model comparison&lt;/title&gt;&lt;style&gt;body{font:16px Arial,sans-serif;max-width:1250px;margin:30px auto;padding:0 24px;color:#173445;background:#f4f7f8}article{background:white;margin:25px 0;padding:22px;border:1px solid #d7e0e3}img{display:block;max-width:100%;height:auto;margin:16px auto}a{color:#006b8d;margin-right:15px}p{line-height:1.5}&lt;/style&gt;&lt;h1&gt;Wastewater treatment plants · updated model comparison&lt;/h1&gt;&lt;p&gt;Current outputs supplied on 10 November 2026. Native concentrations are preserved. Linear triangulation is used for maps only, without extrapolation. Statistical comparisons use coincident native receptors and exclude duplicate locations. Anonymous source labels are retained.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;Poster_CMAS_Session05_WWTP.pdf&quot;&gt;Poster PDF&lt;/a&gt;&lt;a href=&quot;Poster_CMAS_Session05_WWTP.pptx&quot;&gt;PowerPoint&lt;/a&gt;&lt;a href=&quot;../comparacao_modelos/Comparacao_AERMOD_CALPUFF.pdf&quot;&gt;Analysis report (Portuguese)&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Context: supplied RMBH roads + © OpenStreetMap contributors, &lt;a href=&quot;https://www.openstreetmap.org/copyright&quot;&gt;ODbL&lt;/a&gt;. No satellite imagery or facility names.&lt;/p&gt;&#x27;]
+  138      s.append(&#x27;&lt;p&gt;&lt;a href=&quot;../comparacao_modelos/Boxplots_Receptores.pdf&quot;&gt;Individual receptor boxplot atlas&lt;/a&gt;&lt;a href=&quot;../comparacao_modelos/Estatistica_horaria_por_receptor.csv&quot;&gt;Hourly distribution statistics by receptor&lt;/a&gt;&lt;a href=&quot;../comparacao_modelos/Comparacao_cota_altura_fontes.csv&quot;&gt;Terrain elevation versus release height&lt;/a&gt;&lt;/p&gt;&lt;p&gt;The lower display reference of 0.7 µg/m³ corresponds to the lower end of the published ATSDR odour-threshold range at conventional conversion conditions. It is not a universal odour criterion. Values remain unchanged in the calculations and tables.&lt;/p&gt;&#x27;)
+  139      s.append(&#x27;&lt;p&gt;Vertical colour bars also show ppb equivalent on the right, using 1 ppb ≈1.40 µg/m³ at conventional 25°C and 1 atm (NIOSH). &lt;a href=&quot;../comparacao_modelos/Concordancia_espacial_P95.csv&quot;&gt;Spatial P95 agreement by distance&lt;/a&gt;&lt;a href=&quot;../comparacao_modelos/Pares_concordancia_P95.csv&quot;&gt;Receptor pairs and factor-two agreement&lt;/a&gt;. These compare predictions without treating either model as an observation.&lt;/p&gt;&#x27;)
+  140      for stem,title,note in cards:s.append(f&#x27;&lt;article&gt;&lt;h2&gt;{html.escape(title)}&lt;/h2&gt;&lt;p&gt;{html.escape(note)}&lt;/p&gt;&lt;img src=&quot;figuras/{stem}_previa.png&quot; alt=&quot;{html.escape(title)}&quot;&gt;&lt;p&gt;&lt;a href=&quot;figuras/{stem}.pdf&quot;&gt;PDF vector&lt;/a&gt;&lt;a href=&quot;figuras/{stem}.svg&quot;&gt;SVG vector&lt;/a&gt;&lt;a href=&quot;figuras/{stem}.png&quot;&gt;PNG&lt;/a&gt;&lt;/p&gt;&lt;/article&gt;&#x27;)
+  141      (O/&#x27;index.html&#x27;).write_text(&#x27;\n&#x27;.join(s+[&#x27;&lt;/html&gt;&#x27;]),encoding=&#x27;utf8&#x27;)
+  142  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>

@@ -1,0 +1,192 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/validar_cmas_atual.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/validar_cmas_atual.py</h2>
+<p>Conferência da nova rodada e dos valores publicados no pôster.</p>
+<p><strong>Papel.</strong> Conferência/teste. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\validar_cmas_atual.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>PIL</td><td>Inspeção, composição ou ajuste de imagens pela biblioteca Pillow.</td></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>csv</td><td>Leitura/escrita de tabelas delimitadas com separador e codificação explícitos.</td></tr><tr><td>hashlib</td><td>Assinaturas SHA-256 para identificar alterações de arquivos; não é validação do conteúdo científico.</td></tr><tr><td>io</td><td>Fluxos em memória para imagens, tabelas e documentos.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>lxml</td><td>Consulta/edição XML, incluindo os componentes internos de DOCX, PPTX e SVG.</td></tr><tr><td>math</td><td>Funções matemáticas escalares.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>pypdf</td><td>Leitura, montagem e inspeção de PDFs; não substitui a conferência visual das páginas.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr><tr><td>zipfile</td><td>Leitura/empacotamento de arquivos ZIP e estruturas internas de documentos.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>E:/copasa_map/output/cmas_poster/figuras/Cartografia_metadados.json — chamada .read_text, linha 58.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Faixas_concentracao_poster.json — chamada .read_text, linha 58.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Comparacao_consolidada.json — chamada .read_text, linha 58.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Estatistica_horaria_por_receptor.csv — chamada .open, linha 65.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Concordancia_espacial_P95.json — chamada .read_text, linha 66.</li>
+<li>E:/copasa_map/output/cmas_poster/Poster_CMAS_Session05_WWTP.pptx — chamada zipfile.ZipFile, linha 78.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Boxplots_editaveis_dados.json — chamada .read_text, linha 96.</li>
+<li>E:/copasa_map/output/comparacao_modelos/Estatistica_avancada.json — chamada .read_text, linha 103.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Perfis_editaveis_dados.json — chamada .read_text, linha 109.</li>
+<li>E:/copasa_map/codigo/recursos_poster/assets/{logo} — chamada .read_bytes, linha 119.</li>
+<li>io.BytesIO(z.read(name)) — chamada Image.open, linha 122.</li>
+<li>Argumento fornecido pelo chamador — chamada im.load, linha 122.</li>
+<li>E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores.json — chamada .read_text, linha 126.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/auditoria/Validacao_Poster_Anual.json — chamada .write_text, linha 129.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>v: annual, annual_native_max_abs_error_ug_m3, current_run, daily_native_max_abs_error_ug_m3, finite_coverage, mass_difference_percent, maximum_displayed, maximum_native_in_frame, native_node_max_error.</li>
+<li>fields: current_fields.</li>
+<li>m: color_norm, colorbar_end_shape, colorbar_map_gap_cm, colorbar_orientation, colorbar_text_clearance_cm, colorbar_thickness_cm, context_legend, measured_scale, panels, placeholder, poster_scale, primary_ticks_ug_m3, secondary_ticks_ppb, secondary_unit, ug_m3_per_ppb.</li>
+<li>p: AERMOD_P95, CALPUFF_P95, Spearman_rho_P95, distance_m, distance_max_m, distance_min_m, unit, within_factor_2_percent.</li>
+<li>spatial: rows.</li>
+<li>summary: n, within_factor_2_count, within_factor_2_percent.</li>
+<li>meta: Fontes_privacidade.</li>
+<li>data: execution_inputs, quality_AERMOD, quality_CALPUFF.</li>
+<li>b: axis_max, axis_min, axis_offset_below_zero_px, distance_min, high_m, index, low_m, median, model, n, plot_bounds, q1, q3, unit, y_unit_top.</li>
+<li>adv: poster_distributions.</li>
+<li>q: distance_min, model.</li>
+<li>series: values.</li>
+<li>pb: h, w, x, y.</li>
+<li>u: axis_max, axis_min, bins, n, unit.</li>
+<li>scatter: units.</li>
+<li>r: n, n_in_full_range, n_visible_main, stats_all_receptors.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>check(name, ok)</td><td>57-57</td><td>Chamadas efetivas: checks.append, dict, bool</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/validar_cmas_atual.py, linhas 69-75.</p>
+<pre><code>    summary=next(p for p in spatial[&#x27;rows&#x27;] if p[&#x27;unit&#x27;]==unit and p[&#x27;distance_min_m&#x27;]==0 and p[&#x27;distance_max_m&#x27;]==1800)
+    count=sum(.5*float(p[&#x27;AERMOD_P95&#x27;])&lt;=float(p[&#x27;CALPUFF_P95&#x27;])&lt;=2*float(p[&#x27;AERMOD_P95&#x27;]) for p in pairs)
+    check(unit+&#x27; factor-two agreement reproduces source receptor table&#x27;,summary[&#x27;n&#x27;]==len(pairs) and summary[&#x27;within_factor_2_count&#x27;]==count and abs(summary[&#x27;within_factor_2_percent&#x27;]-count/len(pairs)*100)&lt;1e-12)
+check(&#x27;Source-map physical scale recalculated to 1:2500&#x27;,meta[&#x27;Fontes_privacidade&#x27;][&#x27;poster_scale&#x27;]==2500 and all(abs(m[&#x27;measured_scale&#x27;]-2500)&lt;.01 for m in meta[&#x27;Fontes_privacidade&#x27;][&#x27;maps&#x27;]))
+check(&#x27;Larger grouped method legend clear of map and complete facilities&#x27;,meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_position&#x27;]==&#x27;right&#x27; and meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_fontsize_poster_pt&#x27;]==25 and meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_context_fontsize_pt&#x27;]==22 and meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_grouped&#x27;] and meta[&#x27;Fontes_privacidade&#x27;][&#x27;facility_boundaries_complete&#x27;] and meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_map_clearance_cm&#x27;]&gt;0)
+check(&#x27;Hourly AERMOD reproduces daily and annual native data&#x27;,all(v[&#x27;daily_native_max_abs_error_ug_m3&#x27;]&lt;1e-5 and v[&#x27;annual_native_max_abs_error_ug_m3&#x27;]&lt;1e-5 for v in data[&#x27;quality_AERMOD&#x27;]))
+check(&#x27;Annual CALPUFF derived from hourly CONC with audited coverage&#x27;,all(v[&#x27;annual&#x27;][0][&#x27;hours&#x27;]==8784 and v[&#x27;annual&#x27;][1][&#x27;hours&#x27;]==8732 for v in data[&#x27;quality_CALPUFF&#x27;]))</code></pre>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p>Trecho de codigo/validar_cmas_atual.py, linhas 109-115.</p>
+<pre><code>    profile=json.loads((F/&#x27;Perfis_editaveis_dados.json&#x27;).read_text(encoding=&#x27;utf8&#x27;));names=root.xpath(&#x27;//p:cNvPr/@name&#x27;,namespaces=N)
+    check(&#x27;Twelve editable profile ribbons and curves retained&#x27;,sum(n.startswith((&#x27;perfil_faixa_&#x27;,&#x27;perfil_mediana_&#x27;,&#x27;perfil_zoom_&#x27;)) for n in names)==12)
+    for u in profile:
+        raw=[p for p in stats if p[&#x27;unit&#x27;]==u[&#x27;unit&#x27;] and float(p[&#x27;distance_m&#x27;])&lt;1800]
+        check(u[&#x27;unit&#x27;]+&#x27; profile conserves full paired sample&#x27;,sum(b[&#x27;n&#x27;] for b in u[&#x27;bins&#x27;])==u[&#x27;n&#x27;]==len(raw) and u[&#x27;axis_min&#x27;]==0 and u[&#x27;axis_max&#x27;]==80)
+        for b in u[&#x27;bins&#x27;]:
+            selected=[p for p in raw if b[&#x27;low_m&#x27;]&lt;=float(p[&#x27;distance_m&#x27;])&lt;b[&#x27;high_m&#x27;]]</code></pre>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: E:/copasa_map/output/cmas_poster/figuras/Cartografia_metadados.json | .read_text.
+    5  # Entrada: E:/copasa_map/output/cmas_poster/figuras/Faixas_concentracao_poster.json | .read_text.
+    6  # Entrada: E:/copasa_map/output/comparacao_modelos/Comparacao_consolidada.json | .read_text.
+    7  # Entrada: E:/copasa_map/output/comparacao_modelos/Estatistica_horaria_por_receptor.csv | .open.
+    8  # Entrada: E:/copasa_map/output/comparacao_modelos/Concordancia_espacial_P95.json | .read_text.
+    9  # Entrada: E:/copasa_map/output/cmas_poster/Poster_CMAS_Session05_WWTP.pptx | zipfile.ZipFile.
+   10  # Entrada: E:/copasa_map/output/cmas_poster/figuras/Boxplots_editaveis_dados.json | .read_text.
+   11  # Entrada: E:/copasa_map/output/comparacao_modelos/Estatistica_avancada.json | .read_text.
+   12  # Entrada: E:/copasa_map/output/cmas_poster/figuras/Perfis_editaveis_dados.json | .read_text.
+   13  # Entrada: E:/copasa_map/codigo/recursos_poster/assets/{logo} | .read_bytes.
+   14  # Entrada: io.BytesIO(z.read(name)) | Image.open.
+   15  # Entrada: Argumento fornecido pelo chamador | im.load.
+   16  # Entrada: E:/copasa_map/output/cmas_poster/figuras/Concordancia_P95_receptores.json | .read_text.
+   17  # Campos/chaves em v: annual, annual_native_max_abs_error_ug_m3, current_run, daily_native_max_abs_error_ug_m3, finite_coverage, mass_difference_percent, maximum_displayed, maximum_native_in_frame, native_node_max_error.
+   18  # Campos/chaves em fields: current_fields.
+   19  # Campos/chaves em m: color_norm, colorbar_end_shape, colorbar_map_gap_cm, colorbar_orientation, colorbar_text_clearance_cm, colorbar_thickness_cm, context_legend, measured_scale, panels, placeholder, poster_scale, primary_ticks_ug_m3, secondary_ticks_ppb, secondary_unit, ug_m3_per_ppb.
+   20  # Campos/chaves em p: AERMOD_P95, CALPUFF_P95, Spearman_rho_P95, distance_m, distance_max_m, distance_min_m, unit, within_factor_2_percent.
+   21  # Campos/chaves em spatial: rows.
+   22  # Campos/chaves em summary: n, within_factor_2_count, within_factor_2_percent.
+   23  # Campos/chaves em meta: Fontes_privacidade.
+   24  # Campos/chaves em data: execution_inputs, quality_AERMOD, quality_CALPUFF.
+   25  # Campos/chaves em b: axis_max, axis_min, axis_offset_below_zero_px, distance_min, high_m, index, low_m, median, model, n, plot_bounds, q1, q3, unit, y_unit_top.
+   26  # Campos/chaves em adv: poster_distributions.
+   27  # Campos/chaves em q: distance_min, model.
+   28  # Campos/chaves em series: values.
+   29  # Campos/chaves em pb: h, w, x, y.
+   30  # Campos/chaves em u: axis_max, axis_min, bins, n, unit.
+   31  # Campos/chaves em scatter: units.
+   32  # Campos/chaves em r: n, n_in_full_range, n_visible_main, stats_all_receptors.
+   33  # Saída: E:/copasa_map/output/auditoria/Validacao_Poster_Anual.json | .write_text.
+   34  # CÓDIGO DO PROCESSAMENTO
+   35  
+   36  &quot;&quot;&quot;Conferência da nova rodada e dos valores publicados no pôster.&quot;&quot;&quot;
+   37  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   38  import sys as _cp_sys
+   39  from pathlib import Path as _cp_Path
+   40  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   41  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   42      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   43      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   44          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   45          break
+   46  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   47  # FIM DOS CAMINHOS PORTÁTEIS
+   48  
+   49  from pathlib import Path
+   50  import zipfile,json,io
+   51  from PIL import Image
+   52  from lxml import etree as E
+   53  from pypdf import PdfReader
+   54  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/cmas_poster&#x27;;F=O/&#x27;figuras&#x27;;A=R/&#x27;output/comparacao_modelos&#x27;
+   55  checks=[]
+   56  # Check
+   57  def check(name,ok):checks.append(dict(name=name,passed=bool(ok)));assert ok,name
+   58  meta=json.loads((F/&#x27;Cartografia_metadados.json&#x27;).read_text());fields=json.loads((F/&#x27;Faixas_concentracao_poster.json&#x27;).read_text());data=json.loads((A/&#x27;Comparacao_consolidada.json&#x27;).read_text())
+   59  check(&#x27;Current maps preserve native maxima and full frame coverage&#x27;,all(v[&#x27;finite_coverage&#x27;]==1 and v[&#x27;native_node_max_error&#x27;]&lt;1e-4 and abs(v[&#x27;maximum_displayed&#x27;]-v[&#x27;maximum_native_in_frame&#x27;])&lt;1e-5 and v[&#x27;current_run&#x27;] for v in fields[&#x27;current_fields&#x27;]))
+   60  for stem in [&#x27;Comparacao_24h_faixa&#x27;,&#x27;Comparacao_anual_faixa&#x27;]:
+   61      m=meta[stem];check(stem+&#x27; linear colours, vertical flat bar, no contextual legend&#x27;,m[&#x27;panels&#x27;]==4 and m[&#x27;poster_scale&#x27;]==8500 and m[&#x27;colorbar_orientation&#x27;]==&#x27;vertical&#x27; and m[&#x27;colorbar_end_shape&#x27;]==&#x27;flat&#x27; and m[&#x27;colorbar_thickness_cm&#x27;]==.58 and m[&#x27;color_norm&#x27;]==&#x27;linear&#x27; and not m[&#x27;context_legend&#x27;] and not m[&#x27;placeholder&#x27;])
+   62      check(stem+&#x27; colourbar labels separated from last map&#x27;,m[&#x27;colorbar_map_gap_cm&#x27;]&gt;=1.65 and m[&#x27;colorbar_text_clearance_cm&#x27;]&gt;.2)
+   63      check(stem+&#x27; ppb axis is a conversion of the same concentrations&#x27;,m[&#x27;secondary_unit&#x27;]==&#x27;ppb&#x27; and m[&#x27;ug_m3_per_ppb&#x27;]==1.40 and all(abs(a/1.40-b)&lt;1e-12 for a,b in zip(m[&#x27;primary_ticks_ug_m3&#x27;],m[&#x27;secondary_ticks_ppb&#x27;])))
+   64  import csv,math
+   65  stats=list(csv.DictReader((A/&#x27;Estatistica_horaria_por_receptor.csv&#x27;).open(encoding=&#x27;utf-8-sig&#x27;)))
+   66  spatial=json.loads((A/&#x27;Concordancia_espacial_P95.json&#x27;).read_text(encoding=&#x27;utf8&#x27;))
+   67  for unit in [&#x27;VM&#x27;,&#x27;NC&#x27;]:
+   68      pairs=[p for p in stats if p[&#x27;unit&#x27;]==unit and float(p[&#x27;distance_m&#x27;])&lt;1800]
+   69      summary=next(p for p in spatial[&#x27;rows&#x27;] if p[&#x27;unit&#x27;]==unit and p[&#x27;distance_min_m&#x27;]==0 and p[&#x27;distance_max_m&#x27;]==1800)
+   70      count=sum(.5*float(p[&#x27;AERMOD_P95&#x27;])&lt;=float(p[&#x27;CALPUFF_P95&#x27;])&lt;=2*float(p[&#x27;AERMOD_P95&#x27;]) for p in pairs)
+   71      check(unit+&#x27; factor-two agreement reproduces source receptor table&#x27;,summary[&#x27;n&#x27;]==len(pairs) and summary[&#x27;within_factor_2_count&#x27;]==count and abs(summary[&#x27;within_factor_2_percent&#x27;]-count/len(pairs)*100)&lt;1e-12)
+   72  check(&#x27;Source-map physical scale recalculated to 1:2500&#x27;,meta[&#x27;Fontes_privacidade&#x27;][&#x27;poster_scale&#x27;]==2500 and all(abs(m[&#x27;measured_scale&#x27;]-2500)&lt;.01 for m in meta[&#x27;Fontes_privacidade&#x27;][&#x27;maps&#x27;]))
+   73  check(&#x27;Larger grouped method legend clear of map and complete facilities&#x27;,meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_position&#x27;]==&#x27;right&#x27; and meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_fontsize_poster_pt&#x27;]==25 and meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_context_fontsize_pt&#x27;]==22 and meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_grouped&#x27;] and meta[&#x27;Fontes_privacidade&#x27;][&#x27;facility_boundaries_complete&#x27;] and meta[&#x27;Fontes_privacidade&#x27;][&#x27;legend_map_clearance_cm&#x27;]&gt;0)
+   74  check(&#x27;Hourly AERMOD reproduces daily and annual native data&#x27;,all(v[&#x27;daily_native_max_abs_error_ug_m3&#x27;]&lt;1e-5 and v[&#x27;annual_native_max_abs_error_ug_m3&#x27;]&lt;1e-5 for v in data[&#x27;quality_AERMOD&#x27;]))
+   75  check(&#x27;Annual CALPUFF derived from hourly CONC with audited coverage&#x27;,all(v[&#x27;annual&#x27;][0][&#x27;hours&#x27;]==8784 and v[&#x27;annual&#x27;][1][&#x27;hours&#x27;]==8732 for v in data[&#x27;quality_CALPUFF&#x27;]))
+   76  check(&#x27;Mass difference below 0.02 percent&#x27;,all(abs(v[&#x27;mass_difference_percent&#x27;])&lt;.02 for v in data[&#x27;execution_inputs&#x27;].values()))
+   77  N={&#x27;a&#x27;:&#x27;http://schemas.openxmlformats.org/drawingml/2006/main&#x27;,&#x27;c&#x27;:&#x27;http://schemas.openxmlformats.org/drawingml/2006/chart&#x27;,&#x27;p&#x27;:&#x27;http://schemas.openxmlformats.org/presentationml/2006/main&#x27;}
+   78  with zipfile.ZipFile(O/&#x27;Poster_CMAS_Session05_WWTP.pptx&#x27;) as z:
+   79      text=&#x27; &#x27;.join(E.fromstring(z.read(&#x27;ppt/slides/slide1.xml&#x27;)).xpath(&#x27;//a:t/text()&#x27;,namespaces=N));charts=sorted(n for n in z.namelist() if &#x27;/charts/chart&#x27; in n and n.endswith(&#x27;.xml&#x27;))
+   80      check(&#x27;Editable emission chart retained; profiles are native quantitative shapes&#x27;,len(charts)==1);caches=[]
+   81      for name in charts:
+   82          series=E.fromstring(z.read(name)).xpath(&#x27;//c:ser&#x27;,namespaces=N);caches.append((name,series));check(name+&#x27; series complete&#x27;,len(series) in [1,2,4] and all(s.xpath(&#x27;.//c:val//c:pt/c:v/text()&#x27;,namespaces=N) for s in series))
+   83      emission=next(ss for name,ss in caches if len(ss)==4);cat=emission[0].xpath(&#x27;.//c:cat//c:pt/c:v/text()&#x27;,namespaces=N);check(&#x27;WWTP categories correct reversed native bar order&#x27;,cat==[&#x27;WWTP 2&#x27;,&#x27;WWTP 1&#x27;])
+   84      scores=[next(p for p in spatial[&#x27;rows&#x27;] if p[&#x27;unit&#x27;]==unit and p[&#x27;distance_min_m&#x27;]==0 and p[&#x27;distance_max_m&#x27;]==1800) for unit in [&#x27;NC&#x27;,&#x27;VM&#x27;]]
+   85      for name,ss in caches:
+   86          if len(ss)==4:continue
+   87          actual=[[float(v) for v in s.xpath(&#x27;.//c:val//c:pt/c:v/text()&#x27;,namespaces=N)] for s in ss]
+   88          expected=[[p[&#x27;Spearman_rho_P95&#x27;] for p in scores]] if len(ss)==1 else [[p[&#x27;within_factor_2_percent&#x27;]/100 for p in scores],[1-p[&#x27;within_factor_2_percent&#x27;]/100 for p in scores]]
+   89          check(name+&#x27; statistics agree with full receptor analysis&#x27;,all(abs(x-y)&lt;1e-9 for a,b in zip(actual,expected) for x,y in zip(a,b)))
+   90          if len(ss)==2:check(&#x27;Factor-two chart labels show percentages&#x27;,any(&#x27;0.0%&#x27; in v for s in ss for v in s.xpath(&#x27;.//c:dLbls/c:numFmt/@formatCode&#x27;,namespaces=N)))
+   91      check(&#x27;No historical or pending result claim in poster&#x27;,not any(s in text for s in [&#x27;Historical PLT&#x27;,&#x27;results are pending&#x27;,&#x27;Annual results pending&#x27;]))
+   92      check(&#x27;Coverage documented; input differences excluded from poster&#x27;,&#x27;99.68%&#x27; in text and &#x27;Terrain elevations&#x27; not in text and &#x27;input inconsistencies&#x27; not in text and &#x27;release heights&#x27; not in text)
+   93      check(&#x27;P95 spatial profiles and conventional ppb conversion included&#x27;,all(t in text for t in [&#x27;MODEL CONTRAST ACROSS DISTANCE BANDS&#x27;,&#x27;1.40&#x27;,&#x27;ppb&#x27;,&#x27;ρ = 0.57&#x27;,&#x27;ρ = 0.63&#x27;]))
+   94      check(&#x27;Full new institutional acknowledgements&#x27;,all(v in text for v in [&#x27;Regulatory Research, Development, and Innovation Program&#x27;,&#x27;ARSAE-MG&#x27;,&#x27;COPASA&#x27;,&#x27;CNPq&#x27;,&#x27;CAPES&#x27;,&#x27;FAPEMIG&#x27;,&#x27;Finance Code 001&#x27;]))
+   95      check(&#x27;Hourly distribution boxes and physical concentration units labelled&#x27;,&#x27;receptor-level hourly P95 (2024)&#x27; in text and &#x27;µg/m³&#x27; in text and &#x27;logarithmic concentration scale&#x27; not in text)
+   96      boxes=json.loads((F/&#x27;Boxplots_editaveis_dados.json&#x27;).read_text());check(&#x27;Twelve editable P95 comparison boxes&#x27;,len(boxes)==12)
+   97      check(&#x27;Nonnegative boxplot axis with space below zero and separate unit&#x27;,all(b[&#x27;axis_min&#x27;]==0 and b[&#x27;axis_offset_below_zero_px&#x27;]==20 and b[&#x27;plot_bounds&#x27;][&#x27;y&#x27;]-b[&#x27;y_unit_top&#x27;]&gt;=58 for b in boxes))
+   98      root=E.fromstring(z.read(&#x27;ppt/slides/slide1.xml&#x27;));rects=[]
+   99      for sp in root.xpath(&#x27;//p:sp&#x27;,namespaces=N):
+  100          if not sp.xpath(&#x27;./p:spPr/a:prstGeom[@prst=&quot;rect&quot;]&#x27;,namespaces=N):continue
+  101          off=sp.find(&#x27;p:spPr/a:xfrm/a:off&#x27;,N);ext=sp.find(&#x27;p:spPr/a:xfrm/a:ext&#x27;,N)
+  102          if off is not None and ext is not None:rects.append([int(off.get(&#x27;x&#x27;))/9525,int(off.get(&#x27;y&#x27;))/9525,int(ext.get(&#x27;cx&#x27;))/9525,int(ext.get(&#x27;cy&#x27;))/9525])
+  103      adv=json.loads((A/&#x27;Estatistica_avancada.json&#x27;).read_text())
+  104      def quant(v,q):
+  105          a=sorted(v);t=(len(a)-1)*q;i=int(t);return a[i]+(a[min(i+1,len(a)-1)]-a[i])*(t-i)
+  106      for b in boxes:
+  107          series=next(q for q in adv[&#x27;poster_distributions&#x27;][b[&#x27;unit&#x27;]] if q[&#x27;model&#x27;]==b[&#x27;model&#x27;] and q[&#x27;distance_min&#x27;]==b[&#x27;distance_min&#x27;]);check(&#x27;Box quartiles &#x27;+b[&#x27;unit&#x27;]+b[&#x27;model&#x27;]+str(b[&#x27;distance_min&#x27;]),all(abs(x-y)&lt;1e-9 for x,y in [(b[&#x27;q1&#x27;],quant(series[&#x27;values&#x27;],.25)),(b[&#x27;median&#x27;],quant(series[&#x27;values&#x27;],.5)),(b[&#x27;q3&#x27;],quant(series[&#x27;values&#x27;],.75))]))
+  108          pb=b[&#x27;plot_bounds&#x27;];band=0 if b[&#x27;distance_min&#x27;]==0 else 1 if b[&#x27;distance_min&#x27;]==100 else 2;cx=pb[&#x27;x&#x27;]+(band+.5)*pb[&#x27;w&#x27;]/3+(-48 if b[&#x27;model&#x27;]==&#x27;AERMOD&#x27; else 48);expected=[cx-35,pb[&#x27;y&#x27;]+pb[&#x27;h&#x27;]-b[&#x27;q3&#x27;]/b[&#x27;axis_max&#x27;]*pb[&#x27;h&#x27;],70,max(.01,(b[&#x27;q3&#x27;]-b[&#x27;q1&#x27;])/b[&#x27;axis_max&#x27;]*pb[&#x27;h&#x27;])];check(&#x27;Native editable IQR geometry &#x27;+b[&#x27;unit&#x27;]+b[&#x27;model&#x27;]+str(b[&#x27;distance_min&#x27;]),any(all(abs(x-y)&lt;.02 for x,y in zip(actual,expected)) for actual in rects))
+  109      profile=json.loads((F/&#x27;Perfis_editaveis_dados.json&#x27;).read_text(encoding=&#x27;utf8&#x27;));names=root.xpath(&#x27;//p:cNvPr/@name&#x27;,namespaces=N)
+  110      check(&#x27;Twelve editable profile ribbons and curves retained&#x27;,sum(n.startswith((&#x27;perfil_faixa_&#x27;,&#x27;perfil_mediana_&#x27;,&#x27;perfil_zoom_&#x27;)) for n in names)==12)
+  111      for u in profile:
+  112          raw=[p for p in stats if p[&#x27;unit&#x27;]==u[&#x27;unit&#x27;] and float(p[&#x27;distance_m&#x27;])&lt;1800]
+  113          check(u[&#x27;unit&#x27;]+&#x27; profile conserves full paired sample&#x27;,sum(b[&#x27;n&#x27;] for b in u[&#x27;bins&#x27;])==u[&#x27;n&#x27;]==len(raw) and u[&#x27;axis_min&#x27;]==0 and u[&#x27;axis_max&#x27;]==80)
+  114          for b in u[&#x27;bins&#x27;]:
+  115              selected=[p for p in raw if b[&#x27;low_m&#x27;]&lt;=float(p[&#x27;distance_m&#x27;])&lt;b[&#x27;high_m&#x27;]]
+  116              check(u[&#x27;unit&#x27;]+&#x27; profile band &#x27;+str(b[&#x27;index&#x27;])+&#x27; sample and quartiles&#x27;,len(selected)==b[&#x27;n&#x27;] and all(abs(b[model][stat]-quant([float(p[model+&#x27;_P95&#x27;]) for p in selected],q))&lt;1e-9 for model in [&#x27;AERMOD&#x27;,&#x27;CALPUFF&#x27;] for stat,q in [(&#x27;q1&#x27;,.25),(&#x27;median&#x27;,.5),(&#x27;q3&#x27;,.75)]))
+  117      import hashlib
+  118      hashes={hashlib.sha256(z.read(n)).hexdigest() for n in z.namelist() if n.startswith(&#x27;ppt/media/&#x27;) and n.endswith(&#x27;.png&#x27;)}
+  119      for logo in [&#x27;logo_copasa.png&#x27;,&#x27;logo_cretes.png&#x27;,&#x27;logo_smarh_novo.png&#x27;]:check(&#x27;Supplied logo unchanged &#x27;+logo,hashlib.sha256((R/&#x27;codigo/recursos_poster/assets&#x27;/logo).read_bytes()).hexdigest() in hashes)
+  120      for name in z.namelist():
+  121          if name.startswith(&#x27;ppt/media/&#x27;) and name.endswith(&#x27;.png&#x27;):
+  122              im=Image.open(io.BytesIO(z.read(name)));im.load();check(name+&#x27; valid image fallback&#x27;,im.width&gt;1 and im.height&gt;1)
+  123  pdf=PdfReader(O/&#x27;Poster_CMAS_Session05_WWTP.pdf&#x27;);check(&#x27;Native PDF one page 120 x 90 cm&#x27;,len(pdf.pages)==1 and abs(float(pdf.pages[0].mediabox.width)/72*2.54-120)&lt;.1 and abs(float(pdf.pages[0].mediabox.height)/72*2.54-90)&lt;.1)
+  124  report=PdfReader(A/&#x27;Comparacao_AERMOD_CALPUFF.pdf&#x27;);check(&#x27;Complete interpretation report&#x27;,len(report.pages)&gt;=8)
+  125  check(&#x27;Generated chart-data folders removed&#x27;,not list(R.glob(&#x27;.chart-data-*&#x27;)))
+  126  scatter=json.loads((F/&#x27;Concordancia_P95_receptores.json&#x27;).read_text())
+  127  check(&#x27;Companion scatter retains full range and full statistical sample&#x27;,len(scatter[&#x27;units&#x27;])==2 and all(r[&#x27;stats_all_receptors&#x27;] and r[&#x27;n_in_full_range&#x27;]==r[&#x27;n&#x27;] and r[&#x27;n_visible_main&#x27;]&lt;=r[&#x27;n&#x27;] for r in scatter[&#x27;units&#x27;]) and [r[&#x27;n&#x27;] for r in scatter[&#x27;units&#x27;]]==[562,556])
+  128  result=dict(passed=True,checks=checks,publication=&#x27;New CMAS run supplied 10 November 2026&#x27;,native_powerpoint_pdf_export=True,annual_data_status=&#x27;Actual hourly-derived annual fields&#x27;,annual_coverage_CALPUFF={&#x27;2024&#x27;:100,&#x27;2025&#x27;:99.68036529680366},limitations=[&#x27;Different source heights and initial spread at WWTP 2&#x27;,&#x27;Native 24h block alignment differs&#x27;,&#x27;Original meteorological clock convention requires confirmation&#x27;,&#x27;No ambient-observation validation performed&#x27;])
+  129  (R/&#x27;output/auditoria/Validacao_Poster_Anual.json&#x27;).write_text(json.dumps(result,indent=2),encoding=&#x27;utf8&#x27;);print(json.dumps(dict(passed=True,checks=len(checks),report_pages=len(report.pages))))</code></pre></article></html>

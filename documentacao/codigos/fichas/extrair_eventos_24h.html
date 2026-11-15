@@ -1,0 +1,171 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>codigo/extrair_eventos_24h.py</title><style>body{font:16px/1.6 Arial,sans-serif;max-width:1250px;margin:auto;padding:30px;color:#173445;background:#f5f8fa}a{color:#126781}header,article,section{background:white;padding:24px;margin:18px 0;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d2dfe4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf1f4}pre{overflow:auto;background:#112e3f;color:#ecf5fb;padding:18px;font:13px/1.6 Consolas,monospace}code{overflow-wrap:anywhere}h1,h2,h3{line-height:1.25;overflow-wrap:anywhere}input{padding:13px;width:80%;font-size:16px}li{margin:7px 0}</style><header><a href="../index.html">Voltar ao índice</a></header><article><h2>codigo/extrair_eventos_24h.py</h2>
+<p>Campos simultâneos de 24 h, extraídos de saídas horárias já executadas.</p>
+<p><strong>Papel.</strong> Aquisição/leitura. <strong>Fonte inspecionada.</strong> E:\copasa_map\codigo\extrair_eventos_24h.py.</p>
+<p><strong>Bibliotecas e dependências.</strong></p>
+<table><tr><th>Importação</th><th>Uso na implementação</th></tr><tr><td>caminhos_copasa</td><td>Configuração local dos caminhos, independente dos cálculos.</td></tr><tr><td>csv</td><td>Leitura/escrita de tabelas delimitadas com separador e codificação explícitos.</td></tr><tr><td>datetime</td><td>Calendários, datas e duração dos períodos avaliados.</td></tr><tr><td>json</td><td>Configurações, metadados e registros estruturados de auditoria.</td></tr><tr><td>numpy</td><td>Matrizes numéricas, máscaras de validade, transformações, percentis e estatísticas vetorizadas.</td></tr><tr><td>pathlib</td><td>Caminhos de arquivos independentes da concatenação manual de separadores.</td></tr><tr><td>struct</td><td>Decodificação binária com tipos, tamanhos e ordem de bytes definidos.</td></tr><tr><td>sys</td><td>Argumentos, interpretador Python e caminhos de importação.</td></tr></table>
+<p><strong>Entradas.</strong></p>
+<li>{p} — chamada p.read_text, linha 38.</li>
+<li>E:/copasa_map/in/CONC-{k}.DAT — chamada p.open, linha 89.</li>
+<li>E:/copasa_map/output/cmas_poster/dados_cenarios24h/Cenarios24h_manifesto.json — chamada manifest.read_text, linha 128.</li>
+<p><strong>Saídas.</strong></p>
+<li>E:/copasa_map/output/cmas_poster/dados_cenarios24h/CALPUFF_{k}_auditoria_janelas.json — chamada .write_text, linha 120.</li>
+<li>E:/copasa_map/output/cmas_poster/dados_cenarios24h/Cenarios24h_manifesto.json — chamada manifest.write_text, linha 134.</li>
+<p><strong>Campos e chaves lidos.</strong></p>
+<li>mm: average, c, code, lead, tail.</li>
+<li>d: comparison_passed, csv, hourly_source, max_abs_error.</li>
+<li>chosen: offset.</li>
+<li>old: events.</li>
+<p><strong>Etapas e interfaces.</strong> As funções abaixo são apresentadas na ordem do arquivo. A existência de uma função não significa que seja chamada em toda execução.</p>
+<table><tr><th>Função/interface</th><th>Linhas</th><th>Operação e retorno</th></tr><tr><td>table(p, km=False)</td><td>36-44</td><td>lê dados Retorno: (np.array(rows), codes).</td></tr><tr><td>identity(p)</td><td>46-46</td><td>Chamadas efetivas: dict, str, p.stat Retorno: dict(path=str(p), bytes=p.stat().st_size, mtime_ns=p.stat().st_mtime_ns).</td></tr><tr><td>write(model, k, xy, values, meta)</td><td>48-52</td><td>Chamadas efetivas: np.savetxt, meta.update, np.column_stack, str, len, float, values.max, values.min Retorno: meta.</td></tr><tr><td>aermod(k, sg, pl)</td><td>54-66</td><td>Chamadas efetivas: table, len, int, np.dtype, np.memmap, np.flatnonzero, np.all, .mean Retorno: write(&#x27;AERMOD&#x27;, k, native[:, :2], field, dict(period_start=date.isoformat(), period_end=(date + dt.timedelta(days=1)).isoformat(), hours=24, selection=&#x27;Date of the highest native 1ST HIGH 24h receptor.</td></tr><tr><td>unpack_record(f)</td><td>68-73</td><td>Chamadas efetivas: f.read, struct.unpack, len Retorno: b, None.</td></tr><tr><td>decode(b)</td><td>75-79</td><td>Chamadas efetivas: np.frombuffer, .astype, np.zeros, np.cumsum, counts.sum, np.where, np.trunc Retorno: values * 1000000.0.</td></tr><tr><td>stamp(values)</td><td>81-83</td><td>Chamadas efetivas: map, dt.datetime, dt.timedelta Retorno: dt.datetime(year, 1, 1) + dt.timedelta(days=day - 1, hours=hour, seconds=second).</td></tr><tr><td>calpuff(k, suffix)</td><td>85-123</td><td>grava produtos Retorno: write(&#x27;CALPUFF&#x27;, k, native[:, :2], a[i], dict(period_start=start.isoformat(), period_end=end.isoformat(), hours=24, selection=&#x27;Complete 24h averaging block with the highest receptor concentration; mat.</td></tr><tr><td>main()</td><td>125-135</td><td>lê dados; grava produtos</td></tr></table>
+<p><strong>Trechos citados do código.</strong> A numeração corresponde ao arquivo inspecionado nesta edição. São citações do processamento, não instruções para executar fragmentos isolados.</p>
+<p>Trecho de codigo/extrair_eventos_24h.py, linhas 61-67.</p>
+<pre><code>    assert np.all(mm[&#x27;average&#x27;][select]==1)
+    field=mm[&#x27;c&#x27;][select].mean(axis=0);err=float(abs(field[j]-native[j,2]));assert err&lt;1e-5,(k,err)
+    same_date=np.array([int(c)//100==day for c in codes]);same_date_error=float(np.max(abs(field[same_date]-native[same_date,2])))
+    assert same_date_error&lt;1e-5,(k,same_date_error)
+    date=dt.datetime.strptime(str(day),&#x27;%y%m%d&#x27;)
+    return write(&#x27;AERMOD&#x27;,k,native[:,:2],field,dict(period_start=date.isoformat(),period_end=(date+dt.timedelta(days=1)).isoformat(),hours=24,selection=&#x27;Date of the highest native 1ST HIGH 24h receptor value; all receptors on the same day&#x27;,native_rank_file=str(R/&#x27;CMAS&#x27;/pl),native_rank_peak=float(native[j,2]),peak_reproduction_error=err,same_date_peak_receptors=int(same_date.sum()),same_date_peak_max_error=same_date_error,hourly_source=identity(p),timezone=&#x27;as executed by AERMET; preprocessor convention to confirm&#x27;))
+# Unpack record</code></pre>
+<p>Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</p>
+<p>Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</p>
+<p><strong>Cálculos a observar nesta rotina.</strong></p>
+<li>mean: Média no eixo explicitado. Não representa automaticamente média anual ou diária sem a seleção temporal correspondente.</li>
+<li>sum: Soma no eixo definido. Em suportes sobrepostos, uma soma entre vizinhanças pode contar o mesmo local repetidas vezes.</li>
+<p><strong>Reutilização e limites.</strong> Alterar arquivos pelo JSON de caminhos e preservar nomes de campos/chaves, tipos e unidades citados. Antes de trocar a entrada, verificar a cobertura, o sistema de referência e a unicidade das chaves. Um teste ou auditoria confere consistência dentro do recorte previsto; não substitui a justificativa científica do método. </p>
+<h3>Código integral numerado</h3>
+<pre><code>    1  # CONFIGURAÇÃO DE ENTRADAS E SAÍDAS
+    2  # Configuração editável: codigo/caminhos_projeto.json
+    3  # Raiz dos dados: raiz_projeto; pastas e arquivos admitem caminhos próprios.
+    4  # Entrada: {p} | p.read_text.
+    5  # Entrada: E:/copasa_map/in/CONC-{k}.DAT | p.open.
+    6  # Entrada: E:/copasa_map/output/cmas_poster/dados_cenarios24h/Cenarios24h_manifesto.json | manifest.read_text.
+    7  # Campos/chaves em mm: average, c, code, lead, tail.
+    8  # Campos/chaves em d: comparison_passed, csv, hourly_source, max_abs_error.
+    9  # Campos/chaves em chosen: offset.
+   10  # Campos/chaves em old: events.
+   11  # Saída: E:/copasa_map/output/cmas_poster/dados_cenarios24h/CALPUFF_{k}_auditoria_janelas.json | .write_text.
+   12  # Saída: E:/copasa_map/output/cmas_poster/dados_cenarios24h/Cenarios24h_manifesto.json | manifest.write_text.
+   13  # CÓDIGO DO PROCESSAMENTO
+   14  
+   15  &quot;&quot;&quot;Campos simultâneos de 24 h, extraídos de saídas horárias já executadas.
+   16  
+   17  Nenhuma simulação, ajuste de emissão ou interpolação espacial neste módulo.
+   18  &quot;&quot;&quot;
+   19  # INÍCIO DOS CAMINHOS PORTÁTEIS
+   20  import sys as _cp_sys
+   21  from pathlib import Path as _cp_Path
+   22  _cp_file = _cp_Path(globals().get(&#x27;__file__&#x27;, _cp_Path.cwd() / &#x27;codigo&#x27; / &#x27;script.py&#x27;)).resolve()
+   23  for _cp_parent in [_cp_file.parent, *_cp_file.parents]:
+   24      _cp_code = _cp_parent if (_cp_parent / &#x27;caminhos_copasa.py&#x27;).is_file() else _cp_parent / &#x27;codigo&#x27;
+   25      if (_cp_code / &#x27;caminhos_copasa.py&#x27;).is_file():
+   26          if str(_cp_code) not in _cp_sys.path: _cp_sys.path.insert(0, str(_cp_code))
+   27          break
+   28  from caminhos_copasa import raiz_projeto as _cp_raiz, texto_caminho as _cp_texto, externo as _cp_externo, adaptar_texto as _cp_adaptar
+   29  # FIM DOS CAMINHOS PORTÁTEIS
+   30  
+   31  from pathlib import Path
+   32  import datetime as dt,json,struct,csv
+   33  import numpy as np
+   34  R=Path(_cp_texto(&#x27;&#x27;, &#x27;posix&#x27;));O=R/&#x27;output/cmas_poster/dados_cenarios24h&#x27;;O.mkdir(parents=True,exist_ok=True)
+   35  # Table
+   36  def table(p,km=False):
+   37      rows=[];codes=[]
+   38      for l in p.read_text(encoding=&#x27;cp1252&#x27;).splitlines():
+   39          q=l.split()
+   40          if len(q)&lt;3 or l.startswith(&#x27;*&#x27;):continue
+   41          try:x,y,c=map(float,q[:3])
+   42          except ValueError:continue
+   43          rows.append([x*1000 if km else x,y*1000 if km else y,c]);codes.append(q[-1])
+   44      return np.array(rows),codes
+   45  # Identity
+   46  def identity(p):return dict(path=str(p),bytes=p.stat().st_size,mtime_ns=p.stat().st_mtime_ns)
+   47  # Write
+   48  def write(model,k,xy,values,meta):
+   49      path=O/f&#x27;{model}_{k}_evento24h.csv&#x27;
+   50      np.savetxt(path,np.column_stack([xy,values]),delimiter=&#x27;,&#x27;,header=&#x27;X,Y,CONC&#x27;,comments=&#x27;&#x27;,fmt=[&#x27;%.8f&#x27;,&#x27;%.8f&#x27;,&#x27;%.12g&#x27;])
+   51      meta.update(csv=str(path),model=model,unit=k,aliases=&#x27;WWTP 1&#x27; if k==&#x27;VM&#x27; else &#x27;WWTP 2&#x27;,receptors=len(values),maximum=float(values.max()),minimum=float(values.min()),simultaneous=True,emission_corrections_applied=False)
+   52      return meta
+   53  # Aermod
+   54  def aermod(k,sg,pl):
+   55      native,codes=table(R/&#x27;CMAS&#x27;/pl);n=len(native);j=int(native[:,2].argmax());day=int(codes[j])//100
+   56      p=R/f&#x27;in/AERMOD/H2S/H2S_TOTAL.AD/1HG{sg}UN_PA.POS&#x27;
+   57      dtype=np.dtype([(&#x27;lead&#x27;,&#x27;&lt;i4&#x27;),(&#x27;code&#x27;,&#x27;&lt;i4&#x27;),(&#x27;average&#x27;,&#x27;&lt;i4&#x27;),(&#x27;group&#x27;,&#x27;S8&#x27;),(&#x27;c&#x27;,&#x27;&lt;f8&#x27;,(n,)),(&#x27;tail&#x27;,&#x27;&lt;i4&#x27;)]);assert p.stat().st_size%dtype.itemsize==0
+   58      mm=np.memmap(p,dtype=dtype,mode=&#x27;r&#x27;);select=np.flatnonzero(mm[&#x27;code&#x27;]//100==day)
+   59      assert len(select)==24 and np.array_equal(mm[&#x27;code&#x27;][select]%100,np.arange(1,25))
+   60      assert np.all(mm[&#x27;lead&#x27;][select]==16+8*n) and np.all(mm[&#x27;tail&#x27;][select]==16+8*n)
+   61      assert np.all(mm[&#x27;average&#x27;][select]==1)
+   62      field=mm[&#x27;c&#x27;][select].mean(axis=0);err=float(abs(field[j]-native[j,2]));assert err&lt;1e-5,(k,err)
+   63      same_date=np.array([int(c)//100==day for c in codes]);same_date_error=float(np.max(abs(field[same_date]-native[same_date,2])))
+   64      assert same_date_error&lt;1e-5,(k,same_date_error)
+   65      date=dt.datetime.strptime(str(day),&#x27;%y%m%d&#x27;)
+   66      return write(&#x27;AERMOD&#x27;,k,native[:,:2],field,dict(period_start=date.isoformat(),period_end=(date+dt.timedelta(days=1)).isoformat(),hours=24,selection=&#x27;Date of the highest native 1ST HIGH 24h receptor value; all receptors on the same day&#x27;,native_rank_file=str(R/&#x27;CMAS&#x27;/pl),native_rank_peak=float(native[j,2]),peak_reproduction_error=err,same_date_peak_receptors=int(same_date.sum()),same_date_peak_max_error=same_date_error,hourly_source=identity(p),timezone=&#x27;as executed by AERMET; preprocessor convention to confirm&#x27;))
+   67  # Unpack record
+   68  def unpack_record(f):
+   69      a=f.read(4)
+   70      if not a:return None
+   71      n=struct.unpack(&#x27;&lt;i&#x27;,a)[0];assert 0&lt;=n&lt;10000000
+   72      b=f.read(n);end=f.read(4);assert len(b)==n and len(end)==4 and struct.unpack(&#x27;&lt;i&#x27;,end)[0]==n
+   73      return b
+   74  # Decode
+   75  def decode(b):
+   76      assert b[:4]==b&#x27;ODOR&#x27;;z=np.frombuffer(b[15:],dtype=&#x27;&lt;f4&#x27;);neg=z&lt;0
+   77      counts=np.where(neg,-np.trunc(z),1).astype(int);indices=np.cumsum(counts)-counts
+   78      values=np.zeros(counts.sum(),dtype=&#x27;float64&#x27;);values[indices[~neg]]=z[~neg]
+   79      return values*1e6
+   80  # Stamp
+   81  def stamp(values):
+   82      year,day,hour,second=map(int,values)
+   83      return dt.datetime(year,1,1)+dt.timedelta(days=day-1,hours=hour,seconds=second)
+   84  # Calpuff
+   85  def calpuff(k,suffix):
+   86      p=R/f&#x27;in/CONC-{k}.DAT&#x27;;native,_=table(R/f&#x27;CMAS/RANK(ALL)_ODOR_24HR_CONC_C_{suffix}.DAT&#x27;,True)
+   87      first=next((R/f&#x27;calpuff_horario/{k.lower()}&#x27;).glob(&#x27;2023_M12_D31_2300*&#x27;));coord,_=table(first,True);assert len(coord)==len(native) and np.allclose(coord[:,:2],native[:,:2],atol=.001)
+   88      acc=[np.zeros(len(native)),np.zeros(len(native))];days=[[],[]];periods=[[],[]];starts=[None,None]
+   89      with p.open(&#x27;rb&#x27;) as f:
+   90          assert unpack_record(f).startswith(b&#x27;CONC.DAT&#x27;);nlines=struct.unpack(&#x27;&lt;i&#x27;,unpack_record(f))[0]
+   91          for _ in range(nlines):unpack_record(f)
+   92          for _ in range(5):unpack_record(f)
+   93          count=0;previous_end=None
+   94          while True:
+   95              b=unpack_record(f)
+   96              if b is None:break
+   97              assert len(b)==32;btime=struct.unpack(&#x27;&lt;8i&#x27;,b);start,end=stamp(btime[:4]),stamp(btime[4:]);assert end-start==dt.timedelta(hours=1)
+   98              assert previous_end is None or start==previous_end
+   99              previous_end=end
+  100              meta=unpack_record(f);assert meta[8:13]==b&#x27;TOTAL&#x27;
+  101              chunks=[]
+  102              for _ in range(2):
+  103                  pack=struct.unpack(&#x27;&lt;i&#x27;,unpack_record(f))[0];b=unpack_record(f);assert (len(b)-15)//4==pack;chunks.append(decode(b))
+  104              c=np.concatenate(chunks);assert len(c)==len(native) and np.isfinite(c).all() and (c&gt;=0).all()
+  105              for offset in [0,1]:
+  106                  if count&lt;offset:continue
+  107                  j=(count-offset)%24
+  108                  if j==0:starts[offset]=start
+  109                  acc[offset]+=c
+  110                  if j==23:
+  111                      days[offset].append(acc[offset]/24);periods[offset].append((starts[offset],end));acc[offset]=np.zeros(len(native))
+  112              count+=1
+  113      assert count==17517
+  114      candidates=[]
+  115      for offset in [0,1]:
+  116          a=np.asarray(days[offset]);env=a.max(axis=0);error=float(np.max(abs(env-native[:,2])));relative=float(np.max(abs(env-native[:,2])/np.maximum(native[:,2],1e-6)))
+  117          passed=bool(np.allclose(env,native[:,2],rtol=1e-4,atol=1e-6));candidates.append(dict(offset=offset,comparison_passed=passed,max_abs_error=error,max_relative_error=relative))
+  118      choices=[d for d in candidates if d[&#x27;comparison_passed&#x27;]]
+  119      if not choices:
+  120          (O/f&#x27;CALPUFF_{k}_auditoria_janelas.json&#x27;).write_text(json.dumps(candidates,indent=2),encoding=&#x27;utf8&#x27;);raise ValueError((k,&#x27;24h averaging windows do not reproduce native CALPOST ranking&#x27;,candidates))
+  121      chosen=min(choices,key=lambda d:d[&#x27;max_abs_error&#x27;]);offset=chosen[&#x27;offset&#x27;];a=np.asarray(days[offset]);i,j=np.unravel_index(a.argmax(),a.shape);start,end=periods[offset][i]
+  122      assert end-start==dt.timedelta(hours=24)
+  123      return write(&#x27;CALPUFF&#x27;,k,native[:,:2],a[i],dict(period_start=start.isoformat(),period_end=end.isoformat(),hours=24,selection=&#x27;Complete 24h averaging block with the highest receptor concentration; matched to native CALPOST RANK&#x27;,native_rank_peak=float(native[:,2].max()),native_envelope_validation=candidates,selected_offset=offset,hourly_source=identity(p),timezone=&#x27;UTC-03:00, as recorded in the model&#x27;,decoded_records=count))
+  124  # Main
+  125  def main():
+  126      manifest=O/&#x27;Cenarios24h_manifesto.json&#x27;
+  127      if manifest.exists():
+  128          old=json.loads(manifest.read_text(encoding=&#x27;utf8&#x27;))
+  129          if old.get(&#x27;extraction_version&#x27;)==2 and all(identity(Path(d[&#x27;hourly_source&#x27;][&#x27;path&#x27;]))==d[&#x27;hourly_source&#x27;] and Path(d[&#x27;csv&#x27;]).exists() for d in old[&#x27;events&#x27;]):print(&#x27;Event cache current&#x27;);return
+  130      events=[]
+  131      for k,sg,pl,suffix in [(&#x27;VM&#x27;,&#x27;V-Maria&#x27;,&#x27;24H1G001_V-MARIA.PLT&#x27;,&#x27;V-MARIA&#x27;),(&#x27;NC&#x27;,&#x27;N-Cont&#x27;,&#x27;24H1G002_N-CONT.PLT&#x27;,&#x27;N-CONT&#x27;)]:
+  132          events.append(aermod(k,sg,pl));print(&#x27;AERMOD&#x27;,k,events[-1][&#x27;period_start&#x27;],events[-1][&#x27;maximum&#x27;],flush=True)
+  133          events.append(calpuff(k,suffix));print(&#x27;CALPUFF&#x27;,k,events[-1][&#x27;period_start&#x27;],events[-1][&#x27;maximum&#x27;],flush=True)
+  134      manifest.write_text(json.dumps(dict(events=events,simulation_run=False,interpolation_used=False,extraction_version=2),indent=2),encoding=&#x27;utf8&#x27;)
+  135      print(json.dumps(events))
+  136  if __name__==&#x27;__main__&#x27;:main()</code></pre></article></html>
