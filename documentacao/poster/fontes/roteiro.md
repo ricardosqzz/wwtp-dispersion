@@ -2,7 +2,7 @@
 
 Sessão 5 do CMAS
 
-Este material acompanha o pôster corrente e foi conferido em 14 de novembro de 2026. As unidades são identificadas exclusivamente como WWTP 1 e WWTP 2. As versões de 90 segundos e de aproximadamente cinco minutos são sugestões de ensaio, sem atribuir ao congresso um tempo obrigatório de apresentação.
+Este material acompanha o pôster corrente e foi conferido em 18 de novembro de 2026. As unidades são identificadas exclusivamente como WWTP 1 e WWTP 2. Há uma abertura de cerca de 90 segundos e um roteiro ampliado em inglês para aproximadamente dez a doze minutos. O roteiro pode ser abreviado conforme a conversa; esses tempos são sugestões de ensaio, sem atribuir ao congresso uma duração obrigatória.
 
 O título do pôster é “ASSESSING MODEL SENSITIVITY IN H2S DISPERSION: COMPARATIVE EVALUATION OF AERMOD AND CALPUFF FOR WASTEWATER TREATMENT PLANTS”. A comparação se refere aos cenários executados. Não houve calibração estatística dos modelos nem demonstração de superioridade em relação a medições observadas.
 
@@ -26,16 +26,19 @@ At each receptor, we calculated the hourly ninety-fifth percentile. The boxplots
 
 These results show that partial agreement in spatial ranking can coexist with substantial differences in magnitude. The comparison helps identify locations where monitoring is most informative. Measurements at matching locations and averaging periods are required to determine which predictions better represent actual conditions.
 
-## Percurso sugerido para a apresentação completa
+## Percurso sugerido para a apresentação ampliada
 
 | Tempo aproximado | Onde apontar | Mensagem principal |
 |---|---|---|
-| 0 a 40 segundos | Introdução e objetivo | Comparar respostas espaciais dos dois modelos em duas WWTP. |
-| 40 a 90 segundos | Métodos e inventário | Fontes mapeadas, balanço de massa e receptores coincidentes. |
-| 90 a 145 segundos | Boxplots | Cada observação do boxplot é o P95 horário de um receptor. |
-| 145 a 205 segundos | Mapas de 24 h e anual | Envelopes de máximos e contribuição de longa duração são indicadores diferentes. |
-| 205 a 275 segundos | Perfis por distância | Medianas, quartis e diferença entre modelos revelam a mudança espacial. |
-| 275 a 320 segundos | Conclusão | Utilidade para orientar monitoramento, com validação observacional ainda necessária. |
+| 0 a 1 minuto | Introdução e objetivo | Comparar respostas dos modelos; validação ambiental ainda futura. |
+| 1 a 2 minutos | Fontes e inventário | Massa total, fluxo superficial e emissões constantes. |
+| 2 a 4 minutos | Metodologia | AERMET, CALMET, camada limite e opção de dispersão executada. |
+| 4 a 6 minutos | Receptores e boxplots | Pares nativos, P95 em cada receptor e regras de validade. |
+| 6 a 8 minutos | Mapas e perfis | Envelope diário, média anual e variabilidade por distância. |
+| 8 a 11 minutos | Resultados e limitações | Contrastes, comportamento noturno e hipóteses de refinamento. |
+| 11 a 12 minutos | Conclusão | Planejamento de monitoramento e comparação futura com medições. |
+
+A versão em português abaixo mantém um percurso mais breve. Para ampliar a conversa em português, use as explicações físicas e as perguntas do guia de preparação.
 
 ## Apresentação completa em português
 
@@ -61,27 +64,72 @@ A principal contribuição é combinar mapas extremos, distribuições horárias
 
 ## Full presentation in English
 
-Good morning. Our study compares hydrogen sulphide dispersion at two wastewater treatment plants. Hydrogen sulphide, or H2S, may be released from anaerobic treatment units and downstream processes, contributing to odour nuisance beyond plant boundaries. Dispersion modelling helps investigate which receptors may receive higher concentrations and how the predictions change between models.
+### Purpose and research question
 
-We compared AERMOD, a steady-state plume model for each meteorological period, with CALPUFF, a non-steady-state puff model. This presentation examines the concentration fields and their spatial distributions. Comparing the predictions against ambient measurements to determine which model is more representative is a subsequent step.
+Good morning. This study compares hydrogen sulphide dispersion predicted by AERMOD and CALPUFF at two wastewater treatment plants, identified here as WWTP 1 and WWTP 2. Hydrogen sulphide can be generated during anaerobic wastewater treatment and released when dissolved sulphide is transferred from water to the atmosphere. The point where sulphide is produced is therefore not necessarily the point where most of it is emitted.
 
-In the methodology, sources were represented by their mapped geometries and a process mass-balance inventory. Total mean emission rates are approximately 0.05728 grams per second at WWTP 1 and 0.06866 at WWTP 2. UASB reactors account for 72% of emissions at the first plant, while trickling filters account for 73% at the second. These shares describe the adopted inventory for each plant.
+Our question is how the two modelling systems distribute the predicted concentrations around the same treatment processes, and how their differences change with distance. We are comparing model responses, rather than assuming that one model provides the correct answer. Ambient observations will be used in a subsequent evaluation. This distinction is important because a model-to-model comparison can reveal sensitivity, but it cannot establish which prediction is more accurate in the real environment.
 
-The AERMOD grid contains 1,790 records at 1,789 unique positions. For statistical comparisons, we used coincident native locations from the two models, without interpolating concentrations. Within 1,800 metres of the nearest emitting surface, we obtained 562 pairs at WWTP 1 and 556 at WWTP 2. The distribution analysis uses 2024 and retains each model's native validity rules.
+### Sources and emission inventory
 
-For the boxplots, we first calculated the ninety-fifth percentile of hourly concentrations at each receptor. We then grouped these receptor-level values by distance. The boxes therefore show the spatial distribution of receptor percentiles. They do not combine every hour and every location into a single distribution. Each box presents the quartiles and median. Outlier markers are omitted from this display, while all receptors remain in the data and in the full-sample indicators.
+Please look first at the source-characterisation maps. We represented the emitting surfaces using circular or polygonal area sources, including UASB reactors, preliminary treatment and the relevant downstream units. UASB stands for upflow anaerobic sludge blanket. These are diffuse releases from treatment surfaces, rather than conventional hot exhaust stacks.
 
-The 24-hour maps show the highest value at each receptor. These maxima may occur on different days, so the map is a spatial envelope of maxima. The annual maps show the higher calendar-year mean from 2024 or 2025 at each point. CALPUFF coverage is complete in 2024 and 99.68% in 2025. The two colour-bar scales express the same H2S concentration in micrograms per cubic metre and parts per billion, using a conventional conversion at 25 degrees Celsius and one atmosphere.
+The inventory is based on process mass balances. The mass assigned to a process is calculated once and distributed among its corresponding surfaces. Total mean emission rates are approximately 0.05728 grams per second at WWTP 1 and 0.06866 grams per second at WWTP 2. In this inventory, UASB reactors account for about 72 percent of the first plant's emission, while trickling filters account for about 73 percent at the second plant. These percentages describe the adopted inventory and should not be treated as universal emission shares for wastewater treatment plants.
 
-The lower profiles use six distance bands. The line represents the median of the receptor-level P95 values within each band, and the shading represents the first-to-third quartile interval. This describes spatial variability, not a confidence interval. Smoothing between these summaries is only visual and does not modify model concentrations.
+For an area source, surface flux and total emission rate are different quantities. Surface flux is expressed per square metre, whereas the total rate is obtained by integrating that flux over the source area. This distinction matters when comparing a circular representation with a polygonal approximation. The present simulations use constant source rates. We have not imposed an observed hourly emission profile or established that the plants emit more hydrogen sulphide at night.
 
-AERMOD produces higher values close to the sources. For example, in the first distance band at WWTP 1, the difference between the CALPUFF and AERMOD medians is approximately minus 37.6 micrograms per cubic metre. With increasing distance, this difference becomes smaller and may change sign. The lower strip displays this difference of medians, which is distinct from the median of paired receptor differences.
+### Meteorological processing and model formulation
 
-Spatial Spearman correlations for P95 were approximately 0.57 at WWTP 1 and 0.63 at WWTP 2. However, only 35.9% and 24.8% of pairs were within a factor of two. Partial agreement in receptor ranking therefore coexists with substantial differences in concentration magnitude.
+AERMOD represents a plume under the meteorological conditions assigned to each hour. It uses boundary-layer parameters and vertical profiles supplied by AERMET, together with source geometry and terrain information. The executed model was AERMOD version 26135, using meteorological files produced by AERMET version 24142. The run used the default concentration options with elevated terrain and the rural dispersion treatment. Here, rural is a model option; it does not mean that the surrounding region has no urban development.
 
-The main contribution is to combine extreme maps, hourly distributions and distance profiles to identify where model comparison is most informative. The results help select monitoring locations and support source-control discussions. Measurements at the same locations and compatible averaging periods are needed to evaluate environmental representativeness. We acknowledge the ARSAE-MG and COPASA research programme, CNPq, CAPES and FAPEMIG.
+AERMET processed the supplied surface time series and upper-air soundings. Its outputs describe wind, temperature and boundary-layer properties such as friction velocity, sensible heat flux, the Monin-Obukhov length and mixing heights. These variables determine how readily the atmosphere can dilute a release. They are not extra emission rates. We used the resulting surface and profile files as inputs to the dispersion calculation.
+
+CALMET and CALPUFF were both version 5.8.5 in this execution. CALMET generated a three-dimensional diagnostic meteorological field using the supplied observations, terrain and land-surface information. The configured grid contains forty by forty cells, with a horizontal spacing of 1.5 kilometres and ten vertical layers. This is the meteorological grid, which is different from the finer receptor network used to sample concentrations. A dense receptor grid does not itself increase the resolution of the meteorological information.
+
+The submitted CALMET configuration has one surface station, one upper-air station and no prognostic three-dimensional input. We therefore do not describe this run as a WRF-driven, high-resolution reconstruction of every local circulation. CALPUFF transports and disperses puffs through the CALMET field, retaining their evolution over time. An important execution detail is that MDISP was set to three. This uses the configured Pasquill-Gifford or McElroy-Pooler dispersion relationships, rather than the alternative option based directly on internally calculated turbulence standard deviations. Chemical transformation, wet removal and dry deposition were disabled in the CALPUFF input. These details define the scope of the current comparison.
+
+### Receptors and comparison strategy
+
+The AERMOD network contains 1,790 receptor records at 1,789 unique positions. Two cadastral identifiers share a location, and that location is not counted twice in the spatial statistics. We matched native receptor coordinates between the two systems, using the documented 0.75-metre tolerance, rather than interpolating concentrations to manufacture pairs.
+
+Within 1,800 metres of the nearest emitting surface, the comparison includes 562 receptor pairs at WWTP 1 and 556 at WWTP 2. Distance is measured to the union of the emitting surfaces, not to the plant centre. A receptor inside a source polygon therefore has a geometric distance of zero. The receptor percentages discussed here are not percentages of exposed population or of municipal area.
+
+### How to read the boxplots and distance profiles
+
+For the distributional analysis, we used the leap year 2024. At each receptor and for each model, we calculated the ninety-fifth percentile of the valid hourly concentrations. We then compared these receptor-level percentiles across distance bands. Each value in a boxplot is therefore one receptor's hourly P95, rather than an individual hourly observation. The boxes show spatial variation in upper-tail temporal indicators.
+
+AERMOD contributed 8,496 valid hours in this analysis, while CALPUFF contributed 8,784. We preserved native validity rules and did not fill missing hours. These distributions are consequently not a set of synchronised hourly prediction errors. A controlled temporal comparison requires a common clock and a common valid-hour mask, which are part of the next refinement.
+
+The distance profiles summarise six bands from the source boundary to 1,800 metres. The central line is the median of receptor P95 values within a band, and the shaded interval extends from the first to the third quartile. This is spatial interquartile variability, not a confidence interval. The interpolation between the six summaries is only a display aid; it does not change any modelled concentration. The lower strip shows the difference between the two medians, CALPUFF minus AERMOD, which is not necessarily the median of the paired differences.
+
+### How to read the dispersion maps
+
+The 24-hour maps show the highest daily mean at each receptor. The peaks need not occur on the same day, so each map is a receptor-specific envelope of maxima, not a single simultaneous pollution episode. For the annual maps, we selected the larger calendar-year mean from 2024 and 2025 at each point. CALPUFF has complete coverage in 2024 and 99.68 percent coverage in 2025, so the latter is a nearly complete year and is identified as such.
+
+The hourly CALPUFF concentration outputs provide the temporal information needed for this calculation. The RANK files alone do not contain a complete hourly series at every receptor. AERMOD hourly POST files and CALPUFF hourly fields were checked against their native summaries. This numerical consistency check supports the extraction and aggregation procedure; it does not validate the atmospheric predictions against measurements.
+
+The colour bar shows the same hydrogen sulphide concentration in micrograms per cubic metre and equivalent parts per billion. The conversion uses a conventional temperature of 25 degrees Celsius and a pressure of one atmosphere. The daily and annual maps are useful for comparing model behaviour, but they should not be interpreted directly as the frequency of short odour events.
+
+### Main results and their interpretation
+
+AERMOD generally produces higher concentrations very close to the emitting surfaces in this comparison, while the contrast changes with distance and plant. Spatial Spearman correlations of receptor P95 are approximately 0.57 at WWTP 1 and 0.63 at WWTP 2. However, only 35.9 and 24.8 percent of receptor pairs, respectively, are within a factor of two. A partially similar ranking of receptors can therefore coexist with substantial differences in concentration magnitude. Neither statistic is an accuracy score against observed concentrations.
+
+We are still refining the model representation, particularly under nocturnal boundary-layer conditions. The diagnostic hourly summaries show higher AERMOD concentrations during the nominal overnight and early-morning part of its model clock. Constant source rates continue to supply pollutant while weaker mixing, shallow mixing layers and low effective wind speeds can limit dilution. These are physically plausible explanations to investigate, rather than a demonstrated attribution of the model difference to one mechanism. Clock conventions must also be resolved before a detailed local day-night comparison.
+
+It would therefore be premature to say that actual emissions are higher at night, that the model has already been corrected, or that either system is overpredicting the real concentrations. We will compare the predictions with measurements at compatible locations, averaging periods and times. Sensitivity scenarios will separately examine emission timing, source representation and the meteorological treatment, preserving the appropriate total mass when the mean emission is unchanged.
+
+### Conclusion and next steps
+
+The contribution of this work is to combine extreme concentration maps, temporal distributions and spatial distance profiles, rather than choosing a model on the basis of a single maximum. This helps identify where the two systems disagree and where additional monitoring can most effectively test the assumptions. The present poster reports a comparison of executed scenarios. Boundary-layer refinement and independent observed-model evaluation are continuing work for the article. We acknowledge the ARSAE-MG and COPASA research programme, CNPq, CAPES and FAPEMIG.
 
 ## Frases úteis para a conversa em inglês
+
+“We are still refining the nocturnal boundary-layer representation, and comparison with compatible observations is the next step.”
+
+“The source rates are constant; higher modelled nighttime concentrations do not demonstrate higher actual nighttime emissions.”
+
+“MDISP was set to three in the executed CALPUFF input; we have not yet run the alternative turbulence-based option.”
+
 
 “Each value in this boxplot is the hourly P95 at one receptor.” Use para explicar a unidade estatística das caixas.
 

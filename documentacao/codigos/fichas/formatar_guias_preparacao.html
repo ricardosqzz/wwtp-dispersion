@@ -1,0 +1,202 @@
+<!doctype html><meta charset="utf-8"><style>body{max-width:1100px;margin:30px auto;font:16px/1.6 Arial}pre{background:#edf3f5;overflow:auto;padding:18px}</style><h1>formatar_guias_preparacao.py</h1><p>revisão editorial e produtos intermediários de 18/11/2026</p><h2>Entradas e saídas</h2><pre># ENTRADAS: arquivos Markdown indicados na linha de comando; títulos, parágrafos, listas, tabelas e links.
+# SAÍDAS: DOCX e PDF ao lado de cada Markdown; mesma estrutura editorial dos guias de preparação.
+# CAMINHOS: argumentos de arquivo e DOCUMENT_FONT_DIR; executar com as dependências documentais instaladas.
+from pathlib import Path
+import argparse
+import html
+import os
+import re
+import textwrap</pre><h2>Código integral</h2><pre># ENTRADAS: arquivos Markdown indicados na linha de comando; títulos, parágrafos, listas, tabelas e links.
+# SAÍDAS: DOCX e PDF ao lado de cada Markdown; mesma estrutura editorial dos guias de preparação.
+# CAMINHOS: argumentos de arquivo e DOCUMENT_FONT_DIR; executar com as dependências documentais instaladas.
+from pathlib import Path
+import argparse
+import html
+import os
+import re
+import textwrap
+from docx import Document
+from docx.shared import Cm,Pt,RGBColor
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate,Paragraph,Spacer,Table,TableStyle,Preformatted,PageBreak,KeepTogether
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_LEFT
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.lib.pagesizes import A4
+
+# Registrar fontes
+def registrar_fontes():
+    folder=Path(os.environ.get(&#x27;DOCUMENT_FONT_DIR&#x27;,&#x27;C:/Windows/Fonts&#x27;))
+    candidates=[(folder/&#x27;arial.ttf&#x27;,folder/&#x27;arialbd.ttf&#x27;,folder/&#x27;ariali.ttf&#x27;,folder/&#x27;consola.ttf&#x27;),tuple(Path(&#x27;/usr/share/fonts/truetype/dejavu&#x27;)/n for n in [&#x27;DejaVuSans.ttf&#x27;,&#x27;DejaVuSans-Bold.ttf&#x27;,&#x27;DejaVuSans-Oblique.ttf&#x27;,&#x27;DejaVuSansMono.ttf&#x27;])]
+    for normal,bold,italic,code in candidates:
+        if all(p.exists() for p in [normal,bold,italic,code]):
+            for name,path in [(&#x27;Body&#x27;,normal),(&#x27;BodyBold&#x27;,bold),(&#x27;BodyItalic&#x27;,italic),(&#x27;Code&#x27;,code)]:pdfmetrics.registerFont(TTFont(name,str(path)))
+            pdfmetrics.registerFontFamily(&#x27;Body&#x27;,normal=&#x27;Body&#x27;,bold=&#x27;BodyBold&#x27;,italic=&#x27;BodyItalic&#x27;,boldItalic=&#x27;BodyBold&#x27;);return
+    raise FileNotFoundError(&#x27;Informe DOCUMENT_FONT_DIR com Arial e Consolas ou instale DejaVu Sans e DejaVu Sans Mono.&#x27;)
+
+# Blocos
+def blocos(text):
+    lines=text.splitlines();i=0
+    while i&lt;len(lines):
+        line=lines[i]
+        if not line.strip():i+=1;continue
+        if line.startswith(&#x27;```&#x27;):
+            code=[];i+=1
+            while i&lt;len(lines) and not lines[i].startswith(&#x27;```&#x27;):code.append(lines[i]);i+=1
+            yield &#x27;code&#x27;,&#x27;\n&#x27;.join(code);i+=1;continue
+        if line.startswith(&#x27;|&#x27;):
+            rows=[]
+            while i&lt;len(lines) and lines[i].startswith(&#x27;|&#x27;):
+                if not re.fullmatch(r&#x27;[| :\-]+&#x27;,lines[i]):rows.append([s.strip() for s in lines[i].strip(&#x27;|&#x27;).split(&#x27;|&#x27;)])
+                i+=1
+            yield &#x27;table&#x27;,rows;continue
+        if line.startswith(&#x27;#&#x27;):
+            n=len(line)-len(line.lstrip(&#x27;#&#x27;));yield &#x27;h&#x27;+str(min(n,3)),line.lstrip(&#x27;# &#x27;);i+=1;continue
+        if line==&#x27;&lt;!-- PAGEBREAK --&gt;&#x27;:yield &#x27;break&#x27;,&#x27;&#x27;;i+=1;continue
+        if line.startswith(&#x27;- &#x27;):yield &#x27;bullet&#x27;,line[2:];i+=1;continue
+        if line.startswith(&#x27;&gt; &#x27;):yield &#x27;quote&#x27;,line[2:];i+=1;continue
+        buf=[line];i+=1
+        while i&lt;len(lines) and lines[i].strip() and not lines[i].startswith((&#x27;#&#x27;,&#x27;|&#x27;,&#x27;```&#x27;,&#x27;- &#x27;,&#x27;&gt; &#x27;)):
+            buf.append(lines[i]);i+=1
+        yield &#x27;p&#x27;,&#x27; &#x27;.join(buf)
+
+# Texto simples
+def texto_simples(s):
+    s=re.sub(r&#x27;\[([^\]]+)\]\(([^)]+)\)&#x27;,r&#x27;\1&#x27;,s)
+    return s.replace(&#x27;**&#x27;,&#x27;&#x27;).replace(&#x27;`&#x27;,&#x27;&#x27;)
+
+# Inline pdf
+def inline_pdf(s):
+    s=html.escape(s)
+    s=re.sub(r&#x27;\*\*([^*]+)\*\*&#x27;,r&#x27;&lt;b&gt;\1&lt;/b&gt;&#x27;,s)
+    s=re.sub(r&#x27;`([^`]+)`&#x27;,r&#x27;&lt;font name=&quot;Code&quot; size=&quot;9&quot;&gt;\1&lt;/font&gt;&#x27;,s)
+    s=re.sub(r&#x27;\[([^\]]+)\]\(([^)]+)\)&#x27;,r&#x27;&lt;link href=&quot;\2&quot; color=&quot;#19556d&quot;&gt;\1&lt;/link&gt;&#x27;,s)
+    return s
+
+# Criar docx
+def criar_docx(path,content):
+    doc=Document();sec=doc.sections[0];sec.page_height=Cm(29.7);sec.page_width=Cm(21)
+    sec.top_margin=sec.bottom_margin=Cm(2);sec.left_margin=sec.right_margin=Cm(2)
+    for name in [&#x27;Normal&#x27;,&#x27;Title&#x27;,&#x27;Subtitle&#x27;,&#x27;Heading 1&#x27;,&#x27;Heading 2&#x27;,&#x27;Heading 3&#x27;,&#x27;List Bullet&#x27;]:
+        st=doc.styles[name];st.font.name=&#x27;Arial&#x27;;st.font.color.rgb=RGBColor(0,0,0);st._element.get_or_add_rPr().get_or_add_rFonts().set(qn(&#x27;w:hAnsi&#x27;),&#x27;Arial&#x27;)
+    normal=doc.styles[&#x27;Normal&#x27;];normal.font.size=Pt(11);normal.paragraph_format.space_after=Pt(6);normal.paragraph_format.line_spacing=1.12;normal.paragraph_format.widow_control=True
+    doc.styles[&#x27;Title&#x27;].font.size=Pt(21);doc.styles[&#x27;Title&#x27;].font.bold=True
+    for border in list(doc.styles.element.xpath(&#x27;.//w:pBdr&#x27;)):border.getparent().remove(border)
+    for st,size in [(&#x27;Heading 1&#x27;,15),(&#x27;Heading 2&#x27;,12.5),(&#x27;Heading 3&#x27;,11.5)]:
+        doc.styles[st].font.size=Pt(size);doc.styles[st].font.bold=True;doc.styles[st].paragraph_format.space_before=Pt(14);doc.styles[st].paragraph_format.space_after=Pt(7);doc.styles[st].paragraph_format.keep_with_next=True
+    first=True
+    for index,(kind,data) in enumerate(content):
+        if kind.startswith(&#x27;h&#x27;):
+            p=doc.add_paragraph(data,&#x27;Title&#x27; if first else &#x27;Heading &#x27;+str(min(int(kind[1:])-1,3) or 1));first=False
+        elif kind==&#x27;table&#x27;:
+            n=max(len(row) for row in data);t=doc.add_table(rows=0,cols=n);t.alignment=WD_TABLE_ALIGNMENT.CENTER;t.autofit=False
+            widths=[17/n]*n
+            if n==3:widths=[3.0,5.0,9.0]
+            if n==3 and data[0][0]==&#x27;Componente&#x27;:widths=[4.1,6.3,6.6]
+            if n==3 and data[0][0]==&#x27;Função/interface&#x27;:widths=[5.4,1.8,9.8]
+            if n==2:widths=[5.5,11.5]
+            for j,row in enumerate(data):
+                cells=t.add_row().cells
+                for k,value in enumerate(row):
+                    cells[k].width=Cm(widths[k]);p=cells[k].paragraphs[0];r=p.add_run(texto_simples(value));r.font.size=Pt(9.3);r.bold=j==0
+                    p.paragraph_format.space_after=Pt(4);p.paragraph_format.space_before=Pt(4);p.paragraph_format.line_spacing=1.1
+                    cells[k].vertical_alignment=1
+                    tcpr=cells[k]._tc.get_or_add_tcPr();borders=OxmlElement(&#x27;w:tcBorders&#x27;)
+                    for side in [&#x27;top&#x27;,&#x27;left&#x27;,&#x27;bottom&#x27;,&#x27;right&#x27;]:
+                        edge=OxmlElement(&#x27;w:&#x27;+side);edge.set(qn(&#x27;w:val&#x27;),&#x27;single&#x27;);edge.set(qn(&#x27;w:sz&#x27;),&#x27;4&#x27;);edge.set(qn(&#x27;w:color&#x27;),&#x27;D9D9D9&#x27;);borders.append(edge)
+                    tcpr.append(borders)
+                    if j==0:
+                        shade=OxmlElement(&#x27;w:shd&#x27;);shade.set(qn(&#x27;w:fill&#x27;),&#x27;E9EFF2&#x27;);cells[k]._tc.get_or_add_tcPr().append(shade)
+                if j==0:
+                    repeat=OxmlElement(&#x27;w:tblHeader&#x27;);t.rows[0]._tr.get_or_add_trPr().append(repeat)
+                cant=OxmlElement(&#x27;w:cantSplit&#x27;);t.rows[-1]._tr.get_or_add_trPr().append(cant)
+            doc.add_paragraph()
+        elif kind==&#x27;code&#x27;:
+            wrapped=[]
+            for line in data.expandtabs(4).splitlines():
+                wrapped.extend(textwrap.wrap(line,width=98,replace_whitespace=False,drop_whitespace=False,subsequent_indent=&#x27;    &#x27;) or [&#x27; &#x27;])
+            for line in wrapped:
+                p=doc.add_paragraph();p.paragraph_format.space_after=Pt(0);p.paragraph_format.line_spacing=1.02;p.paragraph_format.left_indent=Cm(.3)
+                r=p.add_run(line or &#x27; &#x27;);r.font.name=&#x27;Consolas&#x27;;r.font.size=Pt(8.2)
+            doc.add_paragraph().paragraph_format.space_after=Pt(3)
+        elif kind==&#x27;break&#x27;:doc.add_page_break()
+        else:
+            p=doc.add_paragraph(style=&#x27;List Bullet&#x27; if kind==&#x27;bullet&#x27; else &#x27;Normal&#x27;)
+            if kind==&#x27;quote&#x27;:p.paragraph_format.left_indent=Cm(.5)
+            if data.startswith(&#x27;**&#x27;) and data.endswith(&#x27;?**&#x27;):p.paragraph_format.keep_with_next=True
+            if index+1&lt;len(content) and content[index+1][0]==&#x27;p&#x27; and content[index+1][1].startswith(&#x27;**English answer.**&#x27;):p.paragraph_format.keep_with_next=True
+            parts=re.split(r&#x27;(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))&#x27;,data)
+            for part in parts:
+                if not part:continue
+                link=re.fullmatch(r&#x27;\[([^\]]+)\]\(([^)]+)\)&#x27;,part)
+                if link:
+                    h=OxmlElement(&#x27;w:hyperlink&#x27;);h.set(qn(&#x27;r:id&#x27;),doc.part.relate_to(link[2],RT.HYPERLINK,is_external=True));run=OxmlElement(&#x27;w:r&#x27;);rp=OxmlElement(&#x27;w:rPr&#x27;);color=OxmlElement(&#x27;w:color&#x27;);color.set(qn(&#x27;w:val&#x27;),&#x27;19556D&#x27;);rp.append(color);run.append(rp);t=OxmlElement(&#x27;w:t&#x27;);t.text=link[1];run.append(t);h.append(run);p._p.append(h);continue
+                r=p.add_run(texto_simples(part));r.bold=part.startswith(&#x27;**&#x27;)
+                if part.startswith(&#x27;`&#x27;):r.font.name=&#x27;Consolas&#x27;;r.font.size=Pt(9)
+    footer=sec.footer.paragraphs[0];footer.alignment=WD_ALIGN_PARAGRAPH.RIGHT
+    f=OxmlElement(&#x27;w:fldSimple&#x27;);f.set(qn(&#x27;w:instr&#x27;),&#x27;PAGE&#x27;);footer._p.append(f)
+    doc.core_properties.author=&#x27;Ricardo Silva Queiroz&#x27;;doc.core_properties.title=next(v for k,v in content if k==&#x27;h1&#x27;)
+    doc.save(path)
+
+# Pdfcommarcadores
+class PDFComMarcadores(SimpleDocTemplate):
+    def afterFlowable(self,flow):
+        if isinstance(flow,Paragraph) and getattr(flow,&#x27;bookmark_level&#x27;,None) is not None:
+            level=flow.bookmark_level;key=&#x27;s&#x27;+str(self.seq.nextf(&#x27;heading&#x27;));self.canv.bookmarkPage(key);self.canv.addOutlineEntry(flow.getPlainText(),key,level=level,closed=False)
+
+# Criar pdf
+def criar_pdf(path,content):
+    registrar_fontes()
+    styles={
+        &#x27;title&#x27;:ParagraphStyle(&#x27;title&#x27;,fontName=&#x27;BodyBold&#x27;,fontSize=20,leading=25,spaceAfter=16,textColor=colors.black,keepWithNext=True),
+        &#x27;h1&#x27;:ParagraphStyle(&#x27;h1&#x27;,fontName=&#x27;BodyBold&#x27;,fontSize=14,leading=18,spaceBefore=14,spaceAfter=7,keepWithNext=True),
+        &#x27;h2&#x27;:ParagraphStyle(&#x27;h2&#x27;,fontName=&#x27;BodyBold&#x27;,fontSize=12,leading=16,spaceBefore=12,spaceAfter=6,keepWithNext=True),
+        &#x27;h3&#x27;:ParagraphStyle(&#x27;h3&#x27;,fontName=&#x27;BodyBold&#x27;,fontSize=11.2,leading=15,spaceBefore=10,spaceAfter=5,keepWithNext=True),
+        &#x27;body&#x27;:ParagraphStyle(&#x27;body&#x27;,fontName=&#x27;Body&#x27;,fontSize=10.6,leading=14.7,spaceAfter=7,splitLongWords=True,allowWidows=0,allowOrphans=0),
+        &#x27;table&#x27;:ParagraphStyle(&#x27;table&#x27;,fontName=&#x27;Body&#x27;,fontSize=8.6,leading=11,splitLongWords=True),
+        &#x27;code&#x27;:ParagraphStyle(&#x27;code&#x27;,fontName=&#x27;Code&#x27;,fontSize=7.8,leading=10.1,spaceAfter=5,leftIndent=7),
+    }
+    story=[];first=True
+    for kind,data in content:
+        if kind.startswith(&#x27;h&#x27;):
+            style=styles[&#x27;title&#x27;] if first else styles[&#x27;h&#x27;+str(min(int(kind[1:])-1,3) or 1)];p=Paragraph(inline_pdf(data),style)
+            if not first:p.bookmark_level=min(int(kind[1:])-2,1) if int(kind[1:])&gt;=2 else 0
+            first=False;story.append(p)
+        elif kind==&#x27;table&#x27;:
+            n=max(len(row) for row in data);widths=[481/n]*n
+            if n==3:widths=[77,133,271]
+            if n==2:widths=[156,325]
+            rows=[[Paragraph(inline_pdf(str(v)),styles[&#x27;table&#x27;]) for v in row] for row in data]
+            t=Table(rows,colWidths=widths,repeatRows=1,hAlign=&#x27;LEFT&#x27;);t.setStyle(TableStyle([(&#x27;BACKGROUND&#x27;,(0,0),(-1,0),colors.HexColor(&#x27;#E9EFF2&#x27;)),(&#x27;VALIGN&#x27;,(0,0),(-1,-1),&#x27;TOP&#x27;),(&#x27;LEFTPADDING&#x27;,(0,0),(-1,-1),6),(&#x27;RIGHTPADDING&#x27;,(0,0),(-1,-1),6),(&#x27;TOPPADDING&#x27;,(0,0),(-1,-1),6),(&#x27;BOTTOMPADDING&#x27;,(0,0),(-1,-1),6),(&#x27;LINEBELOW&#x27;,(0,0),(-1,-1),.25,colors.HexColor(&#x27;#CFD9DE&#x27;))]));story.extend([t,Spacer(1,10)])
+        elif kind==&#x27;code&#x27;:
+            wrapped=[]
+            for line in data.expandtabs(4).splitlines():wrapped.extend(textwrap.wrap(line,width=102,replace_whitespace=False,drop_whitespace=False,subsequent_indent=&#x27;    &#x27;) or [&#x27; &#x27;])
+            story.append(Preformatted(&#x27;\n&#x27;.join(wrapped),styles[&#x27;code&#x27;]))
+        elif kind==&#x27;break&#x27;:story.append(PageBreak())
+        else:
+            text=inline_pdf(data)
+            if kind==&#x27;bullet&#x27;:text=&#x27;• &#x27;+text
+            story.append(Paragraph(text,styles[&#x27;body&#x27;]))
+    def footer(canv,doc):
+        canv.setFont(&#x27;Body&#x27;,8);canv.setFillColor(colors.HexColor(&#x27;#586771&#x27;));canv.drawRightString(538,30,str(doc.page))
+    pdf=PDFComMarcadores(str(path),pagesize=A4,rightMargin=56.7,leftMargin=56.7,topMargin=51,bottomMargin=48,title=next(v for k,v in content if k==&#x27;h1&#x27;),author=&#x27;Ricardo Silva Queiroz&#x27;)
+    pdf.build(story,onFirstPage=footer,onLaterPages=footer)
+
+# Main
+def main():
+    p=argparse.ArgumentParser();p.add_argument(&#x27;arquivos&#x27;,nargs=&#x27;+&#x27;);p.add_argument(&#x27;--somente-pdf&#x27;,action=&#x27;store_true&#x27;);p.add_argument(&#x27;--somente-word&#x27;,action=&#x27;store_true&#x27;);args=p.parse_args()
+    for name in args.arquivos:
+        src=Path(name);content=list(blocos(src.read_text(&#x27;utf-8-sig&#x27;)))
+        if not args.somente_pdf:criar_docx(src.with_suffix(&#x27;.docx&#x27;),content)
+        if not args.somente_word:criar_pdf(src.with_suffix(&#x27;.pdf&#x27;),content)
+        print(&#x27;DOCUMENTO&#x27;,str(src.with_suffix(&#x27;.docx&#x27;) if args.somente_word else src.with_suffix(&#x27;.pdf&#x27;)),flush=True)
+
+if __name__==&#x27;__main__&#x27;:main()
+</pre>

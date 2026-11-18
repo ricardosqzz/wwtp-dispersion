@@ -1,0 +1,27 @@
+<!doctype html><meta charset="utf-8"><style>body{max-width:1100px;margin:30px auto;font:16px/1.6 Arial}pre{background:#edf3f5;overflow:auto;padding:18px}</style><h1>exportar_guias_word.ps1</h1><p>revisão editorial e produtos intermediários de 18/11/2026</p><h2>Entradas e saídas</h2><pre># ENTRADA: JSON indicado em ListaArquivos, com docx e pdf para cada documento.
+# SAÍDA: PDF nativo do Word para conferência da paginação e figuras; documentos são abertos apenas para leitura.
+# CAMINHOS: definidos no JSON; não fecha documentos do usuário, somente a instância criada por este script.
+param([Parameter(Mandatory=$true)][string]$ListaArquivos)
+$ErrorActionPreference=&#x27;Stop&#x27;
+$items=Get-Content -LiteralPath $ListaArquivos -Raw -Encoding UTF8 | ConvertFrom-Json
+$word=New-Object -ComObject Word.Application
+$word.Visible=$false
+$word.DisplayAlerts=0</pre><h2>Código integral</h2><pre># ENTRADA: JSON indicado em ListaArquivos, com docx e pdf para cada documento.
+# SAÍDA: PDF nativo do Word para conferência da paginação e figuras; documentos são abertos apenas para leitura.
+# CAMINHOS: definidos no JSON; não fecha documentos do usuário, somente a instância criada por este script.
+param([Parameter(Mandatory=$true)][string]$ListaArquivos)
+$ErrorActionPreference=&#x27;Stop&#x27;
+$items=Get-Content -LiteralPath $ListaArquivos -Raw -Encoding UTF8 | ConvertFrom-Json
+$word=New-Object -ComObject Word.Application
+$word.Visible=$false
+$word.DisplayAlerts=0
+try {
+ foreach($item in $items) {
+  $source=[System.IO.Path]::GetFullPath([string]$item.docx)
+  $target=[System.IO.Path]::GetFullPath([string]$item.pdf)
+  $document=$word.Documents.Open($source,$false,$true,$false)
+  try {$document.Repaginate();$document.ExportAsFixedFormat($target,17,$false,0,0,1,1,0,$true,$true,1);Write-Output &quot;WORD_PDF $target&quot;}
+  finally {$document.Close(0)}
+ }
+} finally {$word.Quit()}
+</pre>
